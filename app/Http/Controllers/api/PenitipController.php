@@ -42,4 +42,30 @@ class PenitipController extends Controller
             'data' => $penitip,
         ], 200);
     }
+
+    public function update(Request $request, $id){
+        $penitip = Penitip::find($id);
+        if(is_null($penitip)){
+            return  response([
+                'message'=> "Penitip Not Found",
+                'data'=>null
+            ],404);
+        }
+        $updateData = $request->all();
+        $validate = Validator::make($updateData,[
+            'nama_penitip' => 'required',
+            'no_telp' => 'required|max:13'
+        ]);
+        if($validate->fails()){
+            return response([
+                'message'=>$validate->errors()
+            ],400);
+        }
+
+        $penitip->update($updateData);
+        return response([
+            'message'=>''
+        ])
+
+    }
 }
