@@ -7,16 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Hampers extends Model
 {
-    use HasFactory;
+        use HasFactory;
 
-    protected $table = 'hampers';
+        protected $table = 'hampers';
 
-    protected $primaryKey = 'id';
-    protected $fillable = [
-        'hampers_name',
-        'hampers_price',
-        'quantity',
-        'hampers_picture',
-        'active',
-    ];
+        protected $primaryKey = 'id';
+        protected $fillable = [
+                'hampers_name',
+                'hampers_price',
+                'quantity',
+                'hampers_picture',
+                'active',
+        ];
 }
