@@ -7,17 +7,21 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
+     *  'id_role', 'nama', 'email', 'password', 'no_telp', 'jenis_kelamin', 'tanggal_lahir'
      * Run the migrations.
      */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('nama');
+            $table->foreignId('id_role')->references('id')->on('roles')->onDelete('cascade')->onUpdate('cascade');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->rememberToken();
+            $table->string('no_telp');
+            $table->string('jenis_kelamin')->nullable();
+            $table->date('tanggal_lahir')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
         });
 
