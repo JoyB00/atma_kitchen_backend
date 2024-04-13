@@ -5,14 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Role extends Model
+class Pegawai extends Model
 {
     use HasFactory;
-
-    protected $table = 'roles';
+    protected $table = 'pegawais';
 
     protected $primaryKey = 'id';
     protected $fillable = [
-        'nama_role'
+        'id_user', 'tanggal_mulai_kerja'
     ];
+
+    public function User(){
+        return $this->belongsTo(User::class, 'id_user');
+    }
 }
+
