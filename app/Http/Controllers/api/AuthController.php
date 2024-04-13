@@ -61,18 +61,24 @@ class AuthController extends Controller
         ]);
         if ($validate->fails()) {
             return response([
-                'message' => $validate->errors(),
+                'message' => $validate->errors()->first(),
             ], 400);
         }
 
         if (!Auth::attempt($login)) {
             return response([
-                'message' => 'Invalid Credential',
+                'message' => 'Email or Password Invalid',
             ], 401);
         }
 
+
         /** @var \App\Models\User $user  **/
         $user = Auth::user();
+        if ($user->active != 1) {
+            return response([
+                'message' => 'Your account has not been verified. Please verify you account first'
+            ]);
+        }
         $token = $user->createToken('Authentication Token')->accessToken;
 
         return response([
@@ -102,8 +108,10 @@ class AuthController extends Controller
     {
         $request->user()->token()->revoke();
 
+
         return response([
-            'message' => 'Logged out'
-        ]);
+            'message' => 'Logged out',
+            // 'data' => $user
+        ], 200);
     }
 }
