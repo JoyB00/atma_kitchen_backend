@@ -29,7 +29,7 @@ class ProdukController extends Controller
     {
         $storeData = $request->all();
         $validate = Validator::make($storeData, [
-            'id_category' => 'required',
+            'id_kategori' => 'required',
             'nama_produk' => 'required',
             'kuantitas' => 'required',
             'harga_produk' => 'required',
@@ -60,8 +60,12 @@ class ProdukController extends Controller
         }
         $updateData = $request->all();
         $validate = Validator::make($updateData, [
-            'nama_Produk' => 'required',
-            'no_telp' => 'required|max:13'
+            'id_kategori' => 'required',
+            'nama_produk' => 'required',
+            'kuantitas' => 'required',
+            'harga_produk' => 'required',
+            'foto_produk' => 'required|image:jpeg,png,jpg',
+            'deskripsi' => 'required',
         ]);
         if ($validate->fails()) {
             return response([

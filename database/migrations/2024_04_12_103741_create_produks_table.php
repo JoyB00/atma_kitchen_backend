@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('nama_produk');
             $table->integer('kuantitas');
             $table->float('harga_produk');
-            $table->longText('foto_produk');
+            $table->longText('foto_produk')->nullable();
             $table->longText('deskripsi');
             $table->timestamps();
         });

@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use App\Models\User;
+use App\Mail\MailSend;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -13,27 +16,37 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $register = $request->all();
-
+        $str = Str::random(30);
         $validate = Validator::make($register, [
-            'nama' => 'required',
+            'fullName' => 'required',
             'email' => 'required|email:rfc,dns|unique:users',
             'password' => 'required|min:8',
-            'no_telp' => 'required|max:13',
-            'tanggal_lahir' => 'required',
+            'phoneNumber' => 'required|max:13|min:10',
+            'dateOfBirth' => 'required',
         ]);
 
         if ($validate->fails()) {
             return response([
-                'message' => $validate->errors()
+                'message' => $validate->errors()->first()
             ], 404);
         }
+        $register['verify_key'] = $str;
         $register['id_role'] = 4;
         $register['password'] = bcrypt($request->password);
 
         $user = User::create($register);
 
+        $details = [
+            'username' => $request->fullName,
+            'website' => 'Atma Kitchen',
+            'dateTime' => date('Y-m-d H:i:s'),
+            'url' => request()->getHttpHost() . '/register/verify/' . $str
+        ];
+
+        Mail::to($request->email)->send(new MailSend($details));
+
         return response([
-            'message' => 'Register Success',
+            'message' => 'Registered, verify your email address to login',
             'user' => $user,
         ], 200);
     }
@@ -68,6 +81,21 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
             'access_token' => $token
         ], 200);
+    }
+
+    public function verify($verify_key)
+    {
+        $keyCheck = User::select('verify_key')->where('verify_key', $verify_key)->exists();
+        if ($keyCheck) {
+            $user = User::where('verify_key', $verify_key)->update([
+                'active' => 1,
+                'email_verified_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            return "Verification Successful, Your account is active now";
+        } else {
+            return "Verification Failed, Key not found";
+        }
     }
 
     public function logout(Request $request)
