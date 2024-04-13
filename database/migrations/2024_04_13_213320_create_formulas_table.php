@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('formulas', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->int('quantity');
+            $table->integer('quantity');
 
             //foreign key ke tabel bahan baku
             //TODO: FIX KALAU SALAH
