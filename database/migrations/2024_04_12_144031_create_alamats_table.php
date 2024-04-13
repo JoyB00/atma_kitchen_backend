@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('alamats', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_customer')->references('id')->on('customers')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('kode_pos');
-            $table->string('kecamatan');
-            $table->string('kota');
-            $table->string('alamat_lengkap');
+            $table->string('postal_code');
+            $table->string('subdistrict'); // kecamatan
+            $table->string('city');
+            $table->string('full_address');
             $table->timestamps();
         });
     }

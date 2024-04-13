@@ -5,17 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Alamat extends Model
+class Address extends Model
 {
     use HasFactory;
 
-    protected $table = 'alamats';
+    protected $table = 'address';
 
     protected $primaryKey = 'id';
-    protected $fillable = ['id_customer', 'kecamatan', 'kode_pos', 'alamat_lengkap'];
+    protected $fillable = ['id_customer', 'subdistrict', 'city', 'postal_code', 'full_address'];
 
-    public function Customer(){
+    public function Customer()
+    {
         return $this->belongsTo(Customer::class, 'id_customer');
     }
-
 }
