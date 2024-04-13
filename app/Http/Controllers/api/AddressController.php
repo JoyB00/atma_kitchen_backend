@@ -4,12 +4,20 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Address;
-use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class AddressController extends Controller
 {
+  public function index()
+  {
+    $address = Address::where('id_customer', auth()->user()->customer->id)->get();
+    return response([
+      'message' => 'All Address Retrieved',
+      'data' => $address,
+    ], 200);
+  }
+
   public function store(Request $request)
   {
     $storeData = $request->all();
