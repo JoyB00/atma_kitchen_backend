@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Address;
+use App\Models\Addresses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -11,7 +11,7 @@ class AddressController extends Controller
 {
   public function index()
   {
-    $address = Address::where('id_customer', auth()->user()->customer->id)->get();
+    $address = Addresses::where('id_customer', auth()->user()->customer->id)->get();
     return response([
       'message' => 'All Address Retrieved',
       'data' => $address,
@@ -35,7 +35,7 @@ class AddressController extends Controller
       ], 400);
     }
 
-    $address = Address::create($storeData);
+    $address = Addresses::create($storeData);
     return response([
       'message' => 'Category Created Successfully',
       'data' => $address,
@@ -44,7 +44,7 @@ class AddressController extends Controller
 
   public function update(Request $request, $id)
   {
-    $address = Address::find($id);
+    $address = Addresses::find($id);
     if (is_null($address)) {
       return response([
         'message' => 'Category Not Found',
@@ -76,7 +76,7 @@ class AddressController extends Controller
 
   public function destroy($id)
   {
-    $address = Address::find($id);
+    $address = Addresses::find($id);
     if (is_null($address)) {
       return response([
         'message' => 'Address Not Found',
