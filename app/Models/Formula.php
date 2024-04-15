@@ -13,6 +13,8 @@ class Formula extends Model
 
     protected $primaryKey = 'id';
     protected $fillable = [
-        'kuantitas'
+        'hampers_name',
+        'hampers_price',
+        'quantity'
     ];
 }

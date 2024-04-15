@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
-            $table->string('metode_delivery');
-            $table->string('jarak_tempuh');
-            $table->string('ongkos_kirim');
-            $table->string('alamat_penerima');
+            $table->string('delivery_method');
+            $table->float('distance');
+            $table->decimal('shipping_cost');
+            $table->string('recipient_address');
             $table->timestamps();
         });
     }
