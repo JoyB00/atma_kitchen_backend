@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Formula;
+use App\Models\Recipes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class FormulaController extends Controller
+class RecipeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $formula = Formula::get();
+        $formula = Recipes::get();
         return response([
             'message' => 'All Formula Retrieved',
             'data' => $formula,
@@ -38,7 +38,7 @@ class FormulaController extends Controller
             ], 400);
         }
 
-        $formula = Formula::create($data);
+        $formula = Recipes::create($data);
         return response([
             'message' => 'Formula Created Successfully',
             'data' => $formula,
@@ -58,7 +58,7 @@ class FormulaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $formula = Formula::find($id);
+        $formula = Recipes::find($id);
 
         if (is_null($formula)) {
             return response([
@@ -91,7 +91,7 @@ class FormulaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Formula $formula)
+    public function destroy(Recipes $formula)
     {
         $formula->delete();
         return response([
