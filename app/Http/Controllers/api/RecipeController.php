@@ -13,10 +13,10 @@ class RecipeController extends Controller
      */
     public function index()
     {
-        $formula = Recipes::get();
+        $recipe = Recipes::get();
         return response([
             'message' => 'All Formula Retrieved',
-            'data' => $formula,
+            'data' => $recipe
         ], 200);
     }
 
@@ -38,29 +38,39 @@ class RecipeController extends Controller
             ], 400);
         }
 
-        $formula = Recipes::create($data);
+        $recipe = Recipes::create($data);
         return response([
             'message' => 'Formula Created Successfully',
-            'data' => $formula,
+            'data' => $recipe,
         ], 200);
     }
 
     /**
      * Display the specified resource.
      */
-    // public function show(Formula $formula)
-    // {
-    //     //
-    // }
+    public function show($id)
+    {
+        $recipe = Recipes::where('id', $id)->get();
+        $product = $recipe::with('Product')->get();
+        $ingredient = $recipe::with('Ingredients')->get();
+        return response([
+            'message' => 'All Formula Retrieved',
+            'data' => [
+                'formula' => $recipe,
+                'product' => $product,
+                'ingredient' => $ingredient
+            ],
+        ], 200);
+    }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
     {
-        $formula = Recipes::find($id);
+        $recipe = Recipes::find($id);
 
-        if (is_null($formula)) {
+        if (is_null($recipe)) {
             return response([
                 'message' => 'Formula Not Found',
                 'data' => null
@@ -81,22 +91,22 @@ class RecipeController extends Controller
             ], 400);
         }
 
-        $formula->update($data);
+        $recipe->update($data);
         return response([
             'message' => 'Formula Updated Successfully',
-            'data' => $formula
+            'data' => $recipe
         ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Recipes $formula)
+    public function destroy(Recipes $recipe)
     {
-        $formula->delete();
+        $recipe->delete();
         return response([
             'message' => 'Formula Deleted Successfully',
-            'data' => $formula
+            'data' => $recipe
         ], 200);
     }
 }
