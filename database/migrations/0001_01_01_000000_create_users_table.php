@@ -11,12 +11,12 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_role')->references('id')->on('roles')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('nama');
+            $table->string('name');
             $table->string('email');
             $table->string('password');
-            $table->string('no_telp');
-            $table->string('jenis_kelamin');
-            $table->date('tanggal_lahir');
+            $table->string('phone_number');
+            $table->string('gender');
+            $table->date('birth_date');
             $table->timestamps();
         });
     }

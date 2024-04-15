@@ -5,16 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Hampers extends Model
+class Categories extends Model
 {
     use HasFactory;
-    
-    protected $table = 'hampers';
+
+    protected  $table = 'categories';
 
     protected $primaryKey = 'id';
     protected $fillable = [
-        'hampers_name', 
-        'hampers_price', 
-        'quantity'
+        'category_name'
     ];
 }

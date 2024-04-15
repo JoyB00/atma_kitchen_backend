@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hampers', function (Blueprint $table) {
+        Schema::create('other_procurements', function (Blueprint $table) {
             $table->id();
-            $table->string('hampers_name');
-            $table->float('hampers_price');
+            $table->foreignId('employee_id')->references('id')->on('employees')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('ingredient_name');
+            $table->float('price');
             $table->integer('quantity');
-           
+            $table->date('procurement_date');
+            $table->float('total_price');
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hampers');
+        Schema::dropIfExists('other_procurements');
     }
 };

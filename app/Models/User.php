@@ -7,23 +7,24 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class Users extends Authenticatable
 {
     use HasFactory, Notifiable;
     protected $table = 'users';
 
     protected $primaryKey = 'id';
     protected $fillable = [
-        'id_role',
-        'nama',
+        'role_id',
+        'name',
         'email',
         'password',
-        'jenis_kelamin',
-        'tanggal_lahir',
+        'phone_number',
+        'gender',
+        'birth_date',
     ];
 
-    protected function Role()
+    protected function Roles()
     {
-       return $this->belongsTo(Role::class, 'id_role');
+       return $this->belongsTo(Roles::class, 'role_id');
     }
 }
