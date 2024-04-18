@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use App\Models\User;
 use App\Mail\MailSend;
+use App\Models\Users;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -36,7 +36,7 @@ class AuthController extends Controller
         $register['id_role'] = 4;
         $register['password'] = bcrypt($request->password);
 
-        $user = User::create($register);
+        $user = Users::create($register);
 
         $details = [
             'username' => $request->fullName,
@@ -93,9 +93,9 @@ class AuthController extends Controller
 
     public function verify($verify_key)
     {
-        $keyCheck = User::select('verify_key')->where('verify_key', $verify_key)->exists();
+        $keyCheck = Users::select('verify_key')->where('verify_key', $verify_key)->exists();
         if ($keyCheck) {
-            $user = User::where('verify_key', $verify_key)->update([
+            $user = Users::where('verify_key', $verify_key)->update([
                 'active' => 1,
                 'email_verified_at' => date('Y-m-d H:i:s'),
             ]);

@@ -5,14 +5,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Produk;
+use App\Models\Product;
 use Illuminate\Support\Facades\Validator;
 
 class ProdukController extends Controller
 {
     public function index()
     {
-        $produk = Produk::get();
+        $produk = Product::get();
         if (is_null($produk)) {
             return response([
                 'message' => 'No Data Found',
@@ -27,7 +27,7 @@ class ProdukController extends Controller
 
     public function getProduct($id)
     {
-        $product = Produk::where('id', $id)->first();
+        $product = Product::where('id', $id)->first();
         if (is_null($product)) {
             return response([
                 'message' => "Product Not Found",
@@ -57,7 +57,7 @@ class ProdukController extends Controller
             ], 400);
         }
 
-        $produk = Produk::create($storeData);
+        $produk = Product::create($storeData);
         return response([
             'message' => 'Product Added Successfully',
             'data' => $produk,
@@ -66,7 +66,7 @@ class ProdukController extends Controller
 
     public function update(Request $request, $id)
     {
-        $produk = Produk::find($id);
+        $produk = Product::find($id);
         if (is_null($produk)) {
             return  response([
                 'message' => "Product Not Found",
@@ -97,7 +97,7 @@ class ProdukController extends Controller
 
     public function destroy($id)
     {
-        $produk = Produk::find($id);
+        $produk = Product::find($id);
         if (is_null($produk)) {
             return response([
                 'message' => 'Product Not Found',
