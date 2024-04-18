@@ -6,51 +6,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\HasApiTokens;
 
-class User extends Authenticatable
+class Users extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-
-    public $timestamps = false;
+    use HasFactory, Notifiable;
     protected $table = 'users';
+
     protected $primaryKey = 'id';
     protected $fillable = [
-        'id_role', 'fullName', 'email', 'password', 'phoneNumber', 'gender', 'dateOfBirth', 'active', 'verify_key'
-    ];
-
-
-    public function Role()
-    {
-        return $this->belongsTo(Role::class, 'id_role');
-    }
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
+        'role_id',
+        'name',
+        'email',
         'password',
-        'remember_token',
+        'phone_number',
+        'gender',
+        'birth_date',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    protected function Roles()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->belongsTo(Roles::class, 'role_id');
     }
 }

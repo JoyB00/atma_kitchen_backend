@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Roles extends Model
+class Consignors extends Model
 {
     use HasFactory;
-
-    protected $table = 'roles';
+    protected $table = 'consignors';
 
     protected $primaryKey = 'id';
     protected $fillable = [
-        'role_name'
+        'consignor_name', 
+        'phone_number',
     ];
 }

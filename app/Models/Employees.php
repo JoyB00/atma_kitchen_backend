@@ -5,13 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Penitip extends Model
+class Employees extends Model
 {
     use HasFactory;
-    protected $table = 'penitips';
+    protected $table = 'employees';
 
     protected $primaryKey = 'id';
     protected $fillable = [
-        'nama_penitip', 'no_telp',
+        'user_id', 
+        'work_start_date'
     ];
+
+    public function Users(){
+        return $this->belongsTo(Users::class, 'user_id');
+    }
 }
+
