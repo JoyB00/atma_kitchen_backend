@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Kategori;
+use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -65,14 +67,19 @@ class KategoriController extends Controller
 
     public function destroy($id)
     {
+        $produk = Produk::where('id_kategori', $id)->get();
         $kategory = Kategori::find($id);
-        if (is_null($kategory)) {
+        if (is_null($kategory) || is_null($produk)) {
             return response([
                 'message' => 'Category Not Found',
                 'data' => null
             ], 404);
         }
+
         if ($kategory->delete()) {
+            foreach ($produk as $p) {
+                $p->delete();
+            }
             return response([
                 'message' => 'Category Deleted Successfully',
                 'data' => $kategory
