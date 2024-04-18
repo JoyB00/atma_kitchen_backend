@@ -12,7 +12,8 @@ Route::middleware('auth:api')->group(function () {
 
 // Route::get('/register/verify/{verify_key}', [App\Http\Controllers\Api\AuthController::class, 'verify']);
 
-Route::get('/produks', [App\Http\Controllers\Api\ProdukController::class, 'index']);
-Route::post('/produks', [App\Http\Controllers\Api\ProdukController::class, 'store']);
-Route::patch('/produks/{id}', [App\Http\Controllers\Api\ProdukController::class, 'update']);
-Route::delete('/produks/{id}', [App\Http\Controllers\Api\ProdukController::class, 'destroy']);
+Route::get('/products', [App\Http\Controllers\Api\ProdukController::class, 'index']);
+Route::post('/products', [App\Http\Controllers\Api\ProdukController::class, 'store']);
+Route::patch('/products/{id}', [App\Http\Controllers\Api\ProdukController::class, 'update']);
+Route::delete('/products/{id}', [App\Http\Controllers\Api\ProdukController::class, 'destroy']);
+Route::get('/products/{id}', [App\Http\Controllers\Api\ProdukController::class, 'getProduct']);

@@ -31,6 +31,8 @@ class AuthController extends Controller
             ], 404);
         }
         $register['verify_key'] = $str;
+        $register['created_at'] = date('Y-m-d H:i:s');
+        $register['updated_at'] = date('Y-m-d H:i:s');
         $register['id_role'] = 4;
         $register['password'] = bcrypt($request->password);
 
@@ -82,7 +84,7 @@ class AuthController extends Controller
         $token = $user->createToken('Authentication Token')->accessToken;
 
         return response([
-            'message' => 'Authenticated',
+            'message' => 'Login Successful',
             'user' => $user,
             'token_type' => 'Bearer',
             'access_token' => $token

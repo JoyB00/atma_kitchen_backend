@@ -25,6 +25,21 @@ class ProdukController extends Controller
         ], 200);
     }
 
+    public function getProduct($id)
+    {
+        $product = Produk::where('id', $id)->first();
+        if (is_null($product)) {
+            return response([
+                'message' => "Product Not Found",
+            ], 404);
+        }
+
+        return response([
+            'message' => 'Retrieve Product Successfully',
+            'data' => $product
+        ], 200);
+    }
+
     public function store(Request $request)
     {
         $storeData = $request->all();
@@ -33,12 +48,12 @@ class ProdukController extends Controller
             'nama_produk' => 'required',
             'kuantitas' => 'required',
             'harga_produk' => 'required',
-            'foto_produk' => 'required|image:jpeg,png,jpg',
+            // 'foto_produk' => 'required|image:jpeg,png,jpg',
             'deskripsi' => 'required',
         ]);
         if ($validate->fails()) {
             return response([
-                'message' => $validate->errors()
+                'message' => $validate->errors()->first()
             ], 400);
         }
 
@@ -51,7 +66,7 @@ class ProdukController extends Controller
 
     public function update(Request $request, $id)
     {
-        $produk = Produk::find($id)->first();
+        $produk = Produk::find($id);
         if (is_null($produk)) {
             return  response([
                 'message' => "Product Not Found",
@@ -64,12 +79,12 @@ class ProdukController extends Controller
             'nama_produk' => 'required',
             'kuantitas' => 'required',
             'harga_produk' => 'required',
-            'foto_produk' => 'required|image:jpeg,png,jpg',
+            // 'foto_produk' => 'required|image:jpeg,png,jpg',
             'deskripsi' => 'required',
         ]);
         if ($validate->fails()) {
             return response([
-                'message' => $validate->errors()
+                'message' => $validate->errors()->first()
             ], 400);
         }
 
@@ -82,7 +97,7 @@ class ProdukController extends Controller
 
     public function destroy($id)
     {
-        $produk = Produk::find($id)->first();
+        $produk = Produk::find($id);
         if (is_null($produk)) {
             return response([
                 'message' => 'Product Not Found',
