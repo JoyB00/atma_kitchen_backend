@@ -6,21 +6,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
 
-class Users extends Authenticatable
+class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
     protected $table = 'users';
 
     protected $primaryKey = 'id';
     protected $fillable = [
         'role_id',
-        'name',
+        'fullName',
         'email',
         'password',
-        'phone_number',
+        'phoneNumber',
         'gender',
-        'birth_date',
+        'dateOfBirth',
     ];
 
     protected function Roles()

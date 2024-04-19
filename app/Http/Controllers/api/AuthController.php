@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use App\Mail\MailSend;
-use App\Models\Users;
+use App\Models\Customers;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -33,10 +34,15 @@ class AuthController extends Controller
         $register['verify_key'] = $str;
         $register['created_at'] = date('Y-m-d H:i:s');
         $register['updated_at'] = date('Y-m-d H:i:s');
-        $register['id_role'] = 4;
+        $register['role_id'] = 4;
         $register['password'] = bcrypt($request->password);
 
-        $user = Users::create($register);
+        $user = User::create($register);
+        $customer = Customers::create([
+            'user_id' => $user->id,
+            'point' => 0,
+            'nominal_balance' => 0,
+        ]);
 
         $details = [
             'username' => $request->fullName,
@@ -49,7 +55,10 @@ class AuthController extends Controller
 
         return response([
             'message' => 'Registered, verify your email address to login',
-            'user' => $user,
+            'data' => [
+                'user' => $user,
+                'customer' => $customer
+            ],
         ], 200);
     }
 
@@ -93,9 +102,9 @@ class AuthController extends Controller
 
     public function verify($verify_key)
     {
-        $keyCheck = Users::select('verify_key')->where('verify_key', $verify_key)->exists();
+        $keyCheck = User::select('verify_key')->where('verify_key', $verify_key)->exists();
         if ($keyCheck) {
-            $user = Users::where('verify_key', $verify_key)->update([
+            $user = User::where('verify_key', $verify_key)->update([
                 'active' => 1,
                 'email_verified_at' => date('Y-m-d H:i:s'),
             ]);

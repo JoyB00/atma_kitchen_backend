@@ -13,12 +13,13 @@ class Customers extends Model
 
     protected $primaryKey = 'id';
     protected $fillable = [
-        'user_id', 
-        'point', 
-        'balance_nominal'
+        'user_id',
+        'point',
+        'nominal_balance'
     ];
 
-    public function Users(){
-        return $this->belongsTo(Users::class, 'user_id');
+    public function Users()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

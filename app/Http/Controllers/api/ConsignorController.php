@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Penitip;
+use App\Models\Consignors;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -11,7 +12,7 @@ class PenitipController extends Controller
 {
     public function index()
     {
-        $penitip = Penitip::get();
+        $penitip = Consignors::get();
         if (is_null($penitip)) {
             return response([
                 'message' => 'No Data Found',
@@ -28,8 +29,8 @@ class PenitipController extends Controller
     {
         $storeData = $request->all();
         $validate = Validator::make($storeData, [
-            'nama_penitip' => 'required',
-            'no_telp' => 'required|max:13'
+            'consignor_name' => 'required',
+            'phone_number' => 'required|max:13'
         ]);
         if ($validate->fails()) {
             return response([
@@ -37,7 +38,7 @@ class PenitipController extends Controller
             ], 400);
         }
 
-        $penitip = Penitip::create($storeData);
+        $penitip = Consignors::create($storeData);
         return response([
             'message' => 'Penitip Added Successfully',
             'data' => $penitip,
@@ -46,7 +47,7 @@ class PenitipController extends Controller
 
     public function update(Request $request, $id)
     {
-        $penitip = Penitip::find($id)->first();
+        $penitip = Consignors::find($id)->first();
         if (is_null($penitip)) {
             return  response([
                 'message' => "Penitip Not Found",
@@ -55,8 +56,8 @@ class PenitipController extends Controller
         }
         $updateData = $request->all();
         $validate = Validator::make($updateData, [
-            'nama_penitip' => 'required',
-            'no_telp' => 'required|max:13'
+            'consignor_name' => 'required',
+            'phone_number' => 'required|max:13'
         ]);
         if ($validate->fails()) {
             return response([
@@ -73,7 +74,8 @@ class PenitipController extends Controller
 
     public function destroy($id)
     {
-        $penitip = Penitip::find($id)->first();
+        $penitip = Consignors::find($id)->first();
+        $product =  Product::where('consignor_id', $id)->get();
         if (is_null($penitip)) {
             return response([
                 'message' => 'Penitip Not Found',
@@ -81,6 +83,9 @@ class PenitipController extends Controller
             ], 404);
         }
         if ($penitip->delete()) {
+            foreach ($product as $p) {
+                $p->delete();
+            }
             return response([
                 'message' => 'Penitip Deleted Successfully',
                 'data' => $penitip

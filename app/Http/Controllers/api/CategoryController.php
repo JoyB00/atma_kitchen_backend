@@ -3,19 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Kategori;
-use App\Models\Produk;
+use App\Models\Categories;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class KategoriController extends Controller
+class CategoryController extends Controller
 {
     public function index()
     {
-        $kategori = Kategori::get();
+        $category = Categories::get();
         return response([
             'message' => 'All Category Retrieved',
-            'data' => $kategori,
+            'data' => $category,
         ], 200);
     }
 
@@ -23,25 +23,25 @@ class KategoriController extends Controller
     {
         $storeData = $request->all();
         $validate = Validator::make($storeData, [
-            'nama_kategori' => 'required',
+            'category_name' => 'required',
         ]);
         if ($validate->fails()) {
             return response([
-                'message' => $validate->errors()
+                'message' => $validate->errors()->first()
             ], 400);
         }
 
-        $kategori = Kategori::create($storeData);
+        $category = Categories::create($storeData);
         return response([
             'message' => 'Category Created Successfully',
-            'data' => $kategori,
+            'data' => $category,
         ], 200);
     }
 
     public function update(Request $request, $id)
     {
-        $kategori = Kategori::find($id);
-        if (is_null($kategori)) {
+        $category = Categories::find($id);
+        if (is_null($category)) {
             return response([
                 'message' => 'Category Not Found',
                 'data' => null
@@ -50,39 +50,41 @@ class KategoriController extends Controller
 
         $newKategori = $request->all();
         $validate = Validator::make($newKategori, [
-            'nama_kategori' => 'required'
+            'category_name' => 'required'
         ]);
         if ($validate->fails()) {
             return response([
-                'message' => $validate->errors()
+                'message' => $validate->errors()->first()
             ], 400);
         }
 
-        $kategori->update($newKategori);
+        $category->update($newKategori);
         return response([
             'message' => 'Category Updated Successfully',
-            'data' => $kategori
+            'data' => $category
         ], 200);
     }
 
     public function destroy($id)
     {
-        $produk = Produk::where('id_kategori', $id)->get();
-        $kategory = Kategori::find($id);
-        if (is_null($kategory) || is_null($produk)) {
+        $product = Product::where('category_id', $id)->get();
+        $category = Categories::find($id);
+        if (is_null($category) || is_null($product)) {
             return response([
                 'message' => 'Category Not Found',
                 'data' => null
             ], 404);
         }
 
-        if ($kategory->delete()) {
-            foreach ($produk as $p) {
-                $p->delete();
+        if ($category->delete()) {
+            if (!is_null($product)) {
+                foreach ($product as $p) {
+                    $p->delete();
+                }
             }
             return response([
                 'message' => 'Category Deleted Successfully',
-                'data' => $kategory
+                'data' => $category
             ], 200);
         }
 

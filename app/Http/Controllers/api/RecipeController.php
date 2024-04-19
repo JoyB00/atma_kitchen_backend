@@ -27,14 +27,14 @@ class RecipeController extends Controller
     {
         $data = $request->all();
         $validate = Validator::make($data, [
+            'ingredient_id' => 'required',
+            'product_id' => 'required',
             'quantity' => 'required',
-            'id_bahan_baku' => 'required',
-            'id_produk' => 'required',
         ]);
 
         if ($validate->fails()) {
             return response([
-                'message' => $validate->errors()
+                'message' => $validate->errors()->first()
             ], 400);
         }
 
@@ -50,16 +50,11 @@ class RecipeController extends Controller
      */
     public function show($id)
     {
-        $recipe = Recipes::where('id', $id)->get();
-        $product = $recipe::with('Product')->get();
-        $ingredient = $recipe::with('Ingredients')->get();
+        $recipe = Recipes::with('Ingredients', 'Product')->where('id', $id)->get();
+
         return response([
             'message' => 'All Formula Retrieved',
-            'data' => [
-                'formula' => $recipe,
-                'product' => $product,
-                'ingredient' => $ingredient
-            ],
+            'data' => $recipe
         ], 200);
     }
 
@@ -80,14 +75,14 @@ class RecipeController extends Controller
 
         $data = $request->all();
         $validate = Validator::make($data, [
+            'ingredient_id' => 'required',
+            'product_id' => 'required',
             'quantity' => 'required',
-            'id_bahan_baku' => 'required',
-            'id_produk' => 'required',
         ]);
 
         if ($validate->fails()) {
             return response([
-                'message' => $validate->errors()
+                'message' => $validate->errors()->first()
             ], 400);
         }
 
@@ -101,8 +96,14 @@ class RecipeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Recipes $recipe)
+    public function destroy($id)
     {
+        $recipe = Recipes::find($id);
+        if (is_null($recipe)) {
+            return response([
+                'message' => 'Formula Not Found',
+            ], 404);
+        }
         $recipe->delete();
         return response([
             'message' => 'Formula Deleted Successfully',

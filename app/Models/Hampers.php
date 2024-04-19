@@ -5,19 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Employees extends Model
+class Hampers extends Model
 {
     use HasFactory;
-    protected $table = 'employees';
+
+    protected $table = 'hampers';
 
     protected $primaryKey = 'id';
     protected $fillable = [
-        'user_id',
-        'work_start_date'
+        'hampers_name',
+        'hampers_price',
+        'quantity'
     ];
-
-    public function Users()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
 }

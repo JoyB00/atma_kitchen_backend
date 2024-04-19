@@ -8,11 +8,11 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use Illuminate\Support\Facades\Validator;
 
-class ProdukController extends Controller
+class ProductController extends Controller
 {
     public function index()
     {
-        $produk = Product::get();
+        $produk = Product::with('Categories')->orderBy('id', 'desc')->first();
         if (is_null($produk)) {
             return response([
                 'message' => 'No Data Found',
@@ -27,7 +27,7 @@ class ProdukController extends Controller
 
     public function getProduct($id)
     {
-        $product = Product::where('id', $id)->first();
+        $product = Product::with('Categories')->where('id', $id)->first();
         if (is_null($product)) {
             return response([
                 'message' => "Product Not Found",
@@ -44,12 +44,12 @@ class ProdukController extends Controller
     {
         $storeData = $request->all();
         $validate = Validator::make($storeData, [
-            'id_kategori' => 'required',
-            'nama_produk' => 'required',
-            'kuantitas' => 'required',
-            'harga_produk' => 'required',
-            // 'foto_produk' => 'required|image:jpeg,png,jpg',
-            'deskripsi' => 'required',
+            'consignor_id' => 'required',
+            'category_id' => 'required',
+            'quantity' => 'required',
+            'product_price' => 'required',
+            // 'product_picture' => 'required|image:jpeg,png,jpg',
+            'description' => 'required',
         ]);
         if ($validate->fails()) {
             return response([
@@ -75,12 +75,12 @@ class ProdukController extends Controller
         }
         $updateData = $request->all();
         $validate = Validator::make($updateData, [
-            'id_kategori' => 'required',
-            'nama_produk' => 'required',
-            'kuantitas' => 'required',
-            'harga_produk' => 'required',
-            // 'foto_produk' => 'required|image:jpeg,png,jpg',
-            'deskripsi' => 'required',
+            'consignor_id' => 'required',
+            'category_id' => 'required',
+            'quantity' => 'required',
+            'product_price' => 'required',
+            // 'product_picture' => 'required|image:jpeg,png,jpg',
+            'description' => 'required',
         ]);
         if ($validate->fails()) {
             return response([
