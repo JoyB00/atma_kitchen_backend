@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('ingredient_name');
             $table->integer('quantity');
-            $table->enum('unit', ['gr','pcs', 'kg', 'ml']);
+            $table->enum('unit', ['gr', 'pcs', 'kg', 'ml', 'buah', 'butir']);
             $table->timestamps();
         });
     }

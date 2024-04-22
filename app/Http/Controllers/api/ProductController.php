@@ -6,13 +6,15 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Recipes;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        $produk = Product::with('Categories')->orderBy('id', 'desc')->first();
+        $produk = Product::with('Categories')->get();
         if (is_null($produk)) {
             return response([
                 'message' => 'No Data Found',
@@ -28,6 +30,7 @@ class ProductController extends Controller
     public function getProduct($id)
     {
         $product = Product::with('Categories')->where('id', $id)->first();
+        $recipe = Recipes::where('product_id', $id)->get();
         if (is_null($product)) {
             return response([
                 'message' => "Product Not Found",
@@ -36,7 +39,11 @@ class ProductController extends Controller
 
         return response([
             'message' => 'Retrieve Product Successfully',
-            'data' => $product
+            'data' => [
+                'product' => $product,
+                'recipe' => $recipe
+            ]
+
         ], 200);
     }
 
@@ -44,12 +51,13 @@ class ProductController extends Controller
     {
         $storeData = $request->all();
         $validate = Validator::make($storeData, [
-            'consignor_id' => 'required',
+            'product_name' => 'required',
             'category_id' => 'required',
-            'quantity' => 'required',
-            'product_price' => 'required',
-            // 'product_picture' => 'required|image:jpeg,png,jpg',
+            'quantity' => 'required|numeric|min:1',
+            'product_price' => 'required|numeric|min:1',
+            'product_picture' => 'required|image:jpeg,png,jpg',
             'description' => 'required',
+            'recipe' => 'required'
         ]);
         if ($validate->fails()) {
             return response([
@@ -57,10 +65,35 @@ class ProductController extends Controller
             ], 400);
         }
 
-        $produk = Product::create($storeData);
+        $uploadFoler = 'product';
+        $image = $request->file('product_picture');
+        $imageUploadedPath = $image->store($uploadFoler, 'public');
+        $uploadedImageResponse = basename($imageUploadedPath);
+
+        $storeData['product_picture'] = $uploadedImageResponse;
+        $recipe = $request->recipe;
+        foreach ($recipe as $item) {
+            $validateRecipe = Validator::make($item, [
+                'ingredient_id' => 'required',
+                'quantity' => 'numeric|min:1'
+            ]);
+            if ($validateRecipe->fails()) {
+                return response([
+                    'message' => $validateRecipe->errors()->first()
+                ], 400);
+            }
+        }
+        $product = Product::create($storeData);
+        foreach ($recipe as $item) {
+            Recipes::create([
+                'product_id' => $product['id'],
+                'ingredient_id' => $item['ingredient_id'],
+                'quantity' => $item['quantity'],
+            ]);
+        }
         return response([
             'message' => 'Product Added Successfully',
-            'data' => $produk,
+            'data' => $product,
         ], 200);
     }
 
@@ -75,12 +108,12 @@ class ProductController extends Controller
         }
         $updateData = $request->all();
         $validate = Validator::make($updateData, [
-            'consignor_id' => 'required',
+            'product_name' => 'required',
             'category_id' => 'required',
-            'quantity' => 'required',
+            'quantity' => 'required|min:1',
             'product_price' => 'required',
-            // 'product_picture' => 'required|image:jpeg,png,jpg',
             'description' => 'required',
+            'recipe' => 'required'
         ]);
         if ($validate->fails()) {
             return response([
@@ -88,7 +121,42 @@ class ProductController extends Controller
             ], 400);
         }
 
+        if ($request->hasFile('product_picture')) {
+            $uploadFolder = 'product';
+            $image = $request->file('product_picture');
+            $imageUploadedPath = $image->store($uploadFolder, 'public');
+            $uploadedImageResponse = basename($imageUploadedPath);
+
+            Storage::disk('public')->delete('product/' . $produk->product_picture);
+
+            $updateData['product_picture'] = $uploadedImageResponse;
+        }
+
+
+        $recipe = $request->recipe;
+        foreach ($recipe as $item) {
+            $validateRecipe = Validator::make($item, [
+                'ingredient_id' => 'required',
+                'quantity' => 'numeric|min:1'
+            ]);
+            if ($validateRecipe->fails()) {
+                return response([
+                    'message' => $validateRecipe->errors()->first()
+                ], 400);
+            }
+        }
+        $oldRecipe = Recipes::where('product_id', $id)->get();
+        foreach ($oldRecipe as $item) {
+            $item->delete();
+        }
         $produk->update($updateData);
+        foreach ($recipe as $item) {
+            Recipes::create([
+                'product_id' => $produk['id'],
+                'ingredient_id' => $item['ingredient_id'],
+                'quantity' => $item['quantity'],
+            ]);
+        }
         return response([
             'message' => 'Product Updated Successfully',
             'data' => $produk,
@@ -105,6 +173,7 @@ class ProductController extends Controller
             ], 404);
         }
         if ($produk->delete()) {
+            Storage::disk('public')->delete('product/' . $produk->product_picture);
             return response([
                 'message' => 'Product Deleted Successfully',
                 'data' => $produk
