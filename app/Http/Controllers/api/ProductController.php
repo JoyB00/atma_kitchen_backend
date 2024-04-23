@@ -75,7 +75,7 @@ class ProductController extends Controller
         foreach ($recipe as $item) {
             $validateRecipe = Validator::make($item, [
                 'ingredient_id' => 'required',
-                'quantity' => 'numeric|min:1'
+                'quantity' => 'required|numeric|min:1'
             ]);
             if ($validateRecipe->fails()) {
                 return response([
@@ -137,7 +137,7 @@ class ProductController extends Controller
         foreach ($recipe as $item) {
             $validateRecipe = Validator::make($item, [
                 'ingredient_id' => 'required',
-                'quantity' => 'numeric|min:1'
+                'quantity' => 'required|numeric|min:1'
             ]);
             if ($validateRecipe->fails()) {
                 return response([
@@ -146,9 +146,6 @@ class ProductController extends Controller
             }
         }
         $oldRecipe = Recipes::where('product_id', $id)->get();
-        foreach ($oldRecipe as $item) {
-            $item->delete();
-        }
         $produk->update($updateData);
         foreach ($recipe as $item) {
             Recipes::create([
@@ -156,6 +153,9 @@ class ProductController extends Controller
                 'ingredient_id' => $item['ingredient_id'],
                 'quantity' => $item['quantity'],
             ]);
+        }
+        foreach ($oldRecipe as $item) {
+            $item->delete();
         }
         return response([
             'message' => 'Product Updated Successfully',
@@ -166,14 +166,19 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $produk = Product::find($id);
+        $recipe = Recipes::where('product_id', $id)->get();
         if (is_null($produk)) {
             return response([
                 'message' => 'Product Not Found',
                 'data' => null
             ], 404);
         }
+
         if ($produk->delete()) {
             Storage::disk('public')->delete('product/' . $produk->product_picture);
+            foreach ($recipe as $item) {
+                $item->delete();
+            }
             return response([
                 'message' => 'Product Deleted Successfully',
                 'data' => $produk

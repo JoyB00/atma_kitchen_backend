@@ -20,3 +20,4 @@ Route::get('/product/{id}', [App\Http\Controllers\Api\ProductController::class, 
 Route::get('/category', [App\Http\Controllers\Api\CategoryController::class, 'index']);
 Route::delete('/category/{id}', [App\Http\Controllers\Api\CategoryController::class, 'destroy']);
 Route::get('/ingredient', [App\Http\Controllers\Api\IngredientController::class, 'index']);
+Route::get('/hampers', [App\Http\Controllers\Api\HampersController::class, 'index']);

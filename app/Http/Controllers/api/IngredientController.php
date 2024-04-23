@@ -11,7 +11,7 @@ class IngredientController extends Controller
 {
     public function index()
     {
-        $ingredient = Ingredients::get();
+        $ingredient = Ingredients::orderBy('ingredient_name', 'asc')->get();
         return response([
             'message' => 'All Ingredient Retrivied',
             'data' => $ingredient
