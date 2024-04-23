@@ -15,6 +15,7 @@ class Hampers extends Model
     protected $fillable = [
         'hampers_name',
         'hampers_price',
-        'quantity'
+        'quantity',
+        'hampers_picture'
     ];
 }

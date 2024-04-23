@@ -65,9 +65,9 @@ class ProductController extends Controller
             ], 400);
         }
 
-        $uploadFoler = 'product';
+        $uploadFolder = 'product';
         $image = $request->file('product_picture');
-        $imageUploadedPath = $image->store($uploadFoler, 'public');
+        $imageUploadedPath = $image->store($uploadFolder, 'public');
         $uploadedImageResponse = basename($imageUploadedPath);
 
         $storeData['product_picture'] = $uploadedImageResponse;

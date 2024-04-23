@@ -16,6 +16,7 @@ return new class extends Migration
       $table->string('hampers_name');
       $table->float('hampers_price');
       $table->integer('quantity');
+      $table->longText('hampers_picture');
 
       $table->timestamps();
     });

@@ -28,8 +28,9 @@ class HampersController extends Controller
         $data = $request->all();
         $validate = Validator::make($data, [
             'hampers_name' => 'required',
-            'hampers_price' => 'required|numeric',
-            'quantity' => 'required|number'
+            'hampers_price' => 'required|numeric|min:1',
+            'quantity' => 'required|numeric|min:1',
+            'hampers_picture' => 'required|image:jpeg,png,jpg',
         ]);
         if ($validate->fails()) {
             return response([
@@ -37,6 +38,12 @@ class HampersController extends Controller
             ], 400);
         }
 
+        $uploadFolder = "hampers";
+        $image = $request->file('hampers_picture');
+        $imageUploadPath = $image->store($uploadFolder, 'public');
+        $uploadedImageRespose = basename($imageUploadPath);
+
+        $data['hampers_picture'] = $uploadedImageRespose;
         $hampers = Hampers::create($data);
         return response([
             'message' => 'Hampers Created Successfully',
