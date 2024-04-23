@@ -13,7 +13,6 @@ class Deliveries extends Model
 
     protected $primaryKey = 'id';
     protected $fillable = [
-        'delivery_method', 'distance', 'shipping_cost', 'recipient_address'
+        'delivery_method', 'distance', 'shipping_cost', 'recipient_address',
     ];
-
 }
