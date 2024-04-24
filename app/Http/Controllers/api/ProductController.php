@@ -174,8 +174,8 @@ class ProductController extends Controller
             ], 404);
         }
 
+        Storage::disk('public')->delete('product/' . $produk->product_picture);
         if ($produk->delete()) {
-            Storage::disk('public')->delete('product/' . $produk->product_picture);
             foreach ($recipe as $item) {
                 $item->delete();
             }

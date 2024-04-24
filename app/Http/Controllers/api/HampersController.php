@@ -13,7 +13,7 @@ class HampersController extends Controller
 {
     public function index()
     {
-        $hampers = Hampers::get();
+        $hampers = Hampers::orderBy('hampers_name', 'asc')->get();
         $hampers_detail = HampersDetails::with('Hampers', 'Product', 'Ingredients')->get();
         return response([
             'message' => 'All Hampers Retrivied',
@@ -49,7 +49,7 @@ class HampersController extends Controller
 
         $details =  $request->details;
         foreach ($details as $detail) {
-            if (is_null($detail['ingredient_id']) && is_null($detail['product_id'])) {
+            if (!isset($detail['ingredient_id']) && !isset($detail['product_id'])) {
                 return response([
                     'message' => "Please provide either Ingredient or Product for this detail!"
                 ], 400);
@@ -57,7 +57,7 @@ class HampersController extends Controller
         }
         $hampers = Hampers::create($data);
         foreach ($details as $detail) {
-            if (is_null($detail['ingredient_id'])) {
+            if (!isset($detail['ingredient_id'])) {
                 HampersDetails::create([
                     'hampers_id' => $hampers['id'],
                     'product_id' => $detail["product_id"],
@@ -129,7 +129,7 @@ class HampersController extends Controller
 
         $details =  $request->details;
         foreach ($details as $detail) {
-            if (is_null($detail['ingredient_id']) && is_null($detail['product_id'])) {
+            if (!isset($detail['ingredient_id']) && !isset($detail['product_id'])) {
                 return response([
                     'message' => "Please provide either Ingredient or Product for this detail!"
                 ], 400);
@@ -138,7 +138,7 @@ class HampersController extends Controller
         $oldDetail = HampersDetails::where('hampers_id', $id)->get();
         $hampers->update($data);
         foreach ($details as $detail) {
-            if (is_null($detail['ingredient_id'])) {
+            if (!isset($detail['ingredient_id'])) {
                 HampersDetails::create([
                     'hampers_id' => $hampers['id'],
                     'product_id' => $detail["product_id"],
@@ -160,40 +160,22 @@ class HampersController extends Controller
     }
 
 
-    public function updateHamperDetails(Request $request, $id)
-    {
-        $detail = HampersDetails::find($id);
-        if (is_null($detail)) {
-            return response([
-                'message' => 'Hamper Details Not Found',
-            ], 404);
-        }
-
-        $data =  $request->all();
-        if (!isset($data['product_id']) && !isset($data['ingredient_id'])) {
-            return response([
-                'message' => "Please fill in the product or ingredient"
-            ], 400);
-        }
-
-        $detail->update();
-        return response([
-            'message' => 'Hamper Detail Updated Successfully',
-            'data' => $detail,
-        ], 200);
-    }
 
     public function destroy($id)
     {
         $hampers = Hampers::find($id);
+        $details = HampersDetails::where('hampers_id', $id)->get();
         if (is_null($hampers)) {
             return  response([
                 'message' => 'Hampers not found'
             ], 404);
         }
 
+        Storage::disk('public')->delete('hampers/' . $hampers->hampers_picture);
         if ($hampers->delete()) {
-            Storage::disk('public')->delete('hampers/' . $hampers->hampers_picture);
+            foreach ($details as $detail) {
+                $detail->delete();
+            }
             return response([
                 'message' => 'Hampers Deleted Successfully',
                 'data' => $hampers
@@ -203,25 +185,5 @@ class HampersController extends Controller
             'message' => 'Delete Hampers Failed',
             'data' => null
         ], 400);
-    }
-
-    public function destroyDiscardHampers()
-    {
-        $last_hampers = Hampers::orderBy('id', 'desc')->first();
-        $hampersDetail = HampersDetails::where('hampers_id', $last_hampers->id + 1)->get();
-
-        if (is_null($hampersDetail)) {
-            return  response([
-                'message' => 'There are no Hamper Details'
-            ], 200);
-        }
-
-        foreach ($hampersDetail as $item) {
-            $item->delete();
-        }
-        return  response([
-            'message' => 'All Hamper Details Deleted',
-            'data' => $hampersDetail
-        ], 200);
     }
 }
