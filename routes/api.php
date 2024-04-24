@@ -22,3 +22,6 @@ Route::delete('/category/{id}', [App\Http\Controllers\Api\CategoryController::cl
 Route::get('/ingredient', [App\Http\Controllers\Api\IngredientController::class, 'index']);
 Route::get('/hampers', [App\Http\Controllers\Api\HampersController::class, 'index']);
 Route::post('/hampers', [App\Http\Controllers\Api\HampersController::class, 'store']);
+Route::delete('/hampers/{id}', [App\Http\Controllers\Api\HampersController::class, 'destroy']);
+Route::get('/hampers/{id}', [App\Http\Controllers\Api\HampersController::class, 'getHampers']);
+Route::post('/hampers/{id}', [App\Http\Controllers\Api\HampersController::class, 'update']);

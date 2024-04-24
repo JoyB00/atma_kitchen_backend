@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Hampers;
 use App\Models\HampersDetails;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class HampersController extends Controller
@@ -27,10 +28,11 @@ class HampersController extends Controller
     {
         $data = $request->all();
         $validate = Validator::make($data, [
-            'hampers_name' => 'required',
+            'hampers_name' => 'required|unique:hampers',
             'hampers_price' => 'required|numeric|min:1',
             'quantity' => 'required|numeric|min:1',
             'hampers_picture' => 'required|image:jpeg,png,jpg',
+            'details' => 'required'
         ]);
         if ($validate->fails()) {
             return response([
@@ -44,33 +46,57 @@ class HampersController extends Controller
         $uploadedImageRespose = basename($imageUploadPath);
 
         $data['hampers_picture'] = $uploadedImageRespose;
+
+        $details =  $request->details;
+        foreach ($details as $detail) {
+            if (is_null($detail['ingredient_id']) && is_null($detail['product_id'])) {
+                return response([
+                    'message' => "Please provide either Ingredient or Product for this detail!"
+                ], 400);
+            }
+        }
         $hampers = Hampers::create($data);
+        foreach ($details as $detail) {
+            if (is_null($detail['ingredient_id'])) {
+                HampersDetails::create([
+                    'hampers_id' => $hampers['id'],
+                    'product_id' => $detail["product_id"],
+                ]);
+            } else {
+                HampersDetails::create([
+                    'hampers_id' => $hampers['id'],
+                    'ingredient_id' => $detail["ingredient_id"],
+                ]);
+            }
+        }
         return response([
             'message' => 'Hampers Created Successfully',
             'data' => $hampers
         ]);
     }
 
-    public function storeDetail(Request $request)
+    public function getHampers($id)
     {
-        $data =  $request->all();
-        if (!isset($data['product_id']) && !isset($data['ingredient_id'])) {
+        $hampers = Hampers::find($id);
+        $hampers_detail = HampersDetails::with('Product', 'Ingredients')->where('hampers_id', $id)->get();
+
+        if (is_null($hampers)) {
             return response([
-                'message' => "Please fill in the product or ingredient"
-            ], 400);
+                'message' => "Hampers not found"
+            ], 404);
         }
 
-        $last_hampers = Hampers::orderBy('id', 'desc')->first();
-        $data['hampers_id'] = $last_hampers->id + 1;
-        $hampers_detail = HampersDetails::create($data);
-
         return response([
-            'message' => 'Added to hampers detail successfully!',
-            'data' => $hampers_detail
+            'message' => 'Retrieve Hampers Successfully',
+            'data' => [
+                'hampers' => $hampers,
+                'details' => $hampers_detail
+            ]
         ], 200);
     }
 
-    public function  update(Request $request, $id)
+
+    public function update(Request $request, $id)
     {
         $hampers = Hampers::find($id);
         if (is_null($hampers)) {
@@ -83,7 +109,8 @@ class HampersController extends Controller
         $validate = Validator::make($data, [
             'hampers_name' => 'required',
             'hampers_price' => 'required|numeric',
-            'quantity' => 'required|number'
+            'quantity' => 'required|numeric',
+            'details' => 'required'
         ]);
         if ($validate->fails()) {
             return response([
@@ -91,7 +118,41 @@ class HampersController extends Controller
             ], 400);
         }
 
+        if ($request->hasFile('hampers_picture')) {
+            $uploadFolder = "hampers";
+            $image = $request->file('hampers_picture');
+            $imageUploadPath = $image->store($uploadFolder, 'public');
+            $uploadedImageRespose = basename($imageUploadPath);
+            Storage::disk('public')->delete('hampers/' . $hampers->hampers_picture);
+            $data['hampers_picture'] = $uploadedImageRespose;
+        }
+
+        $details =  $request->details;
+        foreach ($details as $detail) {
+            if (is_null($detail['ingredient_id']) && is_null($detail['product_id'])) {
+                return response([
+                    'message' => "Please provide either Ingredient or Product for this detail!"
+                ], 400);
+            }
+        }
+        $oldDetail = HampersDetails::where('hampers_id', $id)->get();
         $hampers->update($data);
+        foreach ($details as $detail) {
+            if (is_null($detail['ingredient_id'])) {
+                HampersDetails::create([
+                    'hampers_id' => $hampers['id'],
+                    'product_id' => $detail["product_id"],
+                ]);
+            } else {
+                HampersDetails::create([
+                    'hampers_id' => $hampers['id'],
+                    'ingredient_id' => $detail["ingredient_id"],
+                ]);
+            }
+        }
+        foreach ($oldDetail as $item) {
+            $item->delete();
+        }
         return response([
             'message' => 'Hampers Updated Successfully',
             'data' => $hampers
@@ -132,6 +193,7 @@ class HampersController extends Controller
         }
 
         if ($hampers->delete()) {
+            Storage::disk('public')->delete('hampers/' . $hampers->hampers_picture);
             return response([
                 'message' => 'Hampers Deleted Successfully',
                 'data' => $hampers
