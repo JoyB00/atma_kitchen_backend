@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use App\Mail\MailSend;
 use App\Models\Customers;
+use App\Models\Employees;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,7 +18,7 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $register = $request->all();
-        $str = Str::random(30);
+        $str = Str::random(100);
         $validate = Validator::make($register, [
             'fullName' => 'required',
             'email' => 'required|email:rfc,dns|unique:users',
@@ -58,6 +59,52 @@ class AuthController extends Controller
             'data' => [
                 'user' => $user,
                 'customer' => $customer
+            ],
+        ], 200);
+    }
+    public function employeeRegister(Request $request)
+    {
+        $register = $request->all();
+        // $str = Str::random(100);
+        $validate = Validator::make($register, [
+            'role_id' => 'required',
+            'fullName' => 'required',
+            'email' => 'required|email:rfc,dns|unique:users',
+            'password' => 'required|min:8',
+            'phoneNumber' => 'required|max:13|min:10',
+            'dateOfBirth' => 'required',
+        ]);
+
+        if ($validate->fails()) {
+            return response([
+                'message' => $validate->errors()->first()
+            ], 404);
+        }
+        // $register['verify_key'] = $str;
+        $register['created_at'] = date('Y-m-d H:i:s');
+        $register['updated_at'] = date('Y-m-d H:i:s');
+        $register['password'] = bcrypt($request->password);
+
+        $user = User::create($register);
+        $employee = Employees::create([
+            'user_id' => $user->id,
+            'work_start_date' => date('Y-m-d H:i:s'),
+        ]);
+
+        // $details = [
+        //     'username' => $request->fullName,
+        //     'website' => 'Atma Kitchen',
+        //     'dateTime' => date('Y-m-d H:i:s'),
+        //     'url' => request()->getHttpHost() . '/register/verify/' . $str
+        // ];
+
+        // Mail::to($request->email)->send(new MailSend($details));
+
+        return response([
+            'message' => 'Congratulations, your account has been successfully created',
+            'data' => [
+                'user' => $user,
+                'employee' => $employee
             ],
         ], 200);
     }

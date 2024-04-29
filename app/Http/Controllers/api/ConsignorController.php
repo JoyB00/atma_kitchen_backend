@@ -8,7 +8,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class PenitipController extends Controller
+class ConsignorController extends Controller
 {
     public function index()
     {

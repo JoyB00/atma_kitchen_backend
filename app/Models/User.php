@@ -22,8 +22,31 @@ class User extends Authenticatable
         'phoneNumber',
         'gender',
         'dateOfBirth',
+        'verify_key',
+        'active',
+        'email_verified_at',
     ];
 
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
     protected function Roles()
     {
         return $this->belongsTo(Roles::class, 'role_id');

@@ -25,3 +25,4 @@ Route::post('/hampers', [App\Http\Controllers\Api\HampersController::class, 'sto
 Route::delete('/hampers/{id}', [App\Http\Controllers\Api\HampersController::class, 'destroy']);
 Route::get('/hampers/{id}', [App\Http\Controllers\Api\HampersController::class, 'getHampers']);
 Route::post('/hampers/{id}', [App\Http\Controllers\Api\HampersController::class, 'update']);
+Route::get('/consignor', [App\Http\Controllers\Api\ConsignorController::class, 'index']);

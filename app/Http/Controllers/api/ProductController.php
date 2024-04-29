@@ -110,8 +110,8 @@ class ProductController extends Controller
         $validate = Validator::make($updateData, [
             'product_name' => 'required',
             'category_id' => 'required',
-            'quantity' => 'required|min:1',
-            'product_price' => 'required',
+            'quantity' => 'required|numeric|min:1',
+            'product_price' => 'required|numeric|min:15',
             'description' => 'required',
             'recipe' => 'required'
         ]);
