@@ -65,7 +65,7 @@ class AuthController extends Controller
     public function employeeRegister(Request $request)
     {
         $register = $request->all();
-        // $str = Str::random(100);
+        $str = Str::random(100);
         $validate = Validator::make($register, [
             'role_id' => 'required',
             'fullName' => 'required',
@@ -80,7 +80,8 @@ class AuthController extends Controller
                 'message' => $validate->errors()->first()
             ], 404);
         }
-        // $register['verify_key'] = $str;
+        $register['verify_key'] = $str;
+        $register['active'] = 1;
         $register['created_at'] = date('Y-m-d H:i:s');
         $register['updated_at'] = date('Y-m-d H:i:s');
         $register['password'] = bcrypt($request->password);

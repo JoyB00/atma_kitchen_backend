@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [App\Http\Controllers\Api\AuthController::class, 'register']);
+Route::post('/employee', [App\Http\Controllers\Api\AuthController::class, 'employeeRegister']);
 Route::post('/login', [App\Http\Controllers\Api\AuthController::class, 'login']);
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout',   [App\Http\Controllers\Api\AuthController::class, 'logout']);
@@ -26,3 +27,5 @@ Route::delete('/hampers/{id}', [App\Http\Controllers\Api\HampersController::clas
 Route::get('/hampers/{id}', [App\Http\Controllers\Api\HampersController::class, 'getHampers']);
 Route::post('/hampers/{id}', [App\Http\Controllers\Api\HampersController::class, 'update']);
 Route::get('/consignor', [App\Http\Controllers\Api\ConsignorController::class, 'index']);
+Route::get('/ingredientProcurement', [App\Http\Controllers\Api\IngredientProcurementController::class, 'index']);
+Route::get('/ingredientProcurement/{id}', [App\Http\Controllers\Api\IngredientProcurementController::class, 'getIngredientProcurement']);

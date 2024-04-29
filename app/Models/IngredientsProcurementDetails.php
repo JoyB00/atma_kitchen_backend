@@ -9,28 +9,29 @@ class IngredientsProcurementDetails extends Model
 {
     use HasFactory;
 
-    protected $table = 'ingredients_procurement_details';
+    protected $table = 'ingredients_prcmnt_dtl';
 
     protected $primaryKey = 'id';
     protected $fillable = [
         'ingredient_procurement_id',
-        'ingredient_id', 
+        'ingredient_id',
         'price',
         'quantity',
         'total_price'
     ];
 
-    public function PengadaanBahanBaku(){
+    public function PengadaanBahanBaku()
+    {
         return $this->belongsTo(IngredientProcurements::class, 'ingredient_procurement_id');
     }
 
-    public function Ingredients(){
+    public function Ingredients()
+    {
         return $this->belongsTo(Ingredients::class, 'ingredient_id');
     }
 
-    public function Product(){
+    public function Product()
+    {
         return $this->belongsTo(Product::class, 'product_id');
     }
-
 }
-
