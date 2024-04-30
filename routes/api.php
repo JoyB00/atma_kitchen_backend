@@ -8,6 +8,8 @@ Route::post('/employee', [App\Http\Controllers\Api\AuthController::class, 'emplo
 Route::post('/login', [App\Http\Controllers\Api\AuthController::class, 'login']);
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout',   [App\Http\Controllers\Api\AuthController::class, 'logout']);
+
+    Route::post('/ingredientProcurement', [App\Http\Controllers\Api\IngredientProcurementController::class, 'store']);
 });
 
 
@@ -29,3 +31,5 @@ Route::post('/hampers/{id}', [App\Http\Controllers\Api\HampersController::class,
 Route::get('/consignor', [App\Http\Controllers\Api\ConsignorController::class, 'index']);
 Route::get('/ingredientProcurement', [App\Http\Controllers\Api\IngredientProcurementController::class, 'index']);
 Route::get('/ingredientProcurement/{id}', [App\Http\Controllers\Api\IngredientProcurementController::class, 'getIngredientProcurement']);
+Route::put('/ingredientProcurement/{id}', [App\Http\Controllers\Api\IngredientProcurementController::class, 'update']);
+Route::delete('/ingredientProcurement/{id}', [App\Http\Controllers\Api\IngredientProcurementController::class, 'destroy']);
