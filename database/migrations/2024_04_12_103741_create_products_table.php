@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('product_name');
             $table->integer('quantity');
             $table->float('product_price');
+            $table->string('product_status');
             $table->longText('product_picture');
             $table->longText('description');
             $table->timestamps();
