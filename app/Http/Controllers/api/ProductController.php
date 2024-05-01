@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\ProductLimits;
 use App\Models\Recipes;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -31,6 +32,7 @@ class ProductController extends Controller
     {
         $product = Product::with('Categories')->where('id', $id)->first();
         $recipe = Recipes::where('product_id', $id)->get();
+        $limitProduct = ProductLimits::where('product_id', $id)->latest()->first();
         if (is_null($product)) {
             return response([
                 'message' => "Product Not Found",
@@ -41,7 +43,8 @@ class ProductController extends Controller
             'message' => 'Retrieve Product Successfully',
             'data' => [
                 'product' => $product,
-                'recipe' => $recipe
+                'recipe' => $recipe,
+                'limit' => $limitProduct
             ]
 
         ], 200);
@@ -53,17 +56,38 @@ class ProductController extends Controller
         $validate = Validator::make($storeData, [
             'product_name' => 'required',
             'category_id' => 'required',
-            'quantity' => 'required|numeric|min:1',
+            'quantity' => 'required|numeric|min:0',
             'product_price' => 'required|numeric|min:1',
             'product_picture' => 'required|image:jpeg,png,jpg',
             'description' => 'required',
-            'recipe' => 'required'
+            'product_status' => 'required',
         ]);
         if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()->first()
             ], 400);
+        } else if ($storeData['product_status'] == 'Pre-Order' && $storeData['category_id'] == 4) {
+            return response([
+                'message' => 'Product Status must be Ready',
+            ], 400);
+        } else if ($storeData['product_status'] == 'Pre-Order' && $storeData['limit_amount'] < 1) {
+            return response([
+                'message' => 'The limit amount field must be at least 1.',
+            ], 400);
+        } else if ($storeData['product_status'] == 'Pre-Order' && !isset($storeData['production_date'])) {
+            return response([
+                'message' => 'The production date field is required.',
+            ], 400);
+        } else if ($storeData['category_id'] != 4 && !isset($storeData['recipe'])) {
+            return response([
+                'message' => 'The recipes field is required.',
+            ], 400);
+        } else if ($storeData['category_id'] == 4 && isset($storeData['recipe'])) {
+            return response([
+                "message" => "Product category does not accept recipes"
+            ], 400);
         }
+
 
         $uploadFolder = 'product';
         $image = $request->file('product_picture');
@@ -72,24 +96,36 @@ class ProductController extends Controller
 
         $storeData['product_picture'] = $uploadedImageResponse;
         $recipe = $request->recipe;
-        foreach ($recipe as $item) {
-            $validateRecipe = Validator::make($item, [
-                'ingredient_id' => 'required',
-                'quantity' => 'required|numeric|min:1'
-            ]);
-            if ($validateRecipe->fails()) {
-                return response([
-                    'message' => $validateRecipe->errors()->first()
-                ], 400);
+        if ($storeData['category_id'] != 4) {
+            foreach ($recipe as $item) {
+                $validateRecipe = Validator::make($item, [
+                    'ingredient_id' => 'required',
+                    'quantity' => 'required|numeric|min:1'
+                ]);
+                if ($validateRecipe->fails()) {
+                    return response([
+                        'message' => $validateRecipe->errors()->first()
+                    ], 400);
+                }
             }
         }
+
         $product = Product::create($storeData);
-        foreach ($recipe as $item) {
-            Recipes::create([
-                'product_id' => $product['id'],
-                'ingredient_id' => $item['ingredient_id'],
-                'quantity' => $item['quantity'],
+        if ($product['product_status'] == 'Pre-Order') {
+            ProductLimits::create([
+                'product_id' => $product->id,
+                'limit_amount' => $storeData['limit_amount'],
+                'production_date' => $storeData['production_date'],
             ]);
+        }
+        if ($product['category_id'] != 4) {
+            foreach ($recipe as $item) {
+                Recipes::create([
+                    'product_id' => $product['id'],
+                    'ingredient_id' => $item['ingredient_id'],
+                    'quantity' => $item['quantity'],
+                ]);
+            }
         }
         return response([
             'message' => 'Product Added Successfully',
@@ -110,14 +146,34 @@ class ProductController extends Controller
         $validate = Validator::make($updateData, [
             'product_name' => 'required',
             'category_id' => 'required',
-            'quantity' => 'required|numeric|min:1',
-            'product_price' => 'required|numeric|min:15',
+            'quantity' => 'required|numeric|min:0',
+            'product_price' => 'required|numeric|min:1',
             'description' => 'required',
-            'recipe' => 'required'
+            // 'recipe' => 'required'
         ]);
         if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()->first()
+            ], 400);
+        } else if ($updateData['product_status'] == 'Pre-Order' && $updateData['category_id'] == 4) {
+            return response([
+                'message' => 'Product Status must be Ready',
+            ], 400);
+        } else if ($updateData['product_status'] == 'Pre-Order' && $updateData['limit_amount'] < 1) {
+            return response([
+                'message' => 'The limit amount field must be at least 1.',
+            ], 400);
+        } else if ($updateData['product_status'] == 'Pre-Order' && !isset($updateData['production_date'])) {
+            return response([
+                'message' => 'The production date field is required.',
+            ], 400);
+        } else if ($updateData['category_id'] != 4 && !isset($updateData['recipe'])) {
+            return response([
+                'message' => 'The recipes field is required.',
+            ], 400);
+        } else if ($updateData['category_id'] == 4 && isset($updateData['recipe'])) {
+            return response([
+                "message" => "Product category does not accept recipes"
             ], 400);
         }
 
@@ -134,28 +190,51 @@ class ProductController extends Controller
 
 
         $recipe = $request->recipe;
-        foreach ($recipe as $item) {
-            $validateRecipe = Validator::make($item, [
-                'ingredient_id' => 'required',
-                'quantity' => 'required|numeric|min:1'
-            ]);
-            if ($validateRecipe->fails()) {
-                return response([
-                    'message' => $validateRecipe->errors()->first()
-                ], 400);
+        if ($updateData['category_id'] != 4) {
+            foreach ($recipe as $item) {
+                $validateRecipe = Validator::make($item, [
+                    'ingredient_id' => 'required',
+                    'quantity' => 'required|numeric|min:1'
+                ]);
+                if ($validateRecipe->fails()) {
+                    return response([
+                        'message' => $validateRecipe->errors()->first()
+                    ], 400);
+                }
             }
         }
-        $oldRecipe = Recipes::where('product_id', $id)->get();
         $produk->update($updateData);
-        foreach ($recipe as $item) {
-            Recipes::create([
-                'product_id' => $produk['id'],
-                'ingredient_id' => $item['ingredient_id'],
-                'quantity' => $item['quantity'],
-            ]);
+        if ($produk['product_status'] == "Pre-Order") {
+            $product_limit = ProductLimits::where('product_id', $id)->where('production_date', $updateData['production_date'])->latest()->first();
+            if (is_null($product_limit)) {
+                ProductLimits::create([
+                    'product_id' => $produk->id,
+                    'limit_amount' => $updateData['limit_amount'],
+                    'production_date' => $updateData['production_date'],
+                ]);
+            } else {
+                $product_limit->update([
+                    'limit_amount' => $updateData['limit_amount'],
+                ]);
+            }
         }
-        foreach ($oldRecipe as $item) {
-            $item->delete();
+
+
+        $oldRecipe = Recipes::where('product_id', $id)->get();
+        if ($updateData['category_id'] != 4) {
+            foreach ($recipe as $item) {
+                Recipes::create([
+                    'product_id' => $produk['id'],
+                    'ingredient_id' => $item['ingredient_id'],
+                    'quantity' => $item['quantity'],
+                ]);
+            }
+        }
+
+        if (isset($oldRecipe)) {
+            foreach ($oldRecipe as $item) {
+                $item->delete();
+            }
         }
         return response([
             'message' => 'Product Updated Successfully',

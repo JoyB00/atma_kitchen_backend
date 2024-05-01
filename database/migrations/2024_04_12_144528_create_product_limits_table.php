@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('product_limits', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
-            $table->integer('limit_amaount');
+            $table->integer('limit_amount');
             $table->date('production_date');
             $table->timestamps();
         });
