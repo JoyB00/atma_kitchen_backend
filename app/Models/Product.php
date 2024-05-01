@@ -18,14 +18,9 @@ class Product extends Model
         'product_name',
         'quantity',
         'product_price',
-        'product_picture',
+        'product_pict',
         'description'
     ];
-
-    // public function scopeFilter($query)
-    // {
-    //     
-    // }
 
     public function Categories()
     {

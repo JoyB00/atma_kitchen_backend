@@ -15,5 +15,4 @@ class Deliveries extends Model
     protected $fillable = [
         'delivery_method', 'distance', 'shipping_cost', 'recipient_address'
     ];
-
 }

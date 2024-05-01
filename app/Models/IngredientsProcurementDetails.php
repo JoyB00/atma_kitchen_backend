@@ -9,7 +9,7 @@ class IngredientsProcurementDetails extends Model
 {
     use HasFactory;
 
-    protected $table = 'ingredients_prcmnt_dtl';
+    protected $table = 'ingredients_procurement_details';
 
     protected $primaryKey = 'id';
     protected $fillable = [
