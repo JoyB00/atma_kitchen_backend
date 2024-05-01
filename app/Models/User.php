@@ -22,7 +22,7 @@ class User extends Authenticatable
         'password',
         'phone_number',
         'gender',
-        'dateOfBirth',
+        'birth_date',
         'verify_key',
         'active',
         'email_verified_at',
