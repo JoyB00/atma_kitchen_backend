@@ -32,6 +32,7 @@ class AuthController extends Controller
                 'message' => $validate->errors()->first()
             ], 404);
         }
+
         $register['verify_key'] = $str;
         $register['created_at'] = date('Y-m-d H:i:s');
         $register['updated_at'] = date('Y-m-d H:i:s');
@@ -62,6 +63,7 @@ class AuthController extends Controller
             ],
         ], 200);
     }
+
     public function employeeRegister(Request $request)
     {
         $register = $request->all();
