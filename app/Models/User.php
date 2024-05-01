@@ -20,7 +20,7 @@ class User extends Authenticatable
         'fullName',
         'email',
         'password',
-        'phoneNumber',
+        'phone_number',
         'gender',
         'dateOfBirth',
         'verify_key',
