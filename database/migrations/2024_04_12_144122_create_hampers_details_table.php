@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('hampers_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('hampers_id')->references('id')->on('hampers')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('ingredient_id')->references('id')->on('ingredients')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('product_id')->nullable()->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('ingredient_id')->nullable()->references('id')->on('ingredients')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }
