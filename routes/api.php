@@ -13,8 +13,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/logout',   [AuthController::class, 'logout']);
 });
 
-
-// Route::get('/register/verify/{verify_key}', [App\Http\Controllers\Api\AuthController::class, 'verify']);
+Route::get('/register/verify/{verify_key}', [AuthController::class, 'verify']);
 
 Route::get('/product', [ProductController::class, 'index']);
 Route::post('/product', [ProductController::class, 'store']);
