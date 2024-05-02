@@ -18,6 +18,7 @@ Route::post('/product', [ProductController::class, 'store']);
 Route::post('/product/{id}', [ProductController::class, 'update']);
 Route::delete('/product/{id}', [ProductController::class, 'destroy']);
 Route::get('/product/{id}', [ProductController::class, 'getProduct']);
+Route::post('/limitProduct/{id}', [ProductLimitController::class, 'getLimitByDate']);
 Route::get('/category', [CategoryController::class, 'index']);
 Route::delete('/category/{id}', [CategoryController::class, 'destroy']);
 Route::get('/ingredient', [IngredientController::class, 'index']);
