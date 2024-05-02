@@ -16,6 +16,7 @@ class IngredientProcurementController extends Controller
         if (is_null($data)) {
             return response([
                 'message' => 'Ingredient Procurement Not Found',
+                'data' => []
             ], 404);
         }
         return response([
