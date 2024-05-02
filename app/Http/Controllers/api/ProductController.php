@@ -56,7 +56,8 @@ class ProductController extends Controller
         $validate = Validator::make($storeData, [
             'product_name' => 'required',
             'category_id' => 'required',
-            'quantity' => 'required|numeric|min:0',
+            'ready_stock' => 'required|numeric|min:0',
+            'daily_stock' => 'required|numeric|min:0',
             'product_price' => 'required|numeric|min:1',
             'product_picture' => 'required|image:jpeg,png,jpg',
             'description' => 'required',
@@ -147,7 +148,8 @@ class ProductController extends Controller
         $validate = Validator::make($updateData, [
             'product_name' => 'required',
             'category_id' => 'required',
-            'quantity' => 'required|numeric|min:0',
+            'ready_stock' => 'required|numeric|min:0',
+            'daily_stock' => 'required|numeric|min:0',
             'product_price' => 'required|numeric|min:1',
             'description' => 'required',
         ]);
