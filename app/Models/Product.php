@@ -19,7 +19,7 @@ class Product extends Model
         'quantity',
         'product_status',
         'product_price',
-        'product_pict',
+        'product_picture',
         'description'
     ];
 
