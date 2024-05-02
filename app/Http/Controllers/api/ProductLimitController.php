@@ -13,7 +13,7 @@ class ProductLimitController extends Controller
         $limit = ProductLimits::where('production_date', $request->production_date)->where('product_id', $id)->first();
         if (is_null($limit)) {
             return response([
-                'message' => "Daily Stock Limit Not Found",
+                'message' => $request->production_date,
             ], 404);
         }
 
