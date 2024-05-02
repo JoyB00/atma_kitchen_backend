@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\IngredientProcurements;
+use App\Models\OtherProcurement;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,5 +17,11 @@ class DatabaseSeeder extends Seeder
         ConsignorSeeder::run();
         ProductSeeder::run();
         RoleSeeder::run();
+        HampersSeeder::run();
+        HampersDetailsSeeder::run();
+        IngredientProcurementSeeder::run();
+        IngredientsProcurementDetailsSeeder::run();
+        IngredientSeeder::run();
+        OtherProcurementSeeder::run();
     }
 }

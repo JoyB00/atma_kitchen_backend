@@ -11,7 +11,7 @@ class HampersSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
+    static public function run(): void
     {
         DB::table('hampers')->insert([
             ['id' => 1, 'hampers_name' => 'Paket A', 'hampers_price' => 650000, 'quantity' => 30, 'created_at' => now()],

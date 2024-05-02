@@ -11,7 +11,7 @@ class IngredientSeeder extends Seeder
   /**
    * Run the database seeds.
    */
-  public function run(): void
+  public static function run(): void
   {
     DB::table('ingredients')->insert([
       ['id' => 1,  'ingredient_name' => 'Butter', 'quantity' => 1000, 'unit' => 'gr', 'created_at' => now()],
