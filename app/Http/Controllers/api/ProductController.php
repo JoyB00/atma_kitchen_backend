@@ -33,6 +33,7 @@ class ProductController extends Controller
         $product = Product::with('Categories')->where('id', $id)->first();
         $recipe = Recipes::with('Ingredients')->where('product_id', $id)->get();
         $limitProduct = ProductLimits::where('product_id', $id)->latest()->first();
+        $allLimit =  ProductLimits::where('product_id', $id)->get();
         if (is_null($product)) {
             return response([
                 'message' => "Product Not Found",
@@ -44,7 +45,8 @@ class ProductController extends Controller
             'data' => [
                 'product' => $product,
                 'recipe' => $recipe,
-                'limit' => $limitProduct
+                'limit' => $limitProduct,
+                'allLimit' => $allLimit
             ]
 
         ], 200);

@@ -13,7 +13,7 @@ class ProductLimitController extends Controller
         $limit = ProductLimits::where('production_date', $request->production_date)->where('product_id', $id)->first();
         if (is_null($limit)) {
             return response([
-                'message' => "Limit Not available, Please fill the limit daily field",
+                'message' => "Limit Not available, Please fill the daily limit field",
                 'data' => null,
             ], 404);
         }
