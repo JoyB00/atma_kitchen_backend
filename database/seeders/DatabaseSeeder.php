@@ -18,9 +18,9 @@ class DatabaseSeeder extends Seeder
         ProductSeeder::run();
         RoleSeeder::run();
         HampersSeeder::run();
-        IngredientProcurementSeeder::run();
-        IngredientsProcurementDetailsSeeder::run();
         IngredientSeeder::run();
-        OtherProcurementSeeder::run();
+        // IngredientProcurementSeeder::run();
+        // IngredientsProcurementDetailsSeeder::run();
+        // OtherProcurementSeeder::run();
     }
 }
