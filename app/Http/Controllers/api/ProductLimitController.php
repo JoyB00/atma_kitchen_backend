@@ -14,7 +14,8 @@ class ProductLimitController extends Controller
         if (is_null($limit)) {
             return response([
                 'message' => "Limit Not available, Please fill the limit daily field",
-            ], 200);
+                'data' => null,
+            ], 404);
         }
 
         return response([
