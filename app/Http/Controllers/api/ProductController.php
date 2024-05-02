@@ -95,6 +95,9 @@ class ProductController extends Controller
         $uploadedImageResponse = basename($imageUploadedPath);
 
         $storeData['product_picture'] = $uploadedImageResponse;
+        return response([
+            'message' => $uploadedImageResponse
+        ], 400);
         $recipe = $request->recipe;
         if ($storeData['category_id'] != 4) {
             foreach ($recipe as $item) {
@@ -149,7 +152,6 @@ class ProductController extends Controller
             'quantity' => 'required|numeric|min:0',
             'product_price' => 'required|numeric|min:1',
             'description' => 'required',
-            // 'recipe' => 'required'
         ]);
         if ($validate->fails()) {
             return response([
@@ -159,13 +161,13 @@ class ProductController extends Controller
             return response([
                 'message' => 'Product Status must be Ready',
             ], 400);
-        } else if ($updateData['product_status'] == 'Pre-Order' && $updateData['limit_amount'] < 1) {
-            return response([
-                'message' => 'The limit amount field must be at least 1.',
-            ], 400);
         } else if ($updateData['product_status'] == 'Pre-Order' && !isset($updateData['production_date'])) {
             return response([
                 'message' => 'The production date field is required.',
+            ], 400);
+        } else if ($updateData['product_status'] == 'Pre-Order' && $updateData['limit_amount'] < 1) {
+            return response([
+                'message' => 'The limit amount field must be at least 1.',
             ], 400);
         } else if ($updateData['category_id'] != 4 && !isset($updateData['recipe'])) {
             return response([
