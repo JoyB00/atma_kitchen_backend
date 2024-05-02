@@ -31,7 +31,7 @@ class ProductController extends Controller
     public function getProduct($id)
     {
         $product = Product::with('Categories')->where('id', $id)->first();
-        $recipe = Recipes::where('product_id', $id)->get();
+        $recipe = Recipes::with('Ingredients')->where('product_id', $id)->get();
         $limitProduct = ProductLimits::where('product_id', $id)->latest()->first();
         if (is_null($product)) {
             return response([

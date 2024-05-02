@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('consignor_id')->nullable()->references('id')->on('consignors')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('category_id')->references('id')->on('categories')->onDelete('cascade')->onUpdate('cascade');
             $table->string('product_name');
-            $table->integer('quantity');
+            $table->integer('ready_stock');
+            $table->integer('daily_stock');
             $table->float('product_price');
             $table->string('product_status')->default('');
             $table->longText('product_picture');
