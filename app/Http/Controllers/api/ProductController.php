@@ -95,9 +95,7 @@ class ProductController extends Controller
         $uploadedImageResponse = basename($imageUploadedPath);
 
         $storeData['product_picture'] = $uploadedImageResponse;
-        return response([
-            'message' => $uploadedImageResponse
-        ], 400);
+
         $recipe = $request->recipe;
         if ($storeData['category_id'] != 4) {
             foreach ($recipe as $item) {
