@@ -65,7 +65,7 @@ class ProductController extends Controller
             'product_picture' => 'required|image:jpeg,png,jpg',
             'description' => 'required',
             'product_status' => 'required',
-            'limit_amount' => 'numeric|min:1'
+            'limit_amount' => 'numeric|min:0'
         ]);
         $productionDate = Carbon::parse($storeData['production_date']);
         $oneDayBeforeNow = Carbon::now()->subDay();
