@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Carts;
 use App\Models\IngredientProcurements;
 use App\Models\OtherProcurement;
 use Illuminate\Database\Seeder;
@@ -22,5 +23,11 @@ class DatabaseSeeder extends Seeder
         // IngredientProcurementSeeder::run();
         // IngredientsProcurementDetailsSeeder::run();
         // OtherProcurementSeeder::run();
+
+        // for transaction
+        CustomerSeeder::run();
+        TransactionSeeder::run();
+        CartsSeeder::run();
+        DeliverySeeder::run();
     }
 }
