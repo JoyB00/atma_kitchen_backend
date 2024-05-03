@@ -20,11 +20,15 @@ class TransactionController extends Controller
     }
     public function getDetailOrder($id)
     {
+        $transaction = Transactions::find($id);
         $detailOrders = Carts::with('Product', 'Hampers')->where('transaction_id', $id)->get();
 
         return response([
             'message' => 'All data Retrievied',
-            'data' => $detailOrders,
+            'data' => [
+                'transaction' => $transaction,
+                'details' => $detailOrders
+            ]
         ], 200);
     }
 }
