@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Carts;
 use App\Models\Customers;
+use App\Models\Transactions;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -12,6 +14,22 @@ class CustomerController extends Controller
 {
     public function index()
     {
+        $customers = Customers::get();
+        return response([
+            'message' => 'All Customer Retrivied',
+            'data' => $customers
+        ], 200);
+    }
+
+    public function getOrderHistory($id)
+    {
+        $orders = Transactions::where('customer_id', $id)->get();
+        $orders['detail'] = Carts::where('Transaction.customer_id', $id);
+
+        return response([
+            'message' => 'All data Retrievied',
+            'data' => $orders,
+        ], 200);
     }
 
     public function update(Request $request, $id)

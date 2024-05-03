@@ -31,7 +31,7 @@ class CartsSeeder extends Seeder
         'detail_information' => 'Lorem ipsum',
       ],
       [
-        'customer_id' => 3,
+        'customer_id' => 2,
         'balance_nominal' => 200000,
         'bank_name' => 'Gopay',
         'account_number' => '1234567890',
