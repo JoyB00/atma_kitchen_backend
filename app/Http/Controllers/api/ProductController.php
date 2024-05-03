@@ -77,7 +77,7 @@ class ProductController extends Controller
             return response([
                 'message' => 'The production date field is required.',
             ], 400);
-        } else if ($storeData['production_date'] < now()) {
+        } else if ($storeData['production_date'] < now() - 1) {
             return response([
                 'message' => 'The Production date cannot be before today',
             ], 400);
@@ -167,7 +167,7 @@ class ProductController extends Controller
             return response([
                 'message' => 'Product Status must be Ready',
             ], 400);
-        } else if ($updateData['production_date'] < now()) {
+        } else if ($updateData['production_date'] < now() - 1) {
             return response([
                 'message' => 'The Production date cannot be before today',
             ], 400);
