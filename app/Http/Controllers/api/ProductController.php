@@ -64,7 +64,7 @@ class ProductController extends Controller
             'product_picture' => 'required|image:jpeg,png,jpg',
             'description' => 'required',
             'product_status' => 'required',
-            'production_date' => 'before:tomorrow'
+            'production_date' => 'date_format:Y-m-d|before:today'
         ]);
         if ($validate->fails()) {
             return response([
@@ -155,7 +155,7 @@ class ProductController extends Controller
             'daily_stock' => 'required|numeric|min:0',
             'product_price' => 'required|numeric|min:1',
             'description' => 'required',
-            'production_date' => 'before:tomorrow'
+            'production_date' => 'date_format:Y-m-d|before:today'
         ]);
         if ($validate->fails()) {
             return response([
