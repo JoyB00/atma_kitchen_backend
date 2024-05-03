@@ -186,4 +186,21 @@ class HampersController extends Controller
             'data' => null
         ], 400);
     }
+
+    public function disableHampers($id)
+    {
+        $hampers = Hampers::find($id);
+        if (is_null($hampers)) {
+            return response([
+                'message' => 'Hampers Not Found',
+                'data' => null
+            ], 404);
+        }
+        $hampers['acitve'] = 0;
+        $hampers->save();
+        return  response([
+            'message' => 'Hampers Disabled Successfully',
+            'data' => $hampers,
+        ], 200);
+    }
 }

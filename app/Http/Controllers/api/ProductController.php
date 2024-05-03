@@ -15,7 +15,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $produk = Product::with('Categories')->get();
+        $produk = Product::with('Categories')->where('active', 1)->get();
         if (is_null($produk)) {
             return response([
                 'message' => 'No Data Found',
@@ -271,5 +271,21 @@ class ProductController extends Controller
             'message' => 'Delete Product Failed',
             'data' => null,
         ], 400);
+    }
+    public function disableProduct($id)
+    {
+        $produk = Product::find($id);
+        if (is_null($produk)) {
+            return response([
+                'message' => 'Product Not Found',
+                'data' => null
+            ], 404);
+        }
+        $produk['acitve'] = 0;
+        $produk->save();
+        return  response([
+            'message' => 'Product Disabled Successfully',
+            'data' => $produk,
+        ], 200);
     }
 }

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('daily_stock');
             $table->float('product_price');
             $table->string('product_status')->default('');
+            $table->boolean('active')->default(true);
             $table->longText('product_picture');
             $table->longText('description');
             $table->timestamps();

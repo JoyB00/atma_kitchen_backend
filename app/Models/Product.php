@@ -21,6 +21,7 @@ class Product extends Model
         'product_status',
         'product_price',
         'product_picture',
+        'active',
         'description'
     ];
 
