@@ -48,7 +48,7 @@ class ConsignorController extends Controller
         $storeData = $request->all();
         $validate = Validator::make($storeData, [
             'consignor_name' => 'required',
-            'phone_number' => 'required|numeric|min:11|max:13'
+            'phone_number' => 'required|numeric|min:11'
         ]);
         if ($validate->fails()) {
             return response([
@@ -75,7 +75,7 @@ class ConsignorController extends Controller
         $updateData = $request->all();
         $validate = Validator::make($updateData, [
             'consignor_name' => 'required',
-            'phone_number' => 'required|numeric|min:11|max:13'
+            'phone_number' => 'required|numeric|min:11'
         ]);
         if ($validate->fails()) {
             return response([
