@@ -17,7 +17,7 @@ class CartsSeeder extends Seeder
       [
         "transaction_id" => 1,
         "product_id" => 1,
-        "hampers_id" => 0,
+        "hampers_id" => null,
         "quantity" => 1,
         "price" => 850000,
         "total_price" => 850000
@@ -25,7 +25,7 @@ class CartsSeeder extends Seeder
       [
         "transaction_id" => 2,
         "product_id" => 2,
-        "hampers_id" => 0,
+        "hampers_id" => null,
         "quantity" => 1,
         "price" => 450000,
         "total_price" => 450000
@@ -33,7 +33,7 @@ class CartsSeeder extends Seeder
       [
         "transaction_id" => 3,
         "product_id" => 3,
-        "hampers_id" => 0,
+        "hampers_id" => null,
         "quantity" => 1,
         "price" => 550000,
         "total_price" => 550000
@@ -41,7 +41,7 @@ class CartsSeeder extends Seeder
       [
         "transaction_id" => 4,
         "product_id" => 4,
-        "hampers_id" => 0,
+        "hampers_id" => null,
         "quantity" => 1,
         "price" => 300000,
         "total_price" => 300000
