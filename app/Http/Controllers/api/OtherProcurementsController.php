@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Employees;
-use App\Models\OtherProcurement;
+use App\Models\OtherProcurements;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,7 +12,7 @@ class OtherProcurementsController extends Controller
 {
     public function index()
     {
-        $data = OtherProcurement::get()->orderBy('procurement_date', 'desc');
+        $data = OtherProcurements::orderBy('procurement_date', 'desc')->get();
         return response([
             'message' => 'All Other Procurement Retrieved',
             'data' => $data,
@@ -21,7 +21,7 @@ class OtherProcurementsController extends Controller
 
     public function getProcurement($id)
     {
-        $procurement = OtherProcurement::find($id);
+        $procurement = OtherProcurements::find($id);
         if (is_null($procurement)) {
             return response([
                 'message' => 'Procurement Not Found'
@@ -51,7 +51,7 @@ class OtherProcurementsController extends Controller
 
         $employee = Employees::where('user_id', auth()->user()->id);
         $storeData['employee_id'] = $employee->id;
-        $otherProcurement = OtherProcurement::create($storeData);
+        $otherProcurement = OtherProcurements::create($storeData);
         return response([
             'message' => "Procurement created successfully",
             'data' => $otherProcurement,
@@ -59,7 +59,7 @@ class OtherProcurementsController extends Controller
     }
     public function update(Request $request, $id)
     {
-        $procurement = OtherProcurement::find($id);
+        $procurement = OtherProcurements::find($id);
         if (is_null($procurement)) {
             return response([
                 'message' => 'Procurement Not Found'
@@ -89,7 +89,7 @@ class OtherProcurementsController extends Controller
 
     public function destroy($id)
     {
-        $procurement = OtherProcurement::find($id);
+        $procurement = OtherProcurements::find($id);
         if (is_null($procurement)) {
             return response([
                 'message' => "Procurement not found",
