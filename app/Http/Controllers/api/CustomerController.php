@@ -12,7 +12,7 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $customers = Customers::get();
+        $customers = Customers::with('Users')->get();
         return response([
             'message' => 'All Customer Retrivied',
             'data' => $customers
