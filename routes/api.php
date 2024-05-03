@@ -17,8 +17,11 @@ Route::middleware('auth:api')->group(function () {
 
 
 // Customer
+Route::get('/customer', [CustomerController::class, 'index']);
 
-Route::get('/orderHistory/{id}', [CustomerController::class, 'getOrderHistory']);
+// Transaksi
+Route::get('/orderHistory/{id}', [TransactionController::class, 'getOrderHistory']);
+Route::get('/detailOrder/{id}', [TransactionController::class, 'getDetailOrder']);
 
 Route::get('/product', [ProductController::class, 'index']);
 Route::post('/product', [ProductController::class, 'store']);
