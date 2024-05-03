@@ -49,7 +49,7 @@ class OtherProcurementsController extends Controller
             ], 400);
         }
 
-        $employee = Employees::where('user_id', auth()->user()->id);
+        $employee = Employees::where('user_id', auth()->user()->id)->first();
         $storeData['employee_id'] = $employee->id;
         $otherProcurement = OtherProcurements::create($storeData);
         return response([
