@@ -281,7 +281,7 @@ class ProductController extends Controller
                 'data' => null
             ], 404);
         }
-        $produk['acitve'] = 0;
+        $produk['active'] = 0;
         $produk->save();
         return  response([
             'message' => 'Product Disabled Successfully',

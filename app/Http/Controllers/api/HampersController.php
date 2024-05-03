@@ -196,7 +196,7 @@ class HampersController extends Controller
                 'data' => null
             ], 404);
         }
-        $hampers['acitve'] = 0;
+        $hampers['active'] = 0;
         $hampers->save();
         return  response([
             'message' => 'Hampers Disabled Successfully',

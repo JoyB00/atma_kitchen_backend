@@ -16,6 +16,7 @@ class Hampers extends Model
         'hampers_name',
         'hampers_price',
         'quantity',
-        'hampers_picture'
+        'hampers_picture',
+        'active',
     ];
 }
