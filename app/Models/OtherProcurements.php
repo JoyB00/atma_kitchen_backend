@@ -13,7 +13,7 @@ class OtherProcurement extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'employee_id',
-        'ingredient_name',
+        'item_name',
         'price',
         'quantity', 'procurement_date',
         'total_price'

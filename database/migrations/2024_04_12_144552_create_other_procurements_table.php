@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('other_procurements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->references('id')->on('employees')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('ingredient_name');
+            $table->string('item_name');
             $table->float('price');
             $table->integer('quantity');
             $table->date('procurement_date');

@@ -12,6 +12,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout',   [AuthController::class, 'logout']);
     Route::post('/ingredientProcurement', [IngredientProcurementController::class, 'store']);
+    Route::post('/otherProcurement', [OtherProcurementsController::class, 'store']);
 });
 
 Route::get('/product', [ProductController::class, 'index']);
@@ -44,3 +45,9 @@ Route::get('/ingredientProcurement', [IngredientProcurementController::class, 'i
 Route::get('/ingredientProcurement/{id}', [IngredientProcurementController::class, 'getIngredientProcurement']);
 Route::put('/ingredientProcurement/{id}', [IngredientProcurementController::class, 'update']);
 Route::delete('/ingredientProcurement/{id}', [IngredientProcurementController::class, 'destroy']);
+
+// Other Procurement
+Route::get('/otherProcurement', [OtherProcurementsController::class, 'index']);
+Route::get('/otherProcurement/{id}', [OtherProcurementsController::class, 'getProcurement']);
+Route::put('/otherProcurement/{id}', [OtherProcurementsController::class, 'update']);
+Route::delete('/otherProcurement/{id}', [OtherProcurementsController::class, 'destroy']);
