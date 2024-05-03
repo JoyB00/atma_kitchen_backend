@@ -25,9 +25,9 @@ class DatabaseSeeder extends Seeder
         // OtherProcurementSeeder::run();
 
         // for transaction
+        CustomerSeeder::run();
         TransactionSeeder::run();
         CartsSeeder::run();
         DeliverySeeder::run();
-        CustomerSeeder::run();
     }
 }
