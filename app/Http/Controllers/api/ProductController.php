@@ -64,6 +64,7 @@ class ProductController extends Controller
             'product_picture' => 'required|image:jpeg,png,jpg',
             'description' => 'required',
             'product_status' => 'required',
+            'production_date' => 'before:tomorrow'
         ]);
         if ($validate->fails()) {
             return response([
@@ -76,10 +77,6 @@ class ProductController extends Controller
         } else if ($storeData['product_status'] == 'Pre-Order' && !isset($storeData['production_date'])) {
             return response([
                 'message' => 'The production date field is required.',
-            ], 400);
-        } else if ($storeData['production_date'] < now() - 1) {
-            return response([
-                'message' => 'The Production date cannot be before today',
             ], 400);
         } else if ($storeData['product_status'] == 'Pre-Order' && $storeData['limit_amount'] < 1) {
             return response([
@@ -158,6 +155,7 @@ class ProductController extends Controller
             'daily_stock' => 'required|numeric|min:0',
             'product_price' => 'required|numeric|min:1',
             'description' => 'required',
+            'production_date' => 'before:tomorrow'
         ]);
         if ($validate->fails()) {
             return response([
@@ -166,10 +164,6 @@ class ProductController extends Controller
         } else if ($updateData['product_status'] == 'Pre-Order' && $updateData['category_id'] == 4) {
             return response([
                 'message' => 'Product Status must be Ready',
-            ], 400);
-        } else if ($updateData['production_date'] < now() - 1) {
-            return response([
-                'message' => 'The Production date cannot be before today',
             ], 400);
         } else if ($updateData['product_status'] == 'Pre-Order' && !isset($updateData['production_date'])) {
             return response([
