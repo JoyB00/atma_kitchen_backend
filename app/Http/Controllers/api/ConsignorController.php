@@ -12,16 +12,34 @@ class ConsignorController extends Controller
 {
     public function index()
     {
-        $penitip = Consignors::get();
-        if (is_null($penitip)) {
+        $consignor = Consignors::get();
+        if (is_null($consignor)) {
             return response([
                 'message' => 'No Data Found',
                 'data' => null
             ], 404);
         }
         return response([
-            'message' => 'All Penitip Retrivied',
-            'data' => $penitip
+            'message' => 'All Consignor Retrivied',
+            'data' => $consignor
+        ], 200);
+    }
+    public function getConsignor($id)
+    {
+        $consignor = Consignors::find($id);
+        $product = Product::where('consignor_id', $id)->get();
+        if (is_null($consignor)) {
+            return response([
+                'message' => 'No Data Found',
+                'data' => null
+            ], 404);
+        }
+        return response([
+            'message' => 'All Consignor Retrivied',
+            'data' => [
+                'consignor' => $consignor,
+                'product' => $product
+            ]
         ], 200);
     }
 
@@ -38,19 +56,19 @@ class ConsignorController extends Controller
             ], 400);
         }
 
-        $penitip = Consignors::create($storeData);
+        $consignor = Consignors::create($storeData);
         return response([
-            'message' => 'Penitip Added Successfully',
-            'data' => $penitip,
+            'message' => 'Consignor Added Successfully',
+            'data' => $consignor,
         ], 200);
     }
 
     public function update(Request $request, $id)
     {
-        $penitip = Consignors::find($id)->first();
-        if (is_null($penitip)) {
+        $consignor = Consignors::find($id)->first();
+        if (is_null($consignor)) {
             return  response([
-                'message' => "Penitip Not Found",
+                'message' => "Consignor Not Found",
                 'data' => null
             ], 404);
         }
@@ -65,35 +83,52 @@ class ConsignorController extends Controller
             ], 400);
         }
 
-        $penitip->update($updateData);
+        $consignor->update($updateData);
         return response([
-            'message' => 'Penitip Updated Successfully',
-            'data' => $penitip,
+            'message' => 'Consignor Updated Successfully',
+            'data' => $consignor,
         ], 200);
     }
 
     public function destroy($id)
     {
-        $penitip = Consignors::find($id)->first();
+        $consignor = Consignors::find($id)->first();
         $product =  Product::where('consignor_id', $id)->get();
-        if (is_null($penitip)) {
+        if (is_null($consignor)) {
             return response([
-                'message' => 'Penitip Not Found',
+                'message' => 'Consignor Not Found',
                 'data' => null
             ], 404);
         }
-        if ($penitip->delete()) {
+        if ($consignor->delete()) {
             foreach ($product as $p) {
                 $p->delete();
             }
             return response([
-                'message' => 'Penitip Deleted Successfully',
-                'data' => $penitip
+                'message' => 'Consignor Deleted Successfully',
+                'data' => $consignor
             ], 200);
         }
         return  response([
-            'message' => 'Delete Penitip Failed',
+            'message' => 'Delete Consignor Failed',
             'data' => null,
         ], 400);
+    }
+    public function disableConsignor($id)
+    {
+        $consignor = Consignors::find($id)->first();
+
+        if (is_null($consignor)) {
+            return response([
+                'message' => 'Consignor Not Found',
+                'data' => null
+            ], 404);
+        }
+        $consignor['active'] = 0;
+        $consignor->save();
+        return response([
+            'message' => 'Consignor Disabled Successfully',
+            'data' => $consignor
+        ], 200);
     }
 }

@@ -35,6 +35,10 @@ Route::get('/hampers/{id}', [HampersController::class, 'getHampers']);
 Route::post('/hampers/{id}', [HampersController::class, 'update']);
 
 Route::get('/consignor', [ConsignorController::class, 'index']);
+Route::get('/consignor/{id}', [ConsignorController::class, 'getConsignor']);
+Route::post('/consignor', [ConsignorController::class, 'store']);
+Route::put('/consignor/{id}', [ConsignorController::class, 'update']);
+Route::delete('/consignor/{id}', [ConsignorController::class, 'disableConsignor']);
 
 Route::get('/ingredientProcurement', [IngredientProcurementController::class, 'index']);
 Route::get('/ingredientProcurement/{id}', [IngredientProcurementController::class, 'getIngredientProcurement']);
