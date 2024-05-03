@@ -65,7 +65,7 @@ class ConsignorController extends Controller
 
     public function update(Request $request, $id)
     {
-        $consignor = Consignors::find($id)->first();
+        $consignor = Consignors::find($id);
         if (is_null($consignor)) {
             return  response([
                 'message' => "Consignor Not Found",
