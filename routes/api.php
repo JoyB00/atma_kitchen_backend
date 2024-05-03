@@ -37,3 +37,5 @@ Route::get('/consignor', [ConsignorController::class, 'index']);
 
 Route::get('/ingredientProcurement', [IngredientProcurementController::class, 'index']);
 Route::get('/ingredientProcurement/{id}', [IngredientProcurementController::class, 'getIngredientProcurement']);
+Route::put('/ingredientProcurement/{id}', [IngredientProcurementController::class, 'update']);
+Route::delete('/ingredientProcurement/{id}', [IngredientProcurementController::class, 'destroy']);
