@@ -11,6 +11,7 @@ Route::post('/employee', [AuthController::class, 'employeeRegister']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout',   [AuthController::class, 'logout']);
+    Route::post('/ingredientProcurement', [IngredientProcurementController::class, 'store']);
 });
 
 Route::get('/product', [ProductController::class, 'index']);
