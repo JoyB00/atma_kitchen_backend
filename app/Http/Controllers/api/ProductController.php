@@ -65,6 +65,7 @@ class ProductController extends Controller
             'product_picture' => 'required|image:jpeg,png,jpg',
             'description' => 'required',
             'product_status' => 'required',
+            'limit_amount' => 'numeric|min:1'
         ]);
         $productionDate = Carbon::parse($storeData['production_date']);
         $oneDayBeforeNow = Carbon::now()->subDay();
@@ -84,9 +85,9 @@ class ProductController extends Controller
             return response([
                 'message' => 'Production date cannot be before today',
             ], 400);
-        } else if ($storeData['product_status'] == 'Pre-Order' && $storeData['limit_amount'] < 1) {
+        } else if ($storeData['product_status'] == 'Pre-Order' && !isset($storeData['limit_amount'])) {
             return response([
-                'message' => 'The daily stock limit field must be at least 1.',
+                'message' => 'The daily stock limit field is required.',
             ], 400);
         } else if ($storeData['category_id'] != 4 && !isset($storeData['recipe'])) {
             return response([
@@ -161,6 +162,7 @@ class ProductController extends Controller
             'daily_stock' => 'required|numeric|min:0',
             'product_price' => 'required|numeric|min:1',
             'description' => 'required',
+            'limit_amount' => 'numeric|min:1'
         ]);
         $productionDate = Carbon::parse($updateData['production_date']);
         $oneDayBeforeNow = Carbon::now()->subDay();
@@ -180,9 +182,9 @@ class ProductController extends Controller
             return response([
                 'message' => 'Production date cannot be before today',
             ], 400);
-        } else if ($updateData['product_status'] == 'Pre-Order' && $updateData['limit_amount'] < 1) {
+        } else if ($updateData['product_status'] == 'Pre-Order' && !isset($updateData['limit_amount'])) {
             return response([
-                'message' => 'The daily stock limit field must be at least 1.',
+                'message' => 'The daily stock limit field is required.',
             ], 400);
         } else if ($updateData['category_id'] != 4 && !isset($updateData['recipe'])) {
             return response([
