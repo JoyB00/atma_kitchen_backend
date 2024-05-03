@@ -162,7 +162,7 @@ class ProductController extends Controller
             'daily_stock' => 'required|numeric|min:0',
             'product_price' => 'required|numeric|min:1',
             'description' => 'required',
-            'limit_amount' => 'numeric|min:1'
+            'limit_amount' => 'numeric|min:0'
         ]);
         $productionDate = Carbon::parse($updateData['production_date']);
         $oneDayBeforeNow = Carbon::now()->subDay();
