@@ -73,13 +73,17 @@ class ProductController extends Controller
             return response([
                 'message' => 'Product Status must be Ready',
             ], 400);
-        } else if ($storeData['product_status'] == 'Pre-Order' && $storeData['limit_amount'] < 1) {
-            return response([
-                'message' => 'The limit amount field must be at least 1.',
-            ], 400);
         } else if ($storeData['product_status'] == 'Pre-Order' && !isset($storeData['production_date'])) {
             return response([
                 'message' => 'The production date field is required.',
+            ], 400);
+        } else if ($storeData['production_date'] < now()) {
+            return response([
+                'message' => 'The Production date cannot be before today',
+            ], 400);
+        } else if ($storeData['product_status'] == 'Pre-Order' && $storeData['limit_amount'] < 1) {
+            return response([
+                'message' => 'The daily stock limit field must be at least 1.',
             ], 400);
         } else if ($storeData['category_id'] != 4 && !isset($storeData['recipe'])) {
             return response([
@@ -163,13 +167,17 @@ class ProductController extends Controller
             return response([
                 'message' => 'Product Status must be Ready',
             ], 400);
+        } else if ($updateData['production_date'] < now()) {
+            return response([
+                'message' => 'The Production date cannot be before today',
+            ], 400);
         } else if ($updateData['product_status'] == 'Pre-Order' && !isset($updateData['production_date'])) {
             return response([
                 'message' => 'The production date field is required.',
             ], 400);
         } else if ($updateData['product_status'] == 'Pre-Order' && $updateData['limit_amount'] < 1) {
             return response([
-                'message' => 'The limit amount field must be at least 1.',
+                'message' => 'The daily stock limit field must be at least 1.',
             ], 400);
         } else if ($updateData['category_id'] != 4 && !isset($updateData['recipe'])) {
             return response([
