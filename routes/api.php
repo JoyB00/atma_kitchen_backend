@@ -70,3 +70,10 @@ Route::get('/employee/{id}', [EmployeeController::class, 'show']);
 Route::put('/employee/{id}', [EmployeeController::class, 'update']);
 Route::delete('employee/{id}', [EmployeeController::class, 'deactivate']);
 Route::delete('employee/reactivate/{id}', [EmployeeController::class, 'reactivate']);
+
+// Role
+Route::get('/role', [RoleController::class, 'index']);
+Route::post('/role', [RoleController::class, 'store']);
+Route::update('/role/{id}', [RoleController::class, 'update']);
+Route::delete('/role/{id}', [RoleController::class, 'destroy']);
+Route::get('/role/{id}', [RoleController::class, 'show']);
