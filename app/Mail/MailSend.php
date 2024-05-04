@@ -53,6 +53,6 @@ class MailSend extends Mailable
 
     public function  build()
     {
-        return $this->subject('Atma Kitchen Account Verification')->view('changePasswordVerification');
+        return $this->subject('Atma Kitchen Account Verification')->view('mailTemplate');
     }
 }

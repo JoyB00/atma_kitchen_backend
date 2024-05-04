@@ -53,6 +53,6 @@ class ForgotPasswordMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Change Password Atma Kitchen Account')->view('mailTemplate');
+        return $this->subject('Change Password Atma Kitchen Account')->view('changePasswordVerification');
     }
 }
