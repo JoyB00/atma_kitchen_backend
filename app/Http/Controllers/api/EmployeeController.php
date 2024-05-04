@@ -36,7 +36,6 @@ class EmployeeController extends Controller
             'email' => 'required|email:rfc,dns|unique:users',
             'password' => 'required|min:8',
             'phoneNumber' => 'required|max:13|min:10',
-            'gender' => 'required',
             'dateOfBirth' => 'required',
         ]);
         $request['password'] = bcrypt($request->password);
