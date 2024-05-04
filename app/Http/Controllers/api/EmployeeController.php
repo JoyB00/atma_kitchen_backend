@@ -12,11 +12,10 @@ class EmployeeController extends Controller
 {
     public function index()
     {
-        $employee = Employees::get();
+        $employee = Employees::with('Users')->get();
         return response([
             'message' => "Retrieve All Employee Successfully",
             'data' => $employee,
-
         ], 200);
     }
 
@@ -38,7 +37,7 @@ class EmployeeController extends Controller
             'password' => 'required|min:8',
             'phoneNumber' => 'required|max:13|min:10',
             'gender' => 'required',
-            'birth_date' => 'required',
+            'dateOfBirth' => 'required',
         ]);
         $request['password'] = bcrypt($request->password);
 
@@ -51,7 +50,7 @@ class EmployeeController extends Controller
 
     public function show($id)
     {
-        $employee = Employees::find($id);
+        $employee = Employees::with('Users')->find($id);
         if (is_null($employee)) {
             return response([
                 'message' => 'Employee Not Found'
@@ -63,16 +62,16 @@ class EmployeeController extends Controller
         ], 200);
     }
 
-    public function delete($id)
+    public function deactivate($id)
     {
-        $employee = Employees::find($id);
+        $employee = Employees::with('Users')->find($id);
         if (is_null($employee)) {
             return response([
                 'message' => 'Employee Not Found'
             ], 404);
         }
 
-        $employee->user->update([
+        $employee->users->update([
             'active' => '0'
         ]);
 
@@ -84,14 +83,14 @@ class EmployeeController extends Controller
     // For testing purposes only
     public function reactivate($id)
     {
-        $employee = Employees::find($id);
+        $employee = Employees::with('Users')->find($id);
         if (is_null($employee)) {
             return response([
                 'message' => 'Employee Not Found'
             ], 404);
         }
 
-        $employee->user->update([
+        $employee->users->update([
             'active' => '1'
         ]);
 
