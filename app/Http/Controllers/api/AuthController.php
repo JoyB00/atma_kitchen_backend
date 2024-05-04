@@ -213,7 +213,7 @@ class AuthController extends Controller
     public function changePassword(Request $request)
     {
         $password = $request->password;
-        $user = User::where('id', auth()->user()->id);
+        $user = User::where('id', auth()->user()->id)->first();
         $user['password'] = $password;
         $user->save();
         $request->user()->token()->revoke();
