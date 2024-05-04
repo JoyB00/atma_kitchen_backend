@@ -26,6 +26,7 @@ class User extends Authenticatable
         'verify_key',
         'active',
         'email_verified_at',
+        'verification_code'
     ];
 
 

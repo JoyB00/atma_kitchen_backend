@@ -11,7 +11,9 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/employee', [AuthController::class, 'employeeRegister']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/verifyEmail', [AuthController::class, 'verifyEmail']);
+Route::post('/verifyCode', [AuthController::class, 'verifyCode']);
 Route::middleware('auth:api')->group(function () {
+    Route::post('/changePassword', [AuthController::class, 'changePassword']);
     Route::post('/logout',   [AuthController::class, 'logout']);
     Route::post('/ingredientProcurement', [IngredientProcurementController::class, 'store']);
     Route::post('/otherProcurement', [OtherProcurementsController::class, 'store']);

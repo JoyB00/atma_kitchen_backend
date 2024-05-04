@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use App\Mail\MailSend;
+use App\Mail\ForgotPasswordMail;
 use App\Models\Customers;
 use App\Models\Employees;
 use App\Models\User;
@@ -95,14 +96,6 @@ class AuthController extends Controller
             'work_start_date' => date('Y-m-d H:i:s'),
         ]);
 
-        // $details = [
-        //     'username' => $request->fullName,
-        //     'website' => 'Atma Kitchen',
-        //     'dateTime' => date('Y-m-d H:i:s'),
-        //     'url' => request()->getHttpHost() . '/register/verify/' . $str
-        // ];
-
-        // Mail::to($request->email)->send(new MailSend($details));
 
         return response([
             'message' => 'Congratulations, your account has been successfully created',
@@ -172,19 +165,62 @@ class AuthController extends Controller
     {
         $email = $request->email;
         $user = User::where('email', $email)->first();
-        if (is_null($user)) {
+        if (!Auth::attempt($email)) {
             return response([
                 'message' => 'Email Not Found'
             ], 404);
         }
-        $OTP = mt_rand(100000, 999999);
+        $Verification_code = mt_rand(100000, 999999);
+        $user['verification_code'] = $Verification_code;
+        $user->save();
 
-        // $token = $user->createToken('Authentication Token')->accessToken;
+        $details = [
+            'username' => $request->fullName,
+            'website' => 'Atma Kitchen',
+            'dateTime' => date('Y-m-d H:i:s'),
+            'verification_code' => $Verification_code
+        ];
+
+        Mail::to($request->email)->send(new ForgotPasswordMail($details));
 
         return response([
-            'message' => 'Email Sent, to verify your Email',
+            'message' => 'Email Sent, to verify your Email' . auth()->user()->id,
             'data' => $user,
-            'otp' => $OTP,
+        ], 200);
+        
+    }
+    public function verifyCode(Request $request)
+    {
+        $verification_code = $request->verification_code;
+        $user = User::where('verification_code', $verification_code)->first();
+        if (is_null($user)) {
+            return response([
+                'message' => 'Verification Code Not Valid'
+            ], 404);
+        }
+
+        $token = $user->createToken('Authentication Token')->accessToken;
+        $user['verification_code'] = null;
+        $user->save();
+
+        return response([
+            'message' => 'Verfication Success, Please Change your Password ',
+            'data' => $user,
+            'token_type' => 'Bearer',
+            'access_token' => $token
+        ], 200);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $password = $request->password;
+        $user = User::where('id', auth()->user()->id);
+        $user['password'] = $password;
+        $user->save();
+        $request->user()->token()->revoke();
+        return response([
+            "message" => "Password Changed Successfully",
+            "data" => $user
         ], 200);
     }
 
