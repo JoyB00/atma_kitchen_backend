@@ -127,7 +127,7 @@ class AuthController extends Controller
         }
 
 
-        /** @var \App\Models\Users $user  **/
+        /** @var \App\Models\User $user  **/
         $user = Auth::user();
         if ($user->active != 1) {
             return response([

@@ -13,8 +13,9 @@ class Ingredients extends Model
 
     protected $primaryKey = 'id';
     protected $fillable = [
-        'ingredient_name', 
-        'quantity', 
-        'unit'
+        'ingredient_name',
+        'quantity',
+        'unit',
+        'active'
     ];
 }
