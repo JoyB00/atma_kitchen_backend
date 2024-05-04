@@ -50,7 +50,7 @@ class EmployeeController extends Controller
 
     public function show($id)
     {
-        $employee = Employees::find($id);
+        $employee = Employees::with('Users')->find($id);
         if (is_null($employee)) {
             return response([
                 'message' => 'Employee Not Found'
