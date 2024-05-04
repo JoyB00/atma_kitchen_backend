@@ -15,6 +15,7 @@ class EmployeeController extends Controller
         $employee = Employees::with('Users')->whereHas('Users', function ($query) {
             $query->where('active', 1);
         })->get();
+
         return response([
             'message' => "Retrieve All Employee Successfully",
             'data' => $employee,
