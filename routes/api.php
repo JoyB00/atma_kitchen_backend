@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\Api\EmployeeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
