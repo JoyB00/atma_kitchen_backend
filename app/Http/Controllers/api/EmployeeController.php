@@ -64,14 +64,14 @@ class EmployeeController extends Controller
 
     public function deactivate($id)
     {
-        $employee = Employees::find($id);
+        $employee = Employees::with('Users')->find($id);
         if (is_null($employee)) {
             return response([
                 'message' => 'Employee Not Found'
             ], 404);
         }
 
-        $employee->user->update([
+        $employee->users->update([
             'active' => '0'
         ]);
 
@@ -83,14 +83,14 @@ class EmployeeController extends Controller
     // For testing purposes only
     public function reactivate($id)
     {
-        $employee = Employees::find($id);
+        $employee = Employees::with('Users')->find($id);
         if (is_null($employee)) {
             return response([
                 'message' => 'Employee Not Found'
             ], 404);
         }
 
-        $employee->user->update([
+        $employee->users->update([
             'active' => '1'
         ]);
 
