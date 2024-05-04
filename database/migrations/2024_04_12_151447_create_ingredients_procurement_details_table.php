@@ -11,10 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
+<<<<<<< HEAD
         Schema::create('ingredients_prcmnt_dtl', function (Blueprint $table) { // ingredients_procurement_details
             $table->id();
             $table->foreignId('ingredient_id')->references('id')->on('ingredients')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('ingredient_procurement_id')->references('id')->on('ingredient_procurements')->onDelete('cascade')->onUpdate('cascade');
+=======
+        Schema::create('ingredients_procurement_details', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('ingredient_id')->references('id')->on('ingredients')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('ingredient_procurements_id')->references('id')->on('ingredient_procurements')->onDelete('cascade')->onUpdate('cascade');
+>>>>>>> 1910d06b13b6f454c174fe8fe15088f5c6b6f4ec
             $table->float('price');
             $table->integer('quantity');
             $table->float('total_price');

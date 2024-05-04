@@ -15,7 +15,11 @@ class Attendances extends Model
     protected $fillable = [
         'employee_id', 
         'attendance_date', 
+<<<<<<< HEAD
         'is_absence'
+=======
+        'is_bolos'
+>>>>>>> 1910d06b13b6f454c174fe8fe15088f5c6b6f4ec
     ];
 
     public function Employees(){

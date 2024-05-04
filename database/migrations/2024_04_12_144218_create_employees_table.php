@@ -11,15 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ingredients', function (Blueprint $table) {
+        Schema::create('employees', function (Blueprint $table) {
             $table->id();
-            $table->string('ingredient_name');
-            $table->integer('quantity');
-<<<<<<< HEAD
-            $table->enum('unit', ['gr', 'pcs', 'kg', 'ml', 'buah', 'butir']);
-=======
-            $table->enum('unit', ['gr','pcs', 'kg', 'ml']);
->>>>>>> 1910d06b13b6f454c174fe8fe15088f5c6b6f4ec
+            $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->date('work_start_date');
             $table->timestamps();
         });
     }
@@ -29,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ingredients');
+        Schema::dropIfExists('employees');
     }
 };

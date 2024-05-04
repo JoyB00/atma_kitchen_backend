@@ -13,6 +13,7 @@ class Product extends Model
 
     protected $primaryKey = 'id';
     protected $fillable = [
+<<<<<<< HEAD
         'consignor_id',
         'category_id',
         'product_name',
@@ -27,6 +28,17 @@ class Product extends Model
     //     
     // }
 
+=======
+        'consignor_id', 
+        'category_id', 
+        'product_name', 
+        'quantity', 
+        'product_price', 
+        'product_pict', 
+        'description'
+    ];
+
+>>>>>>> 1910d06b13b6f454c174fe8fe15088f5c6b6f4ec
     public function Categories()
     {
         return  $this->belongsTo(Categories::class, 'category_id');
