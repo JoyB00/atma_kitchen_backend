@@ -54,6 +54,23 @@ class IngredientController extends Controller
         ], 200);
     }
 
+    public function getIngredient($id)
+    {
+        $ingredient = Ingredients::find($id);
+        if (is_null($ingredient)) {
+            return response([
+                'message' => "Ingredient found"
+            ], 404);
+        }
+
+        return response([
+            'message' => 'Retrieve Ingredient Successfully',
+            'data' => [
+                'ingredient' => $ingredient,
+            ]
+        ], 200);
+    }
+
     public function update(Request $request, $id)
     {
         $ingredient = Ingredients::find($id);
