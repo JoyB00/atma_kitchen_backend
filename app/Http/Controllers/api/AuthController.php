@@ -212,6 +212,14 @@ class AuthController extends Controller
 
     public function changePassword(Request $request)
     {
+        $validate = Validator::make($request->all(), [
+            'password' => 'required|min:8',
+        ]);
+        if ($validate->fails()) {
+            return response([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
         $password = $request->password;
         $user = User::where('id', auth()->user()->id)->first();
         $user['password'] = $password;
