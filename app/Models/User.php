@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
-class Users extends Authenticatable
+class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasApiTokens;
     protected $table = 'users';
