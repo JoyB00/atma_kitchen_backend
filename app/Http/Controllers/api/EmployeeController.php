@@ -37,7 +37,7 @@ class EmployeeController extends Controller
             'password' => 'required|min:8',
             'phoneNumber' => 'required|max:13|min:10',
             'gender' => 'required',
-            'birth_date' => 'required',
+            'dateOfBirth' => 'required',
         ]);
         $request['password'] = bcrypt($request->password);
 

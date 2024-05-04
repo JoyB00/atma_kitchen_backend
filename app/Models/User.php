@@ -22,7 +22,7 @@ class User extends Authenticatable
         'password',
         'phoneNumber',
         'gender',
-        'birth_date',
+        'dateOfBirth',
         'verify_key',
         'active',
         'email_verified_at',
@@ -38,7 +38,7 @@ class User extends Authenticatable
         'password',
         'phone_number',
         'gender',
-        'birth_date',
+        'dateOfBirth',
     ];
 
     /**
