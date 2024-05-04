@@ -165,6 +165,27 @@ class AuthController extends Controller
         }
     }
 
+
+    public function verifyEmail(Request $request)
+    {
+        $email = $request->email;
+        $user = User::where('email', $email)->first();
+        if (is_null($user)) {
+            return response([
+                'message' => 'Email Not Found'
+            ], 404);
+        }
+
+        $token = $user->createToken('Authentication Token')->accessToken;
+
+        return response([
+            'message' => 'Email Sent to verify your Email',
+            'data' => $user,
+            'token_type' => 'Bearer',
+            'access_token' => $token
+        ], 200);
+    }
+
     public function logout(Request $request)
     {
         $request->user()->token()->revoke();
