@@ -38,6 +38,10 @@ Route::get('/category', [CategoryController::class, 'index']);
 Route::delete('/category/{id}', [CategoryController::class, 'destroy']);
 
 Route::get('/ingredient', [IngredientController::class, 'index']);
+Route::post('/ingredient', [IngredientController::class, 'store']);
+Route::post('/ingredient/{id}', [IngredientController::class, 'update']);
+Route::delete('/ingredient/{id}', [IngredientController::class, 'destroy']);
+Route::get('/ingredient/{id}', [IngredientController::class, 'getIngredient']);
 
 Route::get('/hampers', [HampersController::class, 'index']);
 Route::post('/hampers', [HampersController::class, 'store']);
