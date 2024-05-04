@@ -62,7 +62,7 @@ class EmployeeController extends Controller
         ], 200);
     }
 
-    public function delete($id)
+    public function deactivate($id)
     {
         $employee = Employees::find($id);
         if (is_null($employee)) {

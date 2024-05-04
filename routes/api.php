@@ -66,5 +66,5 @@ Route::delete('/otherProcurement/{id}', [OtherProcurementsController::class, 'de
 Route::get('/employee', [EmployeeController::class, 'index']);
 Route::get('/employee/{id}', [EmployeeController::class, 'show']);
 Route::put('/employee/{id}', [EmployeeController::class, 'update']);
-Route::delete('employee/{id}', [EmployeeController::class, 'disableEmployee']);
-Route::delete('employee/reactivate/{id}', [EmployeeController::class, 'reactivateEmployee']);
+Route::delete('employee/{id}', [EmployeeController::class, 'deactivate']);
+Route::delete('employee/reactivate/{id}', [EmployeeController::class, 'reactivate']);
