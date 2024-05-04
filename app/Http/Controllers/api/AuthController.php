@@ -165,7 +165,7 @@ class AuthController extends Controller
     {
         $email = $request->email;
         $user = User::where('email', $email)->first();
-        if (!Auth::attempt($email)) {
+        if (is_null($user)) {
             return response([
                 'message' => 'Email Not Found'
             ], 404);
@@ -187,7 +187,7 @@ class AuthController extends Controller
             'message' => 'Email Sent, to verify your Email' . auth()->user()->id,
             'data' => $user,
         ], 200);
-        
+
     }
     public function verifyCode(Request $request)
     {
