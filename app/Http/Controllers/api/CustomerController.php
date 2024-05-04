@@ -19,7 +19,7 @@ class CustomerController extends Controller
         ], 200);
     }
 
-
+    // STORE SUDAH ADA DI AUTHCONTROLLER (REGISTER)
 
     public function update(Request $request, $id)
     {
