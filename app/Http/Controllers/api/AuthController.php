@@ -168,11 +168,11 @@ class AuthController extends Controller
 
     public function verifyEmail(Request $request)
     {
-        $email = $request->email;
+        $email = $request->all();
         $user = User::where('email', $email)->first();
         if (is_null($user)) {
             return response([
-                'message' => $email
+                'message' => 'Email Not Found'. $email
             ], 404);
         }
 
