@@ -175,7 +175,7 @@ class AuthController extends Controller
         $user->save();
 
         $details = [
-            'username' => $request->fullName,
+            'username' => $user["fullName"],
             'website' => 'Atma Kitchen',
             'dateTime' => date('Y-m-d H:i:s'),
             'verification_code' => $Verification_code
@@ -184,10 +184,9 @@ class AuthController extends Controller
         Mail::to($request->email)->send(new ForgotPasswordMail($details));
 
         return response([
-            'message' => 'Email Sent, to verify your Email' . auth()->user()->id,
+            'message' => 'Email Sent, to verify your Email',
             'data' => $user,
         ], 200);
-
     }
     public function verifyCode(Request $request)
     {
