@@ -166,23 +166,24 @@ class AuthController extends Controller
     }
 
 
+
     public function verifyEmail(Request $request)
     {
         $email = $request->email;
         $user = User::where('email', $email)->first();
         if (is_null($user)) {
             return response([
-                'message' => 'Email Not Found' . $email
+                'message' => 'Email Not Found'
             ], 404);
         }
+        $OTP = mt_rand(100000, 999999);
 
-        $token = $user->createToken('Authentication Token')->accessToken;
+        // $token = $user->createToken('Authentication Token')->accessToken;
 
         return response([
-            'message' => 'Email Sent to verify your Email',
+            'message' => 'Email Sent, to verify your Email',
             'data' => $user,
-            'token_type' => 'Bearer',
-            'access_token' => $token
+            'otp' => $OTP,
         ], 200);
     }
 
