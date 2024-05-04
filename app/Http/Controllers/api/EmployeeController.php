@@ -13,7 +13,7 @@ class EmployeeController extends Controller
     public function index()
     {
         $employee = Employees::get();
-        $employee->load('user');
+        $employee["user"] = $employee->user;
         return response([
             'message' => "Retrieve All Employee Successfully",
             'data' => $employee,
