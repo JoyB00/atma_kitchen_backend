@@ -172,7 +172,7 @@ class AuthController extends Controller
         $user = User::where('email', $email)->first();
         if (is_null($user)) {
             return response([
-                'message' => 'Email Not Found'
+                'message' => $email
             ], 404);
         }
 
