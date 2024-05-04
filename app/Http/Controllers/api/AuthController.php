@@ -74,7 +74,8 @@ class AuthController extends Controller
             'email' => 'required|email:rfc,dns|unique:users',
             'password' => 'required|min:8',
             'phoneNumber' => 'required|max:13|min:10',
-            'dateOfBirth' => 'required',
+            'gender' => 'required',
+            'birth_date' => 'required',
         ]);
 
         if ($validate->fails()) {
