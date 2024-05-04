@@ -33,7 +33,7 @@ class EmployeeController extends Controller
             ], 404);
         }
 
-        $validate = Validator::make($request, [
+        $validate = Validator::make($request->all(), [
             'role_id' => 'required',
             'fullName' => 'required',
             'email' => 'required|email:rfc,dns|unique:users',
@@ -42,7 +42,7 @@ class EmployeeController extends Controller
         ]);
         $request['password'] = bcrypt($request->password);
 
-        $employee->user->update($request->all());
+        $employee->users->update($request->all());
         return response([
             'message' => 'Employee Updated',
             'data' => $employee
