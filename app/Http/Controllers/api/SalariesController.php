@@ -18,6 +18,15 @@ class SalariesController extends Controller
         ], 200);
     }
 
+    public function getDetailSalary($id)
+    {
+        $salary =  Salaries::where("employee_id", $id)->get();
+        return response([
+            'message' => 'All Detail Salaries Retrivied',
+            'data' => $salary
+        ], 200);
+    }
+
     public function store(Request $request)
     {
         $data = $request->all();

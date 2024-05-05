@@ -76,6 +76,9 @@ Route::put('/employee/{id}', [EmployeeController::class, 'update']);
 Route::delete('employee/{id}', [EmployeeController::class, 'deactivate']);
 Route::delete('employee/reactivate/{id}', [EmployeeController::class, 'reactivate']);
 
+// Salary
+Route::get('/salaryEmployee/{id}', [SalariesController::class, 'getDetailSalary']);
+
 // Role
 Route::get('/role', [RoleController::class, 'index']);
 Route::post('/role', [RoleController::class, 'store']);
