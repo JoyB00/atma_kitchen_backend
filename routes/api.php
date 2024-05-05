@@ -77,7 +77,11 @@ Route::delete('employee/{id}', [EmployeeController::class, 'deactivate']);
 Route::delete('employee/reactivate/{id}', [EmployeeController::class, 'reactivate']);
 
 // Salary
-Route::get('/salaryEmployee/{id}', [SalariesController::class, 'getDetailSalary']);
+Route::get('/employeeSalary', [SalariesController::class, 'index']);
+Route::get('/employeeSalary/{id}', [SalariesController::class, 'getDetailSalary']);
+Route::post('/employeeSalary', [SalariesController::class, 'store']);
+Route::put('/employeeSalary/{id}', [SalariesController::class, 'update']);
+Route::delete('/employeeSalary/{id}', [SalariesController::class, 'destroy']);
 
 // Role
 Route::get('/role', [RoleController::class, 'index']);

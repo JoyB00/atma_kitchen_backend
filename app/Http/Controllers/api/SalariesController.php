@@ -37,8 +37,8 @@ class SalariesController extends Controller
         $data = $request->all();
         $validate = Validator::make($data, [
             'pay_date' => 'required|date',
-            'daily_salary' => 'required|numeric',
-            'bonus' => 'required|numeric',
+            'daily_salary' => 'numeric|min:0',
+            'bonus' => 'numeric|min:0',
             'total_salaries' => 'required|numeric',
         ]);
         if ($validate->fails()) {
@@ -46,7 +46,7 @@ class SalariesController extends Controller
                 'message' => $validate->errors()->first()
             ], 400);
         }
-
+        $data["employee_id"] = $request->employee_id;
         $salary = Salaries::create($data);
         return response([
             'message' => 'Salary Created Successfully!',
@@ -67,8 +67,8 @@ class SalariesController extends Controller
         $data = $request->all();
         $validate = Validator::make($data, [
             'pay_date' => 'required|date',
-            'daily_salary' => 'required|numeric',
-            'bonus' => 'required|numeric',
+            'daily_salary' => 'numeric|min:0',
+            'bonus' => 'numeric|min:0',
             'total_salaries' => 'required|numeric',
         ]);
         if ($validate->fails()) {
