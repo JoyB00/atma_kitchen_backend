@@ -3,83 +3,101 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Attendances;
+use App\Models\Absence;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class AttendanceController extends Controller
+class AbsenceController extends Controller
 {
     public function index()
     {
-        $attendence = Attendances::get();
+        $absence = Absence::get();
         return response([
-            'message' => 'All Attendandes Retrived',
-            "data" => $attendence
+            'message' => 'All Absence List Retrived',
+            "data" => $absence
         ], 200);
     }
+
+    public function show($id)
+    {
+        $absence = Absence::find($id);
+        if (is_null($absence)) {
+            return response([
+                'message' => 'Absence Not Found'
+            ]);
+        }
+
+        return response([
+            'message' => 'Absence Retrived',
+            'data' => $absence
+        ], 200);
+    }
+
     public function store(Request $request)
     {
         $data = $request->all();
         $validate = Validator::make($data, [
-            'attendance_date' => 'required',
+            'employee_id' => 'required',
+            'absence_date' => 'required',
         ]);
         if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()->first(),
             ], 400);
         }
-        $data['employee_id'] = auth()->user()->id;
-        $data['is_absence'] = true;
-        $attendance = Attendances::create($data);
 
+        $absence = Absence::create($data);
         return response([
-            'message' => 'Create Attendance Successfully',
-            'data' => $attendance
+            'message' => 'Absenced Successfully',
+            'data' => $absence
         ], 200);
     }
+
     public function update(Request $request, $id)
     {
-        $attendance = Attendances::find($id);
-        if (is_null($attendance)) {
+        $absence = Absence::find($id);
+        if (is_null($absence)) {
             return response([
-                'message' => 'Attendance Not Found'
+                'message' => 'Absence Not Found'
             ]);
         }
 
         $data = $request->all();
         $validate = Validator::make($data, [
-            'attendance_date' => 'required',
+            'absence_date' => 'required',
         ]);
+
         if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()->first()
             ], 400);
         }
 
-        $attendance->update($data);
+        $absence->update($data);
         return response([
             'message' => 'Attendance Updated Successfully',
-            'data' => $attendance
+            'data' => $absence
         ], 200);
     }
+
     public function destroy($id)
     {
-        $attendence = Attendances::find($id);
-        if (is_null($attendence)) {
+        $absence = Absence::find($id);
+        if (is_null($absence)) {
             return response([
-                'message' => 'Attendance Not Found'
+                'message' => 'Absence` Not Found'
             ]);
         }
 
-        if ($attendence->delete()) {
+        if ($absence->delete()) {
             return response([
-                'message' => 'Attendance Deleted Successfully',
-                'data' => $attendence
+                'message' => 'Absence Deleted Successfully',
+                'data' => $absence
             ], 200);
         }
 
         return response([
-            'message' => 'Delete Attendance Failed',
+            'message' => 'Delete Absence Failed',
             'data' => null,
         ], 400);
     }
