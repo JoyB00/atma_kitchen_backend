@@ -21,8 +21,8 @@ class Employees extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function Attendances()
+    public function Absence()
     {
-        return $this->hasMany(Attendances::class);
+        return $this->hasMany(Absence::class);
     }
 }

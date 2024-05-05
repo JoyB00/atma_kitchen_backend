@@ -12,7 +12,7 @@ class EmployeeController extends Controller
 {
     public function index()
     {
-        $employee = Employees::with('Users', 'Users', 'Users.Roles', 'Attendances')->whereHas('Users', function ($query) {
+        $employee = Employees::with('Users', 'Users', 'Users.Roles', 'Absence')->whereHas('Users', function ($query) {
             $query->where('active', 1);
         })->get();
 
