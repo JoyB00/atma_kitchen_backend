@@ -64,7 +64,7 @@ class AbsenceController extends Controller
 
         $data = $request->all();
         $validate = Validator::make($data, [
-            'attendance_date' => 'required',
+            'absence_date' => 'required',
         ]);
 
         if ($validate->fails()) {
