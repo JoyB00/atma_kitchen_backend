@@ -13,13 +13,13 @@ class Attendances extends Model
 
     protected $primaryKey = 'id';
     protected $fillable = [
-        'employee_id',
+        'employees_id',
         'attendance_date',
         'is_absence'
     ];
 
     public function Employees()
     {
-        return $this->belongsTo(Employees::class, 'employee_id');
+        return $this->belongsTo(Employees::class, 'employees_id');
     }
 }
