@@ -21,7 +21,7 @@ class SalariesController extends Controller
 
     public function getDetailSalary($id)
     {
-        $employee = Employees::with('Users', 'Users', 'Users.Roles', 'Attendances')->find($id);
+        $employee = Employees::with('Users', 'Users', 'Users.Roles', 'Absence')->find($id);
         $salary =  Salaries::where("employee_id", $id)->get();
         return response([
             'message' => 'All Detail Salaries Retrivied',
