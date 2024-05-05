@@ -19,6 +19,18 @@ class SalariesController extends Controller
         ], 200);
     }
 
+    public function getSalary($id)
+    {
+        $salary = Salaries::find($id);
+        if (is_null($salary)) {
+            return response(['messege' => "Employee Not Found"], 404);
+        }
+        return response([
+            'messege' => 'Salary Retrieved',
+            'data' => $salary
+        ], 200);
+    }
+
     public function getDetailSalary($id)
     {
         $employee = Employees::with('Users', 'Users', 'Users.Roles', 'Absence')->find($id);
