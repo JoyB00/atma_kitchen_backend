@@ -5,17 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Attendances extends Model
+class Absence extends Model
 {
     use HasFactory;
 
-    protected $table = 'attendances';
+    protected $table = 'absences';
 
     protected $primaryKey = 'id';
     protected $fillable = [
         'employees_id',
         'attendance_date',
-        'is_absence'
     ];
 
     public function Employees()

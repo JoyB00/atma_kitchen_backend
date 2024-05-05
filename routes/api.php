@@ -68,7 +68,6 @@ Route::get('/otherProcurement/{id}', [OtherProcurementsController::class, 'getPr
 Route::put('/otherProcurement/{id}', [OtherProcurementsController::class, 'update']);
 Route::delete('/otherProcurement/{id}', [OtherProcurementsController::class, 'destroy']);
 
-
 // Employee
 Route::get('/employee', [EmployeeController::class, 'index']);
 Route::get('/employee/{id}', [EmployeeController::class, 'show']);
@@ -85,3 +84,10 @@ Route::post('/role', [RoleController::class, 'store']);
 Route::put('/role/{id}', [RoleController::class, 'update']);
 Route::delete('/role/{id}', [RoleController::class, 'destroy']);
 Route::get('/role/{id}', [RoleController::class, 'show']);
+
+// Absence
+Route::get('/absence', [AbsenceController::class, 'index']);
+Route::get('/absence/{id}', [AbsenceController::class, 'show']);
+Route::post('/absence', [AbsenceController::class, 'store']);
+Route::put('/absence/{id}', [AbsenceController::class, 'update']);
+Route::delete('/absence/{id}', [AbsenceController::class, 'destroy']);
