@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Workbench\App\Models\User;
+
 
 class Employees extends Model
 {
@@ -20,5 +20,10 @@ class Employees extends Model
     public function Users()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function Attendances()
+    {
+        return $this->hasMany(Attendances::class);
     }
 }

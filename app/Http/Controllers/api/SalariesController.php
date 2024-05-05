@@ -90,6 +90,4 @@ class SalariesController extends Controller
             'data' => null,
         ], 400);
     }
-
-
 }
