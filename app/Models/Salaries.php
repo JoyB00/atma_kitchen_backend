@@ -17,7 +17,7 @@ class Salaries extends Model
         'pay_date', 
         'daily_salary', 
         'bonus', 
-        'total_salaries'
+        'total_salary'
     ];
 
     public function Employees(){

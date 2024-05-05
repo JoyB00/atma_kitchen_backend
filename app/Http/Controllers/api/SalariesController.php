@@ -39,7 +39,7 @@ class SalariesController extends Controller
             'pay_date' => 'required|date',
             'daily_salary' => 'numeric|min:0',
             'bonus' => 'numeric|min:0',
-            'total_salaries' => 'required|numeric',
+            'total_salary' => 'required|numeric',
         ]);
         if ($validate->fails()) {
             return response([
@@ -69,7 +69,7 @@ class SalariesController extends Controller
             'pay_date' => 'required|date',
             'daily_salary' => 'numeric|min:0',
             'bonus' => 'numeric|min:0',
-            'total_salaries' => 'required|numeric',
+            'total_salary' => 'required|numeric',
         ]);
         if ($validate->fails()) {
             return response([
