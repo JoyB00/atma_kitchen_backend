@@ -190,6 +190,17 @@ class AuthController extends Controller
     }
     public function verifyCode(Request $request)
     {
+
+        $validate = Validator::make($request->all(), [
+            'verification_code' => 'required|numeric'
+        ]);
+        if ($validate->fails()) {
+            return response([
+                'message' => $validate->errors()->first()
+            ], 400);
+        }
+
+
         $verification_code = $request->verification_code;
         $user = User::where('verification_code', $verification_code)->first();
         if (is_null($user)) {
@@ -197,6 +208,7 @@ class AuthController extends Controller
                 'message' => 'Verification Code Not Valid'
             ], 404);
         }
+
 
         $token = $user->createToken('Authentication Token')->accessToken;
         $user['verification_code'] = null;
