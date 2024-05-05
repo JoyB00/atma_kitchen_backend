@@ -23,17 +23,15 @@ class EmployeeController extends Controller
     }
     public function showEmployee()
     {
-        $employees = Employees::with(['Users' => function ($query) {
-            $query->select('id', 'employee_id', 'role_id', 'active');
-        }, 'Users.Roles', 'Absence'])
-            ->whereHas('Users', function ($query) {
-                $query->where('active', 1)->where('role_id', '!=', 4);
-            })
-            ->get();
+        $employee = Employees::with(['Users' => function ($query) {
+            $query->where('active', 1)->where('role_id', '!=', 4);
+        }, 'Users.Roles', 'Absence'])->whereHas('Users', function ($query) {
+            $query->where('active', 1);
+        })->get();
 
         return response([
-            'message' => "Retrieve All Employees Successfully",
-            'data' => $employees,
+            'message' => "Retrieve All Employee Successfully",
+            'data' => $employee,
         ], 200);
     }
 
