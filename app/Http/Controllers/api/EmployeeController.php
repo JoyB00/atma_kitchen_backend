@@ -21,6 +21,17 @@ class EmployeeController extends Controller
             'data' => $employee,
         ], 200);
     }
+    public function showEmployee()
+    {
+        $employee = Employees::with('Users',  'Users.Roles', 'Absence')->whereNot('Users.role_id', 4)->whereHas('Users', function ($query) {
+            $query->where('active', 1);
+        })->get();
+
+        return response([
+            'message' => "Retrieve All Employee Successfully",
+            'data' => $employee,
+        ], 200);
+    }
 
     // STORE SUDAH ADA DI AUTHCONTROLLER (REGISTEREMPLOYEE)
 

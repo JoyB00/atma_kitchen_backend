@@ -70,6 +70,7 @@ Route::delete('/otherProcurement/{id}', [OtherProcurementsController::class, 'de
 
 // Employee
 Route::get('/employee', [EmployeeController::class, 'index']);
+Route::get('/employeeForSalary', [EmployeeController::class, 'showEmployee']);
 Route::get('/employee/{id}', [EmployeeController::class, 'show']);
 Route::put('/employee/{id}', [EmployeeController::class, 'update']);
 Route::delete('employee/{id}', [EmployeeController::class, 'deactivate']);
