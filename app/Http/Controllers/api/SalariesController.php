@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employees;
 use App\Models\Salaries;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -20,10 +21,14 @@ class SalariesController extends Controller
 
     public function getDetailSalary($id)
     {
+        $employee = Employees::with('Users', 'Users', 'Users.Roles', 'Attendances')->find($id);
         $salary =  Salaries::where("employee_id", $id)->get();
         return response([
             'message' => 'All Detail Salaries Retrivied',
-            'data' => $salary
+            'data' => [
+                'employee' => $employee,
+                'salary' => $salary
+            ]
         ], 200);
     }
 
