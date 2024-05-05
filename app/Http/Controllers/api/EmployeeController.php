@@ -24,7 +24,7 @@ class EmployeeController extends Controller
     public function showEmployee()
     {
         $employee = Employees::with('Users', 'Users.Roles', 'Absence')->whereHas('Users', function ($query) {
-            $query->where('active', 1)->where('role_id', '!=', 4)->where('role_id', '!=', 3);
+            $query->where('active', 1)->where('role_id', '!=', 4)->where('role_id', '!=', 1);
         })->get();
 
         return response([
