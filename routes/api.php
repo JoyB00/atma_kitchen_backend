@@ -19,7 +19,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/otherProcurement', [OtherProcurementsController::class, 'store']);
 });
 
-Route::middleware(['auth:api', UserRoleCheck::class, ':2,4'])->group(function () {
+Route::middleware(['auth:api', UserRoleCheck::class . ':2,4'])->group(function () {
     Route::get('/hampers', [HampersController::class, 'index']);
 });
 
