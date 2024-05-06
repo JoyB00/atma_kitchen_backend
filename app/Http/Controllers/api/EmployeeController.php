@@ -48,8 +48,11 @@ class EmployeeController extends Controller
             'role_id' => 'required',
             'fullName' => 'required',
             'phoneNumber' => 'required|max:13|min:10',
+
             'gender' => 'required',
         ]);
+
+        $request['password'] = bcrypt($request->password);
         if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()->first()
