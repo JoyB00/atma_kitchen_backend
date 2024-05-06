@@ -25,6 +25,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/changePassword', [AuthController::class, 'changePassword']);
     Route::post('/logout',   [AuthController::class, 'logout']);
 
+    Route::get('/category', [CategoryController::class, 'index']);
     // Customer
     Route::get('/customer', [CustomerController::class, 'index']);
 
@@ -33,7 +34,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/detailOrder/{id}', [TransactionController::class, 'getDetailOrder']);
 
     // Category
-    Route::get('/category', [CategoryController::class, 'index']);
 
     // Ingredient
     Route::get('/ingredient', [IngredientController::class, 'index']);
