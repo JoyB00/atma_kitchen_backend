@@ -13,7 +13,7 @@ class Absence extends Model
 
     protected $primaryKey = 'id';
     protected $fillable = [
-        'employee_id',
+        'employees_id',
         'absence_date',
     ];
 
