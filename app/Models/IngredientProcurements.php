@@ -12,12 +12,13 @@ class IngredientProcurements extends Model
 
     protected $primaryKey = 'id';
     protected $fillable = [
-        'employee_id', 
-        'procurement_date', 
+        'employee_id',
+        'procurement_date',
         'total_price'
     ];
 
-    public function Employees(){
+    public function Employees()
+    {
         return $this->belongsTo(Employees::class, 'employee_id');
     }
 }
