@@ -4,16 +4,10 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class UserRoleCheck
 {
-    protected $allowedRoles;
 
-    public function __construct(...$allowedRoles)
-    {
-        $this->allowedRoles = $allowedRoles;
-    }
     /**
      * Handle an incoming request.
      *
@@ -21,13 +15,13 @@ class UserRoleCheck
      * @param  \Closure  $next
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-        if (in_array(auth()->user()->role_id,  $this->allowedRoles)) {
+        if (in_array(auth()->user()->role_id,  $roles)) {
             return $next($request);
         }
         return response([
-            'message' => 'Not Accessable' . auth()->user()->role_id 
+            'message' => 'Not Accessable'
         ], 400);
     }
 }
