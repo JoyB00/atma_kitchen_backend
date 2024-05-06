@@ -11,7 +11,7 @@ class AbsenceController extends Controller
 {
     public function index()
     {
-        $absence = Absence::get();
+        $absence = Absence::with('Employees.Users')->get();
         return response([
             'message' => 'All Absence List Retrived',
             "data" => $absence
@@ -37,7 +37,7 @@ class AbsenceController extends Controller
     {
         $data = $request->all();
         $validate = Validator::make($data, [
-            'employee_id' => 'required',
+            'employees_id' => 'required',
             'absence_date' => 'required',
         ]);
         if ($validate->fails()) {

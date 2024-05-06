@@ -13,12 +13,12 @@ class Absence extends Model
 
     protected $primaryKey = 'id';
     protected $fillable = [
-        'employee_id',
+        'employees_id',
         'absence_date',
     ];
 
     public function Employees()
     {
-        return $this->belongsTo(Employees::class, 'employee_id');
+        return $this->belongsTo(Employees::class, 'employees_id');
     }
 }
