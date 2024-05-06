@@ -87,14 +87,13 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () 
     // Ingredient
     Route::post('/ingredient', [IngredientController::class, 'store']);
     Route::post('/ingredient/{id}', [IngredientController::class, 'update']);
-    Route::delete('/ingredient/{id}', [IngredientController::class, 'disableIngredient']);
+    Route::put('/ingredient/{id}', [IngredientController::class, 'disableIngredient']);
     Route::delete('/ingredient/{id}', [IngredientController::class, 'destroy']);
 
     // Hampers
     Route::post('/hampers', [HampersController::class, 'store']);
     Route::put('/hampers/{id}', [HampersController::class, 'disableHampers']);
     Route::post('/hampers/{id}', [HampersController::class, 'update']);
-    Route::delete('/hampers/{id}', [HampersController::class, 'disableHampers']);
     Route::delete('/hampers/{id}', [HampersController::class, 'destroy']);
 
     // Product
