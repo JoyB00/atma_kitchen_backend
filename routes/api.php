@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Http\Middleware\UserRoleCheck;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +17,10 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/logout',   [AuthController::class, 'logout']);
     Route::post('/ingredientProcurement', [IngredientProcurementController::class, 'store']);
     Route::post('/otherProcurement', [OtherProcurementsController::class, 'store']);
+});
+
+Route::middleware(['auth:api', UserRoleCheck::class, ':2'])->group(function () {
+    Route::get('/hampers', [HampersController::class, 'index']);
 });
 
 
@@ -40,11 +45,11 @@ Route::delete('/category/{id}', [CategoryController::class, 'destroy']);
 Route::get('/ingredient', [IngredientController::class, 'index']);
 Route::post('/ingredient', [IngredientController::class, 'store']);
 Route::post('/ingredient/{id}', [IngredientController::class, 'update']);
-// Route::delete('/ingredient/{id}', [IngredientController::class, 'destroy']);
 Route::delete('/ingredient/{id}', [IngredientController::class, 'disableIngredient']);
+Route::delete('/ingredient/{id}', [IngredientController::class, 'destroy']);
 Route::get('/ingredient/{id}', [IngredientController::class, 'getIngredient']);
 
-Route::get('/hampers', [HampersController::class, 'index']);
+// Route::get('/hampers', [HampersController::class, 'index']);
 Route::post('/hampers', [HampersController::class, 'store']);
 Route::delete('/hampers/{id}', [HampersController::class, 'destroy']);
 Route::put('/hampers/{id}', [HampersController::class, 'disableHampers']);
