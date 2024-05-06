@@ -11,7 +11,7 @@ class AbsenceController extends Controller
 {
     public function index()
     {
-        $absence = Absence::with('Employees')->get();
+        $absence = Absence::with('Employees.Users')->get();
         return response([
             'message' => 'All Absence List Retrived',
             "data" => $absence
