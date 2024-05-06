@@ -47,12 +47,14 @@ class EmployeeController extends Controller
         $validate = Validator::make($request->all(), [
             'role_id' => 'required',
             'fullName' => 'required',
-            'email' => 'required|email:rfc,dns|unique:users',
-            'password' => 'required|min:8',
             'phoneNumber' => 'required|max:13|min:10',
+            'gender' => 'required',
         ]);
-        
-        $request['password'] = bcrypt($request->password);
+        if ($validate->fails()) {
+            return response([
+                'message' => $validate->errors()->first()
+            ], 400);
+        }
 
         $employee->users->update($request->all());
         return response([
@@ -72,6 +74,24 @@ class EmployeeController extends Controller
         return response([
             'message' => 'A Employee Retrieved',
             'data' => $employee
+        ], 200);
+    }
+
+    public function changePasswordEmployee($oldPassword, $newPassword)
+    {
+        $user = User::find(auth()->user()->id);
+        if (!password_verify($oldPassword, $user->password)) {
+            return response([
+                'message' => 'Old Password is incorrect'
+            ], 400);
+        }
+
+        $user->update([
+            'password' => bcrypt($newPassword)
+        ]);
+
+        return response([
+            'message' => 'Password Changed'
         ], 200);
     }
 
