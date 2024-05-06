@@ -17,7 +17,9 @@ class UserRoleCheck
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function handle(Request $request, Closure $next)
     {
@@ -25,7 +27,7 @@ class UserRoleCheck
             return $next($request);
         }
         return response([
-            'message' => 'Not Accessable'
+            'message' => 'Not Accessable' . auth()->user()->role_id . 'and' . $this->allowedRoles
         ], 400);
     }
 }
