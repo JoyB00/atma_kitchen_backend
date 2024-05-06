@@ -13,10 +13,17 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/verifyEmail', [AuthController::class, 'verifyEmail']);
 Route::post('/verifyCode', [AuthController::class, 'verifyCode']);
 
+// Product
+Route::get('/product', [ProductController::class, 'index']);
+Route::get('/product/{id}', [ProductController::class, 'getProduct']);
+
+// Hampers
+Route::get('/hampers', [HampersController::class, 'index']);
+Route::get('/hampers/{id}', [HampersController::class, 'getHampers']);
+
 Route::middleware('auth:api')->group(function () {
     Route::post('/changePassword', [AuthController::class, 'changePassword']);
     Route::post('/logout',   [AuthController::class, 'logout']);
-    Route::get('/hampers', [HampersController::class, 'index']);
 
     // Customer
     Route::get('/customer', [CustomerController::class, 'index']);
@@ -25,20 +32,12 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/orderHistory/{id}', [TransactionController::class, 'getOrderHistory']);
     Route::get('/detailOrder/{id}', [TransactionController::class, 'getDetailOrder']);
 
-    // Product
-    Route::get('/product', [ProductController::class, 'index']);
-    Route::get('/product/{id}', [ProductController::class, 'getProduct']);
-
     // Category
     Route::get('/category', [CategoryController::class, 'index']);
 
     // Ingredient
     Route::get('/ingredient', [IngredientController::class, 'index']);
     Route::get('/ingredient/{id}', [IngredientController::class, 'getIngredient']);
-
-    // Hampers
-    Route::get('/hampers', [HampersController::class, 'index']);
-    Route::get('/hampers/{id}', [HampersController::class, 'getHampers']);
 
     // Consignor
     Route::get('/consignor', [ConsignorController::class, 'index']);
@@ -69,16 +68,44 @@ Route::middleware('auth:api')->group(function () {
     // Absence
     Route::get('/absence', [AbsenceController::class, 'index']);
     Route::get('/absence/{id}', [AbsenceController::class, 'show']);
+
+    // Customer
+    Route::get('/customer', [CustomerController::class, 'index']);
+    Route::get('/customer/{id}', [CustomerController::class, 'show']);
 });
 
 
-// Customer
-Route::get('/customer', [CustomerController::class, 'index']);
-Route::post('/customer', [CustomerController::class, 'store']); // tambahkan rute POST untuk membuat customer
-Route::get('/customer/{id}', [CustomerController::class, 'show']);
-Route::post('/customer/{id}', [CustomerController::class, 'update']);
-Route::delete('/customer/{id}', [CustomerController::class, 'destroy']);
 
+Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () {
+    Route::post('/employeeSalary', [SalariesController::class, 'store']);
+    Route::put('/employeeSalary/{id}', [SalariesController::class, 'update']);
+    Route::delete('/employeeSalary/{id}', [SalariesController::class, 'destroy']);
+});
+
+
+Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () {
+    // Ingredient
+    Route::post('/ingredient', [IngredientController::class, 'store']);
+    Route::post('/ingredient/{id}', [IngredientController::class, 'update']);
+    Route::delete('/ingredient/{id}', [IngredientController::class, 'disableIngredient']);
+    Route::delete('/ingredient/{id}', [IngredientController::class, 'destroy']);
+
+    // Hampers
+    Route::post('/hampers', [HampersController::class, 'store']);
+    Route::delete('/hampers/{id}', [HampersController::class, 'destroy']);
+    Route::put('/hampers/{id}', [HampersController::class, 'disableHampers']);
+    Route::post('/hampers/{id}', [HampersController::class, 'update']);
+
+    // Product
+    Route::post('/product', [ProductController::class, 'store']);
+    Route::post('/product/{id}', [ProductController::class, 'update']);
+    Route::delete('/product/{id}', [ProductController::class, 'destroy']);
+    Route::put('/product/{id}', [ProductController::class, 'disableProduct']);
+    Route::post('/limitProduct/{id}', [ProductLimitController::class, 'getLimitByDate']);
+
+    // Category
+    Route::delete('/category/{id}', [CategoryController::class, 'destroy']);
+});
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () {
 
@@ -114,32 +141,8 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
 });
 
 
-Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () {
-    Route::post('/employeeSalary', [SalariesController::class, 'store']);
-    Route::put('/employeeSalary/{id}', [SalariesController::class, 'update']);
-    Route::delete('/employeeSalary/{id}', [SalariesController::class, 'destroy']);
-});
-
-Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () {
-    // Ingredient
-    Route::post('/ingredient', [IngredientController::class, 'store']);
-    Route::post('/ingredient/{id}', [IngredientController::class, 'update']);
-    Route::delete('/ingredient/{id}', [IngredientController::class, 'disableIngredient']);
-    Route::delete('/ingredient/{id}', [IngredientController::class, 'destroy']);
-
-    // Hampers
-    Route::post('/hampers', [HampersController::class, 'store']);
-    Route::delete('/hampers/{id}', [HampersController::class, 'destroy']);
-    Route::put('/hampers/{id}', [HampersController::class, 'disableHampers']);
-    Route::post('/hampers/{id}', [HampersController::class, 'update']);
-
-    // Product
-    Route::post('/product', [ProductController::class, 'store']);
-    Route::post('/product/{id}', [ProductController::class, 'update']);
-    Route::delete('/product/{id}', [ProductController::class, 'destroy']);
-    Route::put('/product/{id}', [ProductController::class, 'disableProduct']);
-    Route::post('/limitProduct/{id}', [ProductLimitController::class, 'getLimitByDate']);
-
-    // Category
-    Route::delete('/category/{id}', [CategoryController::class, 'destroy']);
+Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () {
+    Route::post('/customer', [CustomerController::class, 'store']); // tambahkan rute POST untuk membuat customer
+    Route::post('/customer/{id}', [CustomerController::class, 'update']);
+    Route::delete('/customer/{id}', [CustomerController::class, 'destroy']);
 });
