@@ -13,7 +13,7 @@ class HampersController extends Controller
 {
     public function index()
     {
-        $hampers = Hampers::orderBy('hampers_name', 'asc')->get();
+        $hampers = Hampers::where('active',1)->orderBy('hampers_name', 'asc')->get();
         $hampers_detail = HampersDetails::with('Hampers', 'Product', 'Ingredients')->get();
         return response([
             'message' => 'All Hampers Retrivied',
@@ -185,5 +185,22 @@ class HampersController extends Controller
             'message' => 'Delete Hampers Failed',
             'data' => null
         ], 400);
+    }
+
+    public function disableHampers($id)
+    {
+        $hampers = Hampers::find($id);
+        if (is_null($hampers)) {
+            return response([
+                'message' => 'Hampers Not Found',
+                'data' => null
+            ], 404);
+        }
+        $hampers['active'] = 0;
+        $hampers->save();
+        return  response([
+            'message' => 'Hampers Disabled Successfully',
+            'data' => $hampers,
+        ], 200);
     }
 }

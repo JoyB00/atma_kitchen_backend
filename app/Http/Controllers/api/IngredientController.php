@@ -11,7 +11,7 @@ class IngredientController extends Controller
 {
     public function index()
     {
-        $ingredient = Ingredients::orderBy('ingredient_name', 'asc')->get();
+        $ingredient = Ingredients::where('active', 1)->orderBy('ingredient_name', 'asc')->get();
         return response([
             'message' => 'All Ingredient Retrivied',
             'data' => $ingredient
@@ -51,6 +51,23 @@ class IngredientController extends Controller
         return response([
             'message' => 'A Ingredient Retrieved',
             'data' => $ingredient
+        ], 200);
+    }
+
+    public function getIngredient($id)
+    {
+        $ingredient = Ingredients::find($id);
+        if (is_null($ingredient)) {
+            return response([
+                'message' => "Ingredient found"
+            ], 404);
+        }
+
+        return response([
+            'message' => 'Retrieve Ingredient Successfully',
+            'data' => [
+                'ingredient' => $ingredient,
+            ]
         ], 200);
     }
 
@@ -102,5 +119,21 @@ class IngredientController extends Controller
             'message' => 'Delete Ingredient Failed',
             'data' => null,
         ], 400);
+    }
+
+    public function disableIngredient($id)
+    {
+        $ingredient = Ingredients::find($id);
+        if (is_null($ingredient)) {
+            return response([
+                "message" => "Ingredient not found",
+            ], 404);
+        }
+        $ingredient['active'] = 0;
+        $ingredient->save();
+        return response([
+            "message" => "Ingredient disabled successfully",
+            "data" => $ingredient
+        ], 200);
     }
 }

@@ -13,6 +13,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable, HasApiTokens;
     protected $table = 'users';
 
+
     protected $primaryKey = 'id';
     protected $fillable = [
         'role_id',
@@ -25,6 +26,7 @@ class User extends Authenticatable
         'verify_key',
         'active',
         'email_verified_at',
+        'verification_code'
     ];
 
 
@@ -35,7 +37,6 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'remember_token',
     ];
 
     /**
@@ -47,7 +48,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    protected function Roles()
+    public function Roles()
     {
         return $this->belongsTo(Roles::class, 'role_id');
     }

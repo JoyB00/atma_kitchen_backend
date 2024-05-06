@@ -11,14 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('other_procurements', function (Blueprint $table) {
+        Schema::create('absences', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->references('id')->on('employees')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('item_name');
-            $table->float('price');
-            $table->integer('quantity');
-            $table->date('procurement_date');
-            $table->float('total_price');
+            $table->date('attendance_date');
             $table->timestamps();
         });
     }
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('other_procurements');
+        Schema::dropIfExists('absences');
     }
 };

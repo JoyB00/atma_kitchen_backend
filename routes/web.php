@@ -6,4 +6,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/register/verify/{verify_key}', [App\Http\Controllers\Api\AuthController::class, 'verify']);
+Route::get('/register/verify/{verify_key}', [App\Http\Controllers\api\AuthController::class, 'verify']);

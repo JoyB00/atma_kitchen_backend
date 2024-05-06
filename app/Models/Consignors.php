@@ -12,7 +12,8 @@ class Consignors extends Model
 
     protected $primaryKey = 'id';
     protected $fillable = [
-        'consignor_name', 
+        'consignor_name',
         'phone_number',
+        'active',
     ];
 }

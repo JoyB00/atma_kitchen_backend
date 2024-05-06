@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employees;
 use App\Models\Salaries;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -18,21 +19,46 @@ class SalariesController extends Controller
         ], 200);
     }
 
+    public function getSalary($id)
+    {
+        $salary = Salaries::find($id);
+        if (is_null($salary)) {
+            return response(['messege' => "Employee Not Found"], 404);
+        }
+        return response([
+            'messege' => 'Salary Retrieved',
+            'data' => $salary
+        ], 200);
+    }
+
+    public function getDetailSalary($id)
+    {
+        $employee = Employees::with('Users', 'Users', 'Users.Roles', 'Absence')->find($id);
+        $salary =  Salaries::where("employee_id", $id)->get();
+        return response([
+            'message' => 'All Detail Salaries Retrivied',
+            'data' => [
+                'employee' => $employee,
+                'salary' => $salary
+            ]
+        ], 200);
+    }
+
     public function store(Request $request)
     {
         $data = $request->all();
         $validate = Validator::make($data, [
             'pay_date' => 'required|date',
-            'daily_salary' => 'required|numeric',
-            'bonus' => 'required|numeric',
-            'total_salaries' => 'required|numeric',
+            'daily_salary' => 'numeric|min:0',
+            'bonus' => 'numeric|min:0',
+            'total_salary' => 'required|numeric',
         ]);
         if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()->first()
             ], 400);
         }
-
+        $data["employee_id"] = $request->employee_id;
         $salary = Salaries::create($data);
         return response([
             'message' => 'Salary Created Successfully!',
@@ -53,9 +79,9 @@ class SalariesController extends Controller
         $data = $request->all();
         $validate = Validator::make($data, [
             'pay_date' => 'required|date',
-            'daily_salary' => 'required|numeric',
-            'bonus' => 'required|numeric',
-            'total_salaries' => 'required|numeric',
+            'daily_salary' => 'numeric|min:0',
+            'bonus' => 'numeric|min:0',
+            'total_salary' => 'required|numeric',
         ]);
         if ($validate->fails()) {
             return response([
@@ -90,6 +116,4 @@ class SalariesController extends Controller
             'data' => null,
         ], 400);
     }
-
-
 }

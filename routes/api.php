@@ -1,35 +1,104 @@
 <?php
 
+namespace App\Http\Controllers\api;
+
+use App\Http\Middleware\UserRoleCheck;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/register', [App\Http\Controllers\Api\AuthController::class, 'register']);
-Route::post('/employee', [App\Http\Controllers\Api\AuthController::class, 'employeeRegister']);
-Route::post('/login', [App\Http\Controllers\Api\AuthController::class, 'login']);
-Route::middleware('auth:api')->group(function () {
-    Route::post('/logout',   [App\Http\Controllers\Api\AuthController::class, 'logout']);
 
-    Route::post('/ingredientProcurement', [App\Http\Controllers\Api\IngredientProcurementController::class, 'store']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/employee', [AuthController::class, 'employeeRegister']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/verifyEmail', [AuthController::class, 'verifyEmail']);
+Route::post('/verifyCode', [AuthController::class, 'verifyCode']);
+Route::middleware('auth:api')->group(function () {
+    Route::post('/changePassword', [AuthController::class, 'changePassword']);
+    Route::post('/logout',   [AuthController::class, 'logout']);
+    Route::post('/ingredientProcurement', [IngredientProcurementController::class, 'store']);
+    Route::post('/otherProcurement', [OtherProcurementsController::class, 'store']);
+});
+
+Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () {
+    Route::get('/hampers', [HampersController::class, 'index']);
 });
 
 
-// Route::get('/register/verify/{verify_key}', [App\Http\Controllers\Api\AuthController::class, 'verify']);
+// Customer
+Route::get('/customer', [CustomerController::class, 'index']);
 
-Route::get('/product', [App\Http\Controllers\Api\ProductController::class, 'index']);
-Route::post('/product', [App\Http\Controllers\Api\ProductController::class, 'store']);
-Route::post('/product/{id}', [App\Http\Controllers\Api\ProductController::class, 'update']);
-Route::delete('/product/{id}', [App\Http\Controllers\Api\ProductController::class, 'destroy']);
-Route::get('/product/{id}', [App\Http\Controllers\Api\ProductController::class, 'getProduct']);
-Route::get('/category', [App\Http\Controllers\Api\CategoryController::class, 'index']);
-Route::delete('/category/{id}', [App\Http\Controllers\Api\CategoryController::class, 'destroy']);
-Route::get('/ingredient', [App\Http\Controllers\Api\IngredientController::class, 'index']);
-Route::get('/hampers', [App\Http\Controllers\Api\HampersController::class, 'index']);
-Route::post('/hampers', [App\Http\Controllers\Api\HampersController::class, 'store']);
-Route::delete('/hampers/{id}', [App\Http\Controllers\Api\HampersController::class, 'destroy']);
-Route::get('/hampers/{id}', [App\Http\Controllers\Api\HampersController::class, 'getHampers']);
-Route::post('/hampers/{id}', [App\Http\Controllers\Api\HampersController::class, 'update']);
-Route::get('/consignor', [App\Http\Controllers\Api\ConsignorController::class, 'index']);
-Route::get('/ingredientProcurement', [App\Http\Controllers\Api\IngredientProcurementController::class, 'index']);
-Route::get('/ingredientProcurement/{id}', [App\Http\Controllers\Api\IngredientProcurementController::class, 'getIngredientProcurement']);
-Route::put('/ingredientProcurement/{id}', [App\Http\Controllers\Api\IngredientProcurementController::class, 'update']);
-Route::delete('/ingredientProcurement/{id}', [App\Http\Controllers\Api\IngredientProcurementController::class, 'destroy']);
+// Transaksi
+Route::get('/orderHistory/{id}', [TransactionController::class, 'getOrderHistory']);
+Route::get('/detailOrder/{id}', [TransactionController::class, 'getDetailOrder']);
+
+Route::get('/product', [ProductController::class, 'index']);
+Route::post('/product', [ProductController::class, 'store']);
+Route::post('/product/{id}', [ProductController::class, 'update']);
+Route::delete('/product/{id}', [ProductController::class, 'destroy']);
+Route::put('/product/{id}', [ProductController::class, 'disableProduct']);
+Route::get('/product/{id}', [ProductController::class, 'getProduct']);
+Route::post('/limitProduct/{id}', [ProductLimitController::class, 'getLimitByDate']);
+
+Route::get('/category', [CategoryController::class, 'index']);
+Route::delete('/category/{id}', [CategoryController::class, 'destroy']);
+
+Route::get('/ingredient', [IngredientController::class, 'index']);
+Route::post('/ingredient', [IngredientController::class, 'store']);
+Route::post('/ingredient/{id}', [IngredientController::class, 'update']);
+Route::delete('/ingredient/{id}', [IngredientController::class, 'disableIngredient']);
+Route::delete('/ingredient/{id}', [IngredientController::class, 'destroy']);
+Route::get('/ingredient/{id}', [IngredientController::class, 'getIngredient']);
+
+// Route::get('/hampers', [HampersController::class, 'index']);
+Route::post('/hampers', [HampersController::class, 'store']);
+Route::delete('/hampers/{id}', [HampersController::class, 'destroy']);
+Route::put('/hampers/{id}', [HampersController::class, 'disableHampers']);
+Route::get('/hampers/{id}', [HampersController::class, 'getHampers']);
+Route::post('/hampers/{id}', [HampersController::class, 'update']);
+
+Route::get('/consignor', [ConsignorController::class, 'index']);
+Route::get('/consignor/{id}', [ConsignorController::class, 'getConsignor']);
+Route::post('/consignor', [ConsignorController::class, 'store']);
+Route::put('/consignor/{id}', [ConsignorController::class, 'update']);
+Route::delete('/consignor/{id}', [ConsignorController::class, 'disableConsignor']);
+
+Route::get('/ingredientProcurement', [IngredientProcurementController::class, 'index']);
+Route::get('/ingredientProcurement/{id}', [IngredientProcurementController::class, 'getIngredientProcurement']);
+Route::put('/ingredientProcurement/{id}', [IngredientProcurementController::class, 'update']);
+Route::delete('/ingredientProcurement/{id}', [IngredientProcurementController::class, 'destroy']);
+
+// Other Procurement
+Route::get('/otherProcurement', [OtherProcurementsController::class, 'index']);
+Route::get('/otherProcurement/{id}', [OtherProcurementsController::class, 'getProcurement']);
+Route::put('/otherProcurement/{id}', [OtherProcurementsController::class, 'update']);
+Route::delete('/otherProcurement/{id}', [OtherProcurementsController::class, 'destroy']);
+
+// Employee
+Route::get('/employee', [EmployeeController::class, 'index']);
+Route::get('/employeeForSalary', [EmployeeController::class, 'showEmployee']);
+Route::get('/employee/{id}', [EmployeeController::class, 'show']);
+Route::put('/employee/{id}', [EmployeeController::class, 'update']);
+Route::delete('employee/{id}', [EmployeeController::class, 'deactivate']);
+Route::delete('employee/reactivate/{id}', [EmployeeController::class, 'reactivate']);
+
+// Salary
+Route::get('/employeeSalary', [SalariesController::class, 'index']);
+Route::get('/salary/{id}', [SalariesController::class, 'getSalary']);
+Route::get('/employeeSalary/{id}', [SalariesController::class, 'getDetailSalary']);
+Route::post('/employeeSalary', [SalariesController::class, 'store']);
+Route::put('/employeeSalary/{id}', [SalariesController::class, 'update']);
+Route::delete('/employeeSalary/{id}', [SalariesController::class, 'destroy']);
+
+// Role
+Route::get('/role', [RoleController::class, 'index']);
+Route::post('/role', [RoleController::class, 'store']);
+Route::put('/role/{id}', [RoleController::class, 'update']);
+Route::delete('/role/{id}', [RoleController::class, 'destroy']);
+Route::get('/role/{id}', [RoleController::class, 'show']);
+
+// Absence
+Route::get('/absence', [AbsenceController::class, 'index']);
+Route::get('/absence/{id}', [AbsenceController::class, 'show']);
+Route::post('/absence', [AbsenceController::class, 'store']);
+Route::put('/absence/{id}', [AbsenceController::class, 'update']);
+Route::delete('/absence/{id}', [AbsenceController::class, 'destroy']);

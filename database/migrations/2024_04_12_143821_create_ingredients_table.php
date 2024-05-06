@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('ingredient_name');
             $table->integer('quantity');
             $table->enum('unit', ['gr', 'pcs', 'kg', 'ml', 'buah', 'butir']);
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

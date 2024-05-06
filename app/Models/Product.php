@@ -16,17 +16,14 @@ class Product extends Model
         'consignor_id',
         'category_id',
         'product_name',
-        'quantity',
+        'ready_stock',
+        'daily_stock',
         'product_status',
         'product_price',
         'product_picture',
+        'active',
         'description'
     ];
-
-    // public function scopeFilter($query)
-    // {
-    //     
-    // }
 
     public function Categories()
     {

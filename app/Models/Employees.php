@@ -20,4 +20,9 @@ class Employees extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function Absence()
+    {
+        return $this->hasMany(Absence::class);
+    }
 }

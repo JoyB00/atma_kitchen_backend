@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class MailSend extends Mailable
+class ForgotPasswordMail extends Mailable
 {
     use Queueable, SerializesModels;
     public $details;
@@ -27,7 +27,7 @@ class MailSend extends Mailable
     // public function envelope(): Envelope
     // {
     //     return new Envelope(
-    //         subject: 'Mail Send',
+    //         subject: 'Forgot Password Mail',
     //     );
     // }
 
@@ -37,7 +37,7 @@ class MailSend extends Mailable
     // public function content(): Content
     // {
     //     return new Content(
-    //         view: 'mailTemplate',
+    //         view: 'view.name',
     //     );
     // }
 
@@ -51,8 +51,8 @@ class MailSend extends Mailable
         return [];
     }
 
-    public function  build()
+    public function build()
     {
-        return $this->subject('Atma Kitchen Account Verification')->view('mailTemplate');
+        return $this->subject('Change Password Atma Kitchen Account')->view('changePasswordVerification');
     }
 }

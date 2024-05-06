@@ -6,16 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('consignors', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('consignor_name');
+            $table->foreignId('id_role')->references('id')->on('roles')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('name');
+            $table->string('email');
+            $table->string('password');
             $table->string('phone_number');
-            $table->boolean('active')->default(true);
+            $table->string('gender');
+            $table->date('birth_date');
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('consignors');
+        Schema::dropIfExists('users');
     }
 };
