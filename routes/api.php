@@ -25,8 +25,6 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':2,3'])->group(function (
 
 
 // Customer
-use App\Http\Controllers\Api\CustomerController;
-
 Route::get('/customer', [CustomerController::class, 'index']);
 Route::post('/customer', [CustomerController::class, 'store']); // tambahkan rute POST untuk membuat customer
 Route::get('/customer/{id}', [CustomerController::class, 'show']);
