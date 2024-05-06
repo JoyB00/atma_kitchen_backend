@@ -8,14 +8,20 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserRoleCheck
 {
+    protected $allowedRoles;
+
+    public function __construct(...$allowedRoles)
+    {
+        $this->allowedRoles = $allowedRoles;
+    }
     /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, ...$roles)
+    public function handle(Request $request, Closure $next)
     {
-        if (in_array(auth()->user()->role_id, $roles)) {
+        if (in_array(auth()->user()->role_id,  $this->allowedRoles)) {
             return $next($request);
         }
         return response([
