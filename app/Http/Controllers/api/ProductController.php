@@ -69,13 +69,13 @@ class ProductController extends Controller
         ]);
         $productionDate = Carbon::parse($storeData['production_date']);
         $oneDayBeforeNow = Carbon::now()->subDay();
-        if ($validate->fails()) {
-            return response([
-                'message' => $validate->errors()->first()
-            ], 400);
-        } else if ($storeData['product_status'] == 'Pre-Order' && $storeData['category_id'] == 4) {
+        if ($storeData['product_status'] == 'Pre-Order' && $storeData['category_id'] == 4) {
             return response([
                 'message' => 'Product Status must be Ready',
+            ], 400);
+        } else if ($validate->fails()) {
+            return response([
+                'message' => $validate->errors()->first()
             ], 400);
         } else if ($storeData['product_status'] == 'Pre-Order' && !isset($storeData['production_date'])) {
             return response([
