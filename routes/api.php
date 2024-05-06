@@ -92,9 +92,10 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () 
 
     // Hampers
     Route::post('/hampers', [HampersController::class, 'store']);
-    Route::delete('/hampers/{id}', [HampersController::class, 'destroy']);
     Route::put('/hampers/{id}', [HampersController::class, 'disableHampers']);
     Route::post('/hampers/{id}', [HampersController::class, 'update']);
+    Route::delete('/hampers/{id}', [HampersController::class, 'disableHampers']);
+    Route::delete('/hampers/{id}', [HampersController::class, 'destroy']);
 
     // Product
     Route::post('/product', [ProductController::class, 'store']);
