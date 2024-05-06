@@ -77,6 +77,24 @@ class EmployeeController extends Controller
         ], 200);
     }
 
+    public function changePasswordEmployee($oldPassword, $newPassword)
+    {
+        $user = User::find(auth()->user()->id);
+        if (!password_verify($oldPassword, $user->password)) {
+            return response([
+                'message' => 'Old Password is incorrect'
+            ], 400);
+        }
+
+        $user->update([
+            'password' => bcrypt($newPassword)
+        ]);
+
+        return response([
+            'message' => 'Password Changed'
+        ], 200);
+    }
+
     public function deactivate($id)
     {
         $employee = Employees::with('Users')->find($id);

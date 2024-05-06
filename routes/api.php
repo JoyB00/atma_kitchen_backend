@@ -55,6 +55,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/employee', [EmployeeController::class, 'index']);
     Route::get('/employeeForSalary', [EmployeeController::class, 'showEmployee']);
     Route::get('/employee/{id}', [EmployeeController::class, 'show']);
+    Route::post('/changePasswordEmployee', [EmployeeController::class, 'changePasswordEmployee']);
 
     // Salary
     Route::get('/employeeSalary', [SalariesController::class, 'index']);
