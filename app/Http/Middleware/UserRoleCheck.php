@@ -27,7 +27,7 @@ class UserRoleCheck
             return $next($request);
         }
         return response([
-            'message' => 'Not Accessable' . auth()->user()->role_id . 'and' . $this->allowedRoles
+            'message' => 'Not Accessable' . auth()->user()->role_id 
         ], 400);
     }
 }
