@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customers;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,44 +11,70 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $customers = Customers::with('Users')->get();
+        $customer = Customers::with('Users')->get();
+
         return response([
-            'message' => 'All Customer Retrivied',
-            'data' => $customers
-        ], 200);
-    }
-
-    // STORE SUDAH ADA DI AUTHCONTROLLER (REGISTER)
-
-    public function update(Request $request, $id)
-    {
-        $customer = Customers::find($id);
-        // $user = User::find($customer->user_id);
-        if (is_null($customer)) {
-            return response([
-                'message' => 'Customer Not Found'
-            ], 404);
-        }
-
-        //TODO need testing
-        $customer->update($request->all());
-        return response([
-            'message' => 'Customer Updated',
-            'data' => $customer
+            'message' => 'Retrieve All Customers Successfully',
+            'data' => $customer,
         ], 200);
     }
 
     public function show($id)
     {
-        $customer = Customers::find($id);
+        $customer = Customers::with('Users')->find($id);
         if (is_null($customer)) {
             return response([
                 'message' => 'Customer Not Found'
             ], 404);
         }
         return response([
-            'message' => 'Customer with ID ' . $id . ' Retrieved',
+            'message' => 'Customer Retrieved Successfully',
             'data' => $customer
+        ], 200);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $customer = Customers::find($id);
+        if (is_null($customer)) {
+            return response([
+                'message' => 'Customer Not Found'
+            ], 404);
+        }
+        
+        $validate = Validator::make($customer, [
+            'role_id' => 'required',
+            'fullName' => 'required',
+            'email' => 'required|email:rfc,dns|unique:users',
+            'password' => 'required|min:8',
+            'phoneNumber' => 'required|max:13|min:10',             
+        ]);
+        if ($validate->fails()) {
+            return response([
+                'message' => $validate->errors()->first()
+            ], 400);
+        }
+
+        $customer->users->update($request->all());
+        return response([
+            'message' => 'Customer Updated Successfully',
+            'data' => $customer
+        ], 200);
+    }
+
+    public function destroy($id)
+    {
+        $customer = Customers::find($id);
+        if (is_null($customer)) {
+            return response([
+                'message' => 'Customer Not Found'
+            ], 404);
+        }
+
+        $customer->delete();
+
+        return response([
+            'message' => 'Customer Deleted Successfully'
         ], 200);
     }
 }
