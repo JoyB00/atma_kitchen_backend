@@ -21,11 +21,13 @@ Route::get('/product/{id}', [ProductController::class, 'getProduct']);
 Route::get('/hampers', [HampersController::class, 'index']);
 Route::get('/hampers/{id}', [HampersController::class, 'getHampers']);
 
+// Category
+Route::get('/category', [CategoryController::class, 'index']);
+
 Route::middleware('auth:api')->group(function () {
     Route::post('/changePassword', [AuthController::class, 'changePassword']);
     Route::post('/logout',   [AuthController::class, 'logout']);
 
-    Route::get('/category', [CategoryController::class, 'index']);
     // Customer
     Route::get('/customer', [CustomerController::class, 'index']);
 
@@ -33,7 +35,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/orderHistory/{id}', [TransactionController::class, 'getOrderHistory']);
     Route::get('/detailOrder/{id}', [TransactionController::class, 'getDetailOrder']);
 
-    // Category
 
     // Ingredient
     Route::get('/ingredient', [IngredientController::class, 'index']);
@@ -99,8 +100,8 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () 
     // Product
     Route::post('/product', [ProductController::class, 'store']);
     Route::post('/product/{id}', [ProductController::class, 'update']);
-    Route::delete('/product/{id}', [ProductController::class, 'destroy']);
     Route::put('/product/{id}', [ProductController::class, 'disableProduct']);
+    Route::delete('/product/{id}', [ProductController::class, 'destroy']);
     Route::post('/limitProduct/{id}', [ProductLimitController::class, 'getLimitByDate']);
 
     // Category
