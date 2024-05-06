@@ -34,14 +34,15 @@ class CustomerController extends Controller
 
     public function update(Request $request, $id)
     {
-        $customer = Customers::with('Users')->find($id);
+        $customer = Customers::find($id);
+        // $user = User::find($customer->user_id);
         if (is_null($customer)) {
             return response([
                 'message' => 'Customer Not Found'
             ], 404);
         }
-        
-        $validate = Validator::make($request->all(), [
+
+        $validate = Validator::make($customer, [
             'role_id' => 'required',
             'fullName' => 'required',
             'email' => 'required|email:rfc,dns|unique:users',
@@ -53,14 +54,27 @@ class CustomerController extends Controller
                 'message' => $validate->errors()->first()
             ], 400);
         }
-        $request['password'] = bcrypt($request->password);
 
         $customer->users->update($request->all());
         return response([
-            'message' => 'Customer Updated Successfully',
+            'message' => 'Customer Updated',
             'data' => $customer
         ], 200);
     }
-    
 
+    public function destroy($id)
+    {
+        $customer = Customers::find($id);
+        if (is_null($customer)) {
+            return response([
+                'message' => 'Customer Not Found'
+            ], 404);
+        }
+
+        $customer->delete();
+
+        return response([
+            'message' => 'Customer Deleted Successfully'
+        ], 200);
+    }
 }
