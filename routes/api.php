@@ -20,7 +20,14 @@ Route::middleware('auth:api')->group(function () {
 
 
 // Customer
+use App\Http\Controllers\Api\CustomerController;
+
 Route::get('/customer', [CustomerController::class, 'index']);
+Route::post('/customer', [CustomerController::class, 'store']); // tambahkan rute POST untuk membuat customer
+Route::get('/customer/{id}', [CustomerController::class, 'show']);
+Route::post('/customer/{id}', [CustomerController::class, 'update']);
+Route::delete('/customer/{id}', [CustomerController::class, 'destroy']);
+
 
 // Transaksi
 Route::get('/orderHistory/{id}', [TransactionController::class, 'getOrderHistory']);
