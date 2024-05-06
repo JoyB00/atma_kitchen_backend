@@ -21,4 +21,9 @@ class IngredientProcurements extends Model
     {
         return $this->belongsTo(Employees::class, 'employee_id');
     }
+
+    public function IngredientsProcurementDetails()
+    {
+        return $this->hasMany(IngredientsProcurementDetails::class, 'ingredient_procurement_id', 'id');
+    }
 }
