@@ -12,7 +12,7 @@ class ConsignorController extends Controller
 {
     public function index()
     {
-        $consignor = Consignors::where('active', 1)->get();
+        $consignor = Consignors::where('active', 1)->orderBy('id','desc')->get();
         if (is_null($consignor)) {
             return response([
                 'message' => 'No Data Found',

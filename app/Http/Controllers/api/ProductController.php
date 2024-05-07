@@ -16,7 +16,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $produk = Product::with('Categories')->where('active', 1)->get();
+        $produk = Product::with('Categories')->orderBy('id', 'desc')->where('active', 1)->get();
         if (is_null($produk)) {
             return response([
                 'message' => 'No Data Found',

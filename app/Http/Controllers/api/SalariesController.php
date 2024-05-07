@@ -12,7 +12,7 @@ class SalariesController extends Controller
 {
     public function index()
     {
-        $salaries = Salaries::with('Employees', 'Employees.Users')->get();
+        $salaries = Salaries::with('Employees', 'Employees.Users')->orderBy('id', 'desc')->get();
         return response([
             'message' => 'All Salaries Retrivied',
             'data' => $salaries
