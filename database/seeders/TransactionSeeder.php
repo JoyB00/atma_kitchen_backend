@@ -17,7 +17,7 @@ class TransactionSeeder extends Seeder
     DB::table('transactions')->insert(
       [
         [
-          "employee_id" => 2,
+          "employee_id" => 4,
           "customer_id" => 1,
           "delivery_id" => 1, // deliver
           "order_date" => "2021-08-01",
@@ -32,7 +32,7 @@ class TransactionSeeder extends Seeder
           "tip" => 0
         ],
         [
-          "employee_id" => 2,
+          "employee_id" => 4,
           "customer_id" => 1,
           "delivery_id" => 2, // pickup
           "order_date" => "2021-09-01",
@@ -47,7 +47,7 @@ class TransactionSeeder extends Seeder
           "tip" => 0
         ],
         [
-          "employee_id" => 2,
+          "employee_id" => 5,
           "customer_id" => 2,
           "delivery_id" => 3, // deliver
           "order_date" => "2021-10-01",
@@ -62,7 +62,7 @@ class TransactionSeeder extends Seeder
           "tip" => 0
         ],
         [
-          "employee_id" => 2,
+          "employee_id" => 4,
           "customer_id" => 2,
           "delivery_id" => 2, // pickup
           "order_date" => "2021-12-01",
