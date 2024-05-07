@@ -79,7 +79,7 @@ class EmployeeController extends Controller
         ], 200);
     }
 
-    public function changePasswordEmployee($request)
+    public function changePasswordEmployee(Request $request)
     {
         $user = User::find(auth()->user()->id);
         $oldPassword = $request->oldPassword;
