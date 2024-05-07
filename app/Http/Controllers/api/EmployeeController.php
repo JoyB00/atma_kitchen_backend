@@ -50,12 +50,6 @@ class EmployeeController extends Controller
             'gender' => 'required',
         ]);
 
-        if ($validate->fails()) {
-            return response([
-                'message' => $validate->errors()->first()
-            ], 400);
-        }
-
         $request['password'] = bcrypt($request->password);
 
         $employee->users->update($request->all());
