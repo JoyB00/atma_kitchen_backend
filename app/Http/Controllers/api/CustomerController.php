@@ -12,7 +12,6 @@ class CustomerController extends Controller
     public function index()
     {
         $customer = Customers::with('Users')->get();
-
         return response([
             'message' => 'Retrieve All Customers Successfully',
             'data' => $customer,
@@ -35,25 +34,26 @@ class CustomerController extends Controller
 
     public function update(Request $request, $id)
     {
-        $customer = Customers::find($id);
+        $customer = Customers::with('Users')->find($id);
         if (is_null($customer)) {
             return response([
                 'message' => 'Customer Not Found'
             ], 404);
         }
         
-        $validate = Validator::make($customer, [
+        $validate = Validator::make($request->all(), [
             'role_id' => 'required',
             'fullName' => 'required',
             'email' => 'required|email:rfc,dns|unique:users',
             'password' => 'required|min:8',
-            'phoneNumber' => 'required|max:13|min:10',             
+            'phoneNumber' => 'required|max:13|min:10',
         ]);
         if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()->first()
             ], 400);
         }
+        $request['password'] = bcrypt($request->password);
 
         $customer->users->update($request->all());
         return response([
@@ -61,20 +61,6 @@ class CustomerController extends Controller
             'data' => $customer
         ], 200);
     }
+    
 
-    public function destroy($id)
-    {
-        $customer = Customers::find($id);
-        if (is_null($customer)) {
-            return response([
-                'message' => 'Customer Not Found'
-            ], 404);
-        }
-
-        $customer->delete();
-
-        return response([
-            'message' => 'Customer Deleted Successfully'
-        ], 200);
-    }
 }
