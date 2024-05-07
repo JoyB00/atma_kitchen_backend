@@ -124,7 +124,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
     // Consignor
     Route::post('/consignor', [ConsignorController::class, 'store']);
     Route::put('/consignor/{id}', [ConsignorController::class, 'update']);
-    Route::delete('/consignor/{id}', [ConsignorController::class, 'disableConsignor']);
+    Route::put('/disableConsignor/{id}', [ConsignorController::class, 'disableConsignor']);
 
     // Ingredient Procurement
     Route::post('/ingredientProcurement', [IngredientProcurementController::class, 'store']);
