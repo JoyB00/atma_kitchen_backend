@@ -30,11 +30,7 @@ Route::middleware('auth:api')->group(function () {
 
     // Customer
     Route::get('/customer', [CustomerController::class, 'index']);
-    Route::post('/customer', [CustomerController::class, 'store']); // tambahkan rute POST untuk membuat customer
     Route::get('/customer/{id}', [CustomerController::class, 'show']);
-    Route::post('/customer/{id}', [CustomerController::class, 'update']);
-    Route::delete('/customer/{id}', [CustomerController::class, 'destroy']);
-
 
     // Order
     Route::get('/orderHistory/{id}', [TransactionController::class, 'getOrderHistory']);
@@ -75,10 +71,6 @@ Route::middleware('auth:api')->group(function () {
     // Absence
     Route::get('/absence', [AbsenceController::class, 'index']);
     Route::get('/absence/{id}', [AbsenceController::class, 'show']);
-
-    // Customer
-    Route::get('/customer', [CustomerController::class, 'index']);
-    Route::get('/customer/{id}', [CustomerController::class, 'show']);
 });
 
 
@@ -88,7 +80,6 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () 
     Route::put('/employeeSalary/{id}', [SalariesController::class, 'update']);
     Route::delete('/employeeSalary/{id}', [SalariesController::class, 'destroy']);
 });
-
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () {
     // Ingredient
@@ -147,9 +138,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
     Route::delete('/role/{id}', [RoleController::class, 'destroy']);
 });
 
-
 Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () {
-    Route::post('/customer', [CustomerController::class, 'store']); // tambahkan rute POST untuk membuat customer
-    Route::post('/customer/{id}', [CustomerController::class, 'update']);
+    Route::put('/customer/{id}', [CustomerController::class, 'update']);
     Route::delete('/customer/{id}', [CustomerController::class, 'destroy']);
 });
