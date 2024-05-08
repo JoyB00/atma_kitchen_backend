@@ -55,7 +55,10 @@ class CustomerController extends Controller
             ], 404);
         }
         $validate = Validator::make($request->all(), [
-            'phoneNumber' => 'max:13|min:10',
+            'fullName' => 'required',
+            'gender' => 'required',
+            'phoneNumber' => 'required|max:13|min:10',
+            'dateOfBirth' => 'required',
         ]);
         if ($validate->fails()) {
             return response([
