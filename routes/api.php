@@ -31,6 +31,7 @@ Route::middleware('auth:api')->group(function () {
     // Customer
     Route::get('/customer', [CustomerController::class, 'index']);
     Route::get('/customer/{id}', [CustomerController::class, 'show']);
+    Route::get('/customer/loggedIn', [CustomerController::class, 'showLoggedIn']);
 
     // Order
     Route::get('/orderHistory/{id}', [TransactionController::class, 'getOrderHistory']);

@@ -32,6 +32,20 @@ class CustomerController extends Controller
         ], 200);
     }
 
+    public function showLoggedIn()
+    {
+        $customer = Customers::with('Users')->find(auth()->user()->id);
+        if (is_null($customer)) {
+            return response([
+                'message' => 'Customer Not Found'
+            ], 404);
+        }
+        return response([
+            'message' => 'Customer Retrieved Successfully',
+            'data' => $customer
+        ], 200);
+    }
+
     public function update(Request $request, $id)
     {
         $customer = Customers::with('Users')->find($id);
