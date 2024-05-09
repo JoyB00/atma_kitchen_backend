@@ -34,7 +34,7 @@ class TransactionController extends Controller
     }
     public function searchProductNameInTransactions($term)
     {
-        $transaction = Transactions::where('customer_id', Customers::where('user_id', auth()->user()->id));
+        $transaction = Transactions::where('customer_id', Customers::where('user_id', auth()->user()->id))->get();
         $transactionItemSize = count($transaction);
         $filteredList = [];
         for ($i = 0; $i < $transactionItemSize; $i++) {
