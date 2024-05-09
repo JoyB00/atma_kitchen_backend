@@ -36,20 +36,13 @@ class TransactionController extends Controller
     {
         $customerId = Customers::where('user_id', auth()->user()->id)->first();
         $transaction = Transactions::where('customer_id', $customerId)->get();
-        $transactionItemSize = count($transaction);
-        $filteredList = [];
-        for ($i = 0; $i < $transactionItemSize; $i++) {
-            $filtered = Carts::with('Product', 'Hampers')->where('transaction_id', $transaction[$i]->id)->whereHas('Product', function ($query) use ($term) {
-                $query->where('product_name', 'like', '%' . $term . '%');
-            })->get();
-            if (count($filtered) > 0) {
-                array_push($filteredList, $filtered);
-            }
-        }
+        $filtered = Carts::with('Product', 'Hampers')->where('transaction_id', $transaction->id)->whereHas('Product', function ($query) use ($term) {
+            $query->where('product_name', 'like', '%' . $term . '%');
+        })->get();
 
         return response([
             'message' => 'All data Retrievied',
-            'data' => $filteredList,
+            'data' => $filtered,
         ], 200);
     }
 }
