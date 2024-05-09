@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Carts;
 use App\Models\Transactions;
+use App\Models\Customers;
 
 class TransactionController extends Controller
 {
@@ -33,7 +34,7 @@ class TransactionController extends Controller
     }
     public function searchProductNameInTransactions($term)
     {
-        $transaction = Transactions::where('customer_id', auth()->user()->id);
+        $transaction = Transactions::where('customer_id', Customers::where('user_id', auth()->user()->id));
         $transactionItemSize = count($transaction);
         $filteredList = [];
         for ($i = 0; $i < $transactionItemSize; $i++) {
