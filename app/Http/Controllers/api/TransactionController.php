@@ -33,15 +33,15 @@ class TransactionController extends Controller
     }
     public function searchProductNameInTransactions($term)
     {
-        $transactions = Transactions::whereHas('carts', function ($query) use ($term) {
-            $query->whereHas('product', function ($query) use ($term) {
-                $query->where('product_name', 'like', '%' . $term . '%');
-            });
+        $filteredDetailOrders = Carts::with('Product', 'Hampers')->whereHas('Product', function ($query) use ($term) {
+            $query->where('name', 'like', '%' . $term . '%');
+        })->orWhereHas('Hampers', function ($query) use ($term) {
+            $query->where('name', 'like', '%' . $term . '%');
         })->get();
 
         return response([
             'message' => 'All data Retrievied',
-            'data' => $transactions,
+            'data' => $filteredDetailOrders,
         ], 200);
     }
 }
