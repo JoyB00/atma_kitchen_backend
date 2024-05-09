@@ -36,6 +36,7 @@ Route::middleware('auth:api')->group(function () {
     // Order
     Route::get('/orderHistory/{id}', [TransactionController::class, 'getOrderHistory']);
     Route::get('/detailOrder/{id}', [TransactionController::class, 'getDetailOrder']);
+    Route::get('/searchProductNameInTransactions/{term}', [TransactionController::class, 'searchProductNameInTransactions']);
 
     // Ingredient
     Route::get('/ingredient', [IngredientController::class, 'index']);
