@@ -34,13 +34,20 @@ class TransactionController extends Controller
     public function searchProductNameInTransactions($term)
     {
         $transaction = Transactions::find(auth()->user()->id);
-        $filtered = Carts::with('Product', 'Hampers')->where('transaction_id', $transaction->id)->whereHas('Product', function ($query) use ($term) {
-            $query->where('name', 'like', '%' . $term . '%');
-        })->get();
+        $transactionItemSize = count($transaction);
+        $filteredList = [];
+        for ($i = 0; $i < $transactionItemSize; $i++) {
+            $filtered = Carts::with('Product', 'Hampers')->where('transaction_id', $transaction[$i]->id)->whereHas('Product', function ($query) use ($term) {
+                $query->where('product_name', 'like', '%' . $term . '%');
+            })->get();
+            if (count($filtered) > 0) {
+                array_push($filteredList, $filtered);
+            }
+        }
 
         return response([
             'message' => 'All data Retrievied',
-            'data' => $filtered
+            'data' => $filteredList,
         ], 200);
     }
 }
