@@ -33,19 +33,14 @@ class TransactionController extends Controller
     }
     public function searchProductNameInTransactions($term)
     {
-        $loggedInId = auth()->user()->id;
-        $transactionHistory = Transactions::where('customer_id', $loggedInId)->get();
-        $filteredDetailOrders = Carts::with('Product', 'Hampers')->whereHas('Product', function ($query) use ($term) {
-            $query->where('product_name', 'like', '%' . $term . '%');
-        })->orWhereHas('Hampers', function ($query) use ($term) {
-            $query->where('hampers_name', 'like', '%' . $term . '%');
-        })
-            ->whereIn('transaction_id', $transactionHistory->pluck('id'))
-            ->get();
+        $transaction = Transactions::find(auth()->user()->id);
+        $filtered = Carts::with('Product', 'Hampers')->where('transaction_id', $transaction->id)->whereHas('Product', function ($query) use ($term) {
+            $query->where('name', 'like', '%' . $term . '%');
+        })->get();
 
         return response([
             'message' => 'All data Retrievied',
-            'data' => $filteredDetailOrders,
+            'data' => $filtered
         ], 200);
     }
 }
