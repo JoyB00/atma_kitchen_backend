@@ -34,7 +34,7 @@ class CustomerController extends Controller
 
     public function showLoggedIn()
     {
-        $customer = Customers::with('Users')->where('user_id', auth()->user()->id);
+        $customer = Customers::with('Users')->where('user_id', auth()->user()->id)->first();
         if (is_null($customer)) {
             return response([
                 'message' => 'Customer Not Found'
