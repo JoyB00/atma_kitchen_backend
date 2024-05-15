@@ -164,8 +164,6 @@ class ProductController extends Controller
             'description' => 'required',
             'limit_amount' => 'numeric|min:0'
         ]);
-        $productionDate = Carbon::parse($updateData['production_date']);
-        $oneDayBeforeNow = Carbon::now()->subDay();
         if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()->first()
@@ -177,10 +175,6 @@ class ProductController extends Controller
         } else if ($updateData['product_status'] == 'Pre-Order' && !isset($updateData['production_date'])) {
             return response([
                 'message' => 'The production date field is required.',
-            ], 400);
-        } else if ($productionDate < $oneDayBeforeNow) {
-            return response([
-                'message' => 'Production date cannot be before today',
             ], 400);
         } else if ($updateData['product_status'] == 'Pre-Order' && !isset($updateData['limit_amount'])) {
             return response([
