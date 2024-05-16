@@ -19,4 +19,9 @@ class Hampers extends Model
                 'hampers_picture',
                 'active',
         ];
+
+        public function HampersDetail()
+        {
+                return $this->hasMany(HampersDetails::class, 'hampers_id', 'id');
+        }
 }
