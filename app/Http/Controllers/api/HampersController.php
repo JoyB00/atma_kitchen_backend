@@ -13,7 +13,7 @@ class HampersController extends Controller
 {
     public function index()
     {
-        $hampers = Hampers::with('HampersDetail')->where('active', 1)->orderBy('hampers_name', 'asc')->orderBy('id', 'desc')->get();
+        $hampers = Hampers::with('HampersDetail', 'HampersDetail.Product')->where('active', 1)->orderBy('hampers_name', 'asc')->orderBy('id', 'desc')->get();
         $hampers_detail = HampersDetails::with('Hampers', 'Product', 'Ingredients')->get();
         return response([
             'message' => 'All Hampers Retrivied',
