@@ -29,7 +29,7 @@ class CartsController extends Controller
             ->get();
 
         $groupedCarts = $carts->groupBy(function ($cart) {
-            return $cart->order_date->format('Y-m-d');
+            return $cart->order_date;
         });
 
         $formattedData = $groupedCarts->map(function ($items, $date) {
