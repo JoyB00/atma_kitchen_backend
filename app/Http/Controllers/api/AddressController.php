@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Addresses;
+use App\Models\Customers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,7 +13,8 @@ class AddressController extends Controller
   public function index()
   {
     // retrieve all address from currently logged in user
-    $address = Addresses::where('customer_id', auth()->user()->customer->id)->get();
+    $customer_id = Customers::where('user_id', auth()->user()->id)->first()->id;
+    $address = Addresses::where('customer_id', $customer_id)->get();
     return response([
       'message' => 'All Address Retrieved',
       'data' => $address,
