@@ -11,6 +11,7 @@ class AddressController extends Controller
 {
   public function index()
   {
+    // retrieve all address from currently logged in user
     $address = Addresses::where('id_customer', auth()->user()->customer->id)->get();
     return response([
       'message' => 'All Address Retrieved',
@@ -18,15 +19,31 @@ class AddressController extends Controller
     ], 200);
   }
 
+  public function show($id)
+  {
+    $address = Addresses::find($id);
+    if (is_null($address)) {
+      return response([
+        'message' => 'Address Not Found',
+        'data' => null
+      ], 404);
+    }
+
+    return response([
+      'message' => 'Address Retrieved',
+      'data' => $address
+    ], 200);
+  }
+
   public function store(Request $request)
   {
     $storeData = $request->all();
     $validate = Validator::make($storeData, [
-      'id_customer' => 'required',
+      'customer_id' => 'required',
       'subdistrict' => 'required',
       'city' => 'required',
       'postal_code' => 'required',
-      'full_address' => 'required'
+      'complete_address' => 'required'
     ]);
 
     if ($validate->fails()) {
@@ -37,28 +54,29 @@ class AddressController extends Controller
 
     $address = Addresses::create($storeData);
     return response([
-      'message' => 'Category Created Successfully',
+      'message' => 'Address Created Successfully',
       'data' => $address,
     ], 200);
   }
 
   public function update(Request $request, $id)
   {
+    // find address with id X
     $address = Addresses::find($id);
     if (is_null($address)) {
       return response([
-        'message' => 'Category Not Found',
+        'message' => 'Address Not Found',
         'data' => null
       ], 404);
     }
 
     $newAddress = $request->all();
     $validate = Validator::make($newAddress, [
-      'id_customer' => 'required',
+      'customer_id' => 'rhequired',
       'subdistrict' => 'required',
       'city' => 'required',
       'postal_code' => 'required',
-      'full_address' => 'required'
+      'complete_address' => 'required'
     ]);
 
     if ($validate->fails()) {
@@ -69,7 +87,7 @@ class AddressController extends Controller
 
     $address->update($newAddress);
     return response([
-      'message' => 'Category Updated Successfully',
+      'message' => 'Address Updated Successfully',
       'data' => $address
     ], 200);
   }
@@ -92,7 +110,7 @@ class AddressController extends Controller
     }
 
     return response([
-      'message' => 'Delete Category Failed',
+      'message' => 'Delete Address Failed',
       'data' => null
     ], 400);
   }
