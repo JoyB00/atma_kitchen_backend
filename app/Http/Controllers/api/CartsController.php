@@ -24,10 +24,17 @@ class CartsController extends Controller
     public function store(Request $request)
     {
         $storeData = $request->all();
-        $validate = Validator::make($storeData, [
-            'quantity' => 'required|numeric|min:1',
-            'order_date' => 'required|date'
-        ]);
+        $validate = Validator::make(
+            $storeData,
+            [
+                'product_id' => 'unique:products',
+                'quantity' => 'required|numeric|min:1',
+                'order_date' => 'required|date'
+            ],
+            [
+                'product_id.unique' => 'The Product is already on your cart'
+            ]
+        );
         if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()->first()
