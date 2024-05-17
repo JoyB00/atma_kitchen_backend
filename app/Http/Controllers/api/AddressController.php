@@ -12,7 +12,7 @@ class AddressController extends Controller
   public function index()
   {
     // retrieve all address from currently logged in user
-    $address = Addresses::where('id_customer', auth()->user()->customer->id)->get();
+    $address = Addresses::where('customer_id', auth()->user()->customer->id)->get();
     return response([
       'message' => 'All Address Retrieved',
       'data' => $address,
