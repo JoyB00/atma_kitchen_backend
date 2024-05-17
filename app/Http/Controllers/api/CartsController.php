@@ -8,6 +8,7 @@ use App\Models\Carts;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class CartsController extends Controller
 {
@@ -27,14 +28,20 @@ class CartsController extends Controller
         $validate = Validator::make(
             $storeData,
             [
-                'product_id' => 'unique:carts',
                 'quantity' => 'required|numeric|min:1',
                 'order_date' => 'required|date'
             ],
-            [
-                'product_id.unique' => 'The Product is already on your cart'
-            ]
         );
+        $validate->after(function ($validator) use ($storeData) {
+            $exists = DB::table('carts')
+                ->where('product_id', $storeData['product_id'])
+                ->where('order_date', $storeData['order_date'])
+                ->exists();
+
+            if ($exists) {
+                $validator->errors()->add('product_id', 'The Product with this order date is already in your cart');
+            }
+        });
         if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()->first()
