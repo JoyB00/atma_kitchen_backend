@@ -148,5 +148,5 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::get('/address', [AddressController::class, 'index']);
     Route::post('/address', [AddressController::class, 'store']);
     Route::put('/address/{id}', [AddressController::class, 'update']);
-    Route::delete('/address', [AddressController::class, 'destroy']);
+    Route::delete('/address/{id}', [AddressController::class, 'destroy']);
 });
