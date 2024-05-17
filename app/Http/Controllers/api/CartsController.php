@@ -21,6 +21,29 @@ class CartsController extends Controller
         ], 200);
     }
 
+    public function showCartPerDate()
+    {
+        $carts = Carts::with('Products', 'Hampers', 'User')
+            ->where('user_id', auth()->user()->id)
+            ->orderBy('order_date', 'desc')
+            ->get();
+
+        $groupedCarts = $carts->groupBy(function ($cart) {
+            return $cart->order_date->format('Y-m-d');
+        });
+
+        $formattedData = $groupedCarts->map(function ($items, $date) {
+            return [
+                'tanggal' => $date,
+                'data' => $items
+            ];
+        })->values();
+
+        return response([
+            'message' => 'All Carts Retrieved',
+            'data' => $formattedData
+        ], 200);
+    }
 
     public function store(Request $request)
     {

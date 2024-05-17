@@ -36,6 +36,7 @@ Route::middleware('auth:api')->group(function () { // all logged in user
 
     // Cart
     Route::get('/cart', [CartsController::class, 'index']);
+    Route::get('/cartPerDate', [CartsController::class, 'showCartPerDate']);
 
     // Order
     Route::get('/orderHistory/{id}', [TransactionController::class, 'getOrderHistory']);
