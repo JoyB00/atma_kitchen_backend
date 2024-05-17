@@ -28,13 +28,15 @@ class CartsController extends Controller
             'quantity' => 'required|numeric|min:1',
             'order_date' => 'required|date'
         ]);
-        $productionDate = Carbon::parse($storeData['order_date']);
-        $oneDayBeforeNow = Carbon::now()->subDay();
         if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()->first()
             ], 400);
-        } else if ($productionDate < $oneDayBeforeNow) {
+        }
+        $productionDate = Carbon::parse($storeData['order_date']);
+        $oneDayBeforeNow = Carbon::now()->subDay();
+
+        if ($productionDate < $oneDayBeforeNow) {
             return response([
                 'message' => 'Order date cannot be before today',
             ], 400);
