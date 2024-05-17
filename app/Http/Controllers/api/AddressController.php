@@ -74,7 +74,7 @@ class AddressController extends Controller
 
     $newAddress = $request->all();
     $validate = Validator::make($newAddress, [
-      'customer_id' => 'rhequired',
+      'customer_id' => 'required',
       'subdistrict' => 'required',
       'city' => 'required',
       'postal_code' => 'required',
