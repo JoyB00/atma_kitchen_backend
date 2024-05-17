@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\Api\AddressController;
 use App\Http\Middleware\UserRoleCheck;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
