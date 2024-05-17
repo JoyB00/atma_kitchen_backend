@@ -17,7 +17,7 @@ class Carts extends Model
         'hampers_id',
         'order_date',
         'quantity',
-        'total'
+        'total_price'
     ];
 
     public function Products()
