@@ -41,12 +41,13 @@ class AddressController extends Controller
   {
     $storeData = $request->all();
     $validate = Validator::make($storeData, [
-      'customer_id' => 'required',
       'subdistrict' => 'required',
       'city' => 'required',
       'postal_code' => 'required',
       'complete_address' => 'required'
     ]);
+    $customer_id = Customers::where('user_id', auth()->user()->id)->first()->id; //add customer id automatically
+    $storeData['customer_id'] = $customer_id;
 
     if ($validate->fails()) {
       return response([
