@@ -24,7 +24,7 @@ Route::get('/hampers/{id}', [HampersController::class, 'getHampers']);
 // Category
 Route::get('/category', [CategoryController::class, 'index']);
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware('auth:api')->group(function () { // all logged in user
     Route::post('/changePassword', [AuthController::class, 'changePassword']);
     Route::post('/logout',   [AuthController::class, 'logout']);
 
@@ -75,17 +75,18 @@ Route::middleware('auth:api')->group(function () {
     // Absence
     Route::get('/absence', [AbsenceController::class, 'index']);
     Route::get('/absence/{id}', [AbsenceController::class, 'show']);
+
+    // Address
+    Route::get('/address/{id}', [AddressController::class, 'show']);
 });
 
-
-
-Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () {
+Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () { // logged in and have Owner role
     Route::post('/employeeSalary', [SalariesController::class, 'store']);
     Route::put('/employeeSalary/{id}', [SalariesController::class, 'update']);
     Route::delete('/employeeSalary/{id}', [SalariesController::class, 'destroy']);
 });
 
-Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () {
+Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () { // logged in and have Admin role
     // Ingredient
     Route::post('/ingredient', [IngredientController::class, 'store']);
     Route::post('/ingredient/{id}', [IngredientController::class, 'update']);
@@ -109,8 +110,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () 
     Route::delete('/category/{id}', [CategoryController::class, 'destroy']);
 });
 
-Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () {
-
+Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () { // logged in and have MO role
     // Employee
     Route::put('/employee/{id}', [EmployeeController::class, 'update']);
     Route::delete('employee/{id}', [EmployeeController::class, 'deactivate']);
@@ -142,7 +142,8 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
     Route::delete('/role/{id}', [RoleController::class, 'destroy']);
 });
 
-Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () {
+Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () { // logged in and have Customer role
+    // Profile management
     Route::put('/customer/{id}', [CustomerController::class, 'update']);
     Route::delete('/customer/{id}', [CustomerController::class, 'destroy']);
 
@@ -150,4 +151,9 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::post('/cart', [CartsController::class, 'store']);
     Route::put('/cart/{id}', [CartsController::class, 'update']);
     Route::delete('/cart/{id}', [CartsController::class, 'destroy']);
+    // Address
+    Route::get('/address', [AddressController::class, 'index']);
+    Route::post('/address', [AddressController::class, 'store']);
+    Route::put('/address/{id}', [AddressController::class, 'update']);
+    Route::delete('/address/{id}', [AddressController::class, 'destroy']);
 });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Addresses;
+use App\Models\Customers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -11,10 +12,28 @@ class AddressController extends Controller
 {
   public function index()
   {
-    $address = Addresses::where('id_customer', auth()->user()->customer->id)->get();
+    // retrieve all address from currently logged in user
+    $customer_id = Customers::where('user_id', auth()->user()->id)->first()->id;
+    $address = Addresses::where('customer_id', $customer_id)->get();
     return response([
       'message' => 'All Address Retrieved',
       'data' => $address,
+    ], 200);
+  }
+
+  public function show($id)
+  {
+    $address = Addresses::find($id);
+    if (is_null($address)) {
+      return response([
+        'message' => 'Address Not Found',
+        'data' => null
+      ], 404);
+    }
+
+    return response([
+      'message' => 'Address Retrieved',
+      'data' => $address
     ], 200);
   }
 
@@ -22,12 +41,13 @@ class AddressController extends Controller
   {
     $storeData = $request->all();
     $validate = Validator::make($storeData, [
-      'id_customer' => 'required',
       'subdistrict' => 'required',
       'city' => 'required',
       'postal_code' => 'required',
-      'full_address' => 'required'
+      'complete_address' => 'required'
     ]);
+    $customer_id = Customers::where('user_id', auth()->user()->id)->first()->id; //add customer id automatically
+    $storeData['customer_id'] = $customer_id;
 
     if ($validate->fails()) {
       return response([
@@ -37,28 +57,29 @@ class AddressController extends Controller
 
     $address = Addresses::create($storeData);
     return response([
-      'message' => 'Category Created Successfully',
+      'message' => 'Address Created Successfully',
       'data' => $address,
     ], 200);
   }
 
   public function update(Request $request, $id)
   {
+    // find address with id X
     $address = Addresses::find($id);
     if (is_null($address)) {
       return response([
-        'message' => 'Category Not Found',
+        'message' => 'Address Not Found',
         'data' => null
       ], 404);
     }
 
     $newAddress = $request->all();
     $validate = Validator::make($newAddress, [
-      'id_customer' => 'required',
+      'customer_id' => 'required',
       'subdistrict' => 'required',
       'city' => 'required',
       'postal_code' => 'required',
-      'full_address' => 'required'
+      'complete_address' => 'required'
     ]);
 
     if ($validate->fails()) {
@@ -69,7 +90,7 @@ class AddressController extends Controller
 
     $address->update($newAddress);
     return response([
-      'message' => 'Category Updated Successfully',
+      'message' => 'Address Updated Successfully',
       'data' => $address
     ], 200);
   }
@@ -92,7 +113,7 @@ class AddressController extends Controller
     }
 
     return response([
-      'message' => 'Delete Category Failed',
+      'message' => 'Delete Address Failed',
       'data' => null
     ], 400);
   }
