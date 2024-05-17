@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Carts;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -27,9 +28,15 @@ class CartsController extends Controller
             'quantity' => 'required|numeric|min:1',
             'order_date' => 'required|date'
         ]);
+        $productionDate = Carbon::parse($storeData['order_date']);
+        $oneDayBeforeNow = Carbon::now()->subDay();
         if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()->first()
+            ], 400);
+        } else if ($productionDate < $oneDayBeforeNow) {
+            return response([
+                'message' => 'Order date cannot be before today',
             ], 400);
         }
 
@@ -53,9 +60,15 @@ class CartsController extends Controller
             'quantity' => 'required|numeric|min:1',
             'order_date' => 'required|date'
         ]);
+        $productionDate = Carbon::parse($update['order_date']);
+        $oneDayBeforeNow = Carbon::now()->subDay();
         if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()->first()
+            ], 400);
+        } else if ($productionDate < $oneDayBeforeNow) {
+            return response([
+                'message' => 'Order date cannot be before today',
             ], 400);
         }
 
