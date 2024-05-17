@@ -144,6 +144,15 @@ class AuthController extends Controller
         ], 200);
     }
 
+    public function getUserByToken()
+    {
+        $user = User::where('id', auth()->user()->id)->first();
+        return response([
+            'message' => 'User Retrieved Successfully',
+            'data' => $user
+        ], 200);
+    }
+
     public function verify($verify_key)
     {
         $keyCheck = User::select('verify_key')->where('verify_key', $verify_key)->exists();

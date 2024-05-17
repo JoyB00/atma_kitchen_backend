@@ -27,6 +27,7 @@ Route::get('/category', [CategoryController::class, 'index']);
 Route::middleware('auth:api')->group(function () { // all logged in user
     Route::post('/changePassword', [AuthController::class, 'changePassword']);
     Route::post('/logout',   [AuthController::class, 'logout']);
+    Route::get('/showUser', [AuthController::class, 'getUserByToken']);
 
     // Customer
     Route::get('/customer', [CustomerController::class, 'index']);
