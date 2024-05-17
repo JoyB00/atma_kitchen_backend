@@ -27,7 +27,7 @@ class CartsController extends Controller
         $validate = Validator::make(
             $storeData,
             [
-                'product_id' => 'unique:products',
+                'product_id' => 'unique:product',
                 'quantity' => 'required|numeric|min:1',
                 'order_date' => 'required|date'
             ],
