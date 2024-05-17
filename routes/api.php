@@ -33,6 +33,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/customer/{id}', [CustomerController::class, 'show']);
     Route::get('/customerLoggedIn', [CustomerController::class, 'showLoggedIn']);
 
+    // Cart
+    Route::get('/cart', [CartsController::class, 'index']);
+
     // Order
     Route::get('/orderHistory/{id}', [TransactionController::class, 'getOrderHistory']);
     Route::get('/detailOrder/{id}', [TransactionController::class, 'getDetailOrder']);
@@ -142,4 +145,9 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
 Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () {
     Route::put('/customer/{id}', [CustomerController::class, 'update']);
     Route::delete('/customer/{id}', [CustomerController::class, 'destroy']);
+
+    // cart
+    Route::post('/cart', [CartsController::class, 'store']);
+    Route::put('/cart/{id}', [CartsController::class, 'update']);
+    Route::delete('/cart/{id}', [CartsController::class, 'destroy']);
 });

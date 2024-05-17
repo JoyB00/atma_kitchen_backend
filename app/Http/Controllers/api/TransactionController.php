@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Carts;
+use App\Models\TransactionDetail;
 use App\Models\Transactions;
 use App\Models\Customers;
 
@@ -22,7 +22,7 @@ class TransactionController extends Controller
     public function getDetailOrder($id)
     {
         $transaction = Transactions::find($id);
-        $detailOrders = Carts::with('Product', 'Hampers')->where('transaction_id', $id)->get();
+        $detailOrders = TransactionDetail::with('Product', 'Hampers')->where('transaction_id', $id)->get();
 
         return response([
             'message' => 'All data Retrievied',
@@ -39,7 +39,7 @@ class TransactionController extends Controller
         $transactionItemSize = count($transaction);
         $filteredList = [];
         for ($i = 0; $i < $transactionItemSize; $i++) {
-            $filtered = Carts::with('Product', 'Hampers')->where('transaction_id', $transaction[$i]->id)->whereHas('Product', function ($query) use ($term) {
+            $filtered = TransactionDetail::with('Product', 'Hampers')->where('transaction_id', $transaction[$i]->id)->whereHas('Product', function ($query) use ($term) {
                 $query->where('product_name', 'like', '%' . $term . '%');
             })->get();
             if (count($filtered) > 0) {
