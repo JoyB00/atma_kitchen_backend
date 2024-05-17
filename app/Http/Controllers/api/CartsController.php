@@ -74,7 +74,7 @@ class CartsController extends Controller
 
         $cart->update($update);
         return response([
-            'message' => 'Add To Cart Successfully',
+            'message' => 'Update Cart Item Successfully',
             'data' => $cart
         ], 200);
     }
