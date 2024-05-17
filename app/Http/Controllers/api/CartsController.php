@@ -34,7 +34,7 @@ class CartsController extends Controller
 
         $formattedData = $groupedCarts->map(function ($items, $date) {
             return [
-                'tanggal' => $date,
+                'order_date' => $date,
                 'data' => $items
             ];
         })->values();
