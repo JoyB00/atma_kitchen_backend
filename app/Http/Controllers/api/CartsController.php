@@ -48,7 +48,7 @@ class CartsController extends Controller
             ], 400);
         }
         $productionDate = Carbon::parse($storeData['order_date']);
-        $twoDayBeforeNow = Carbon::now()->addDays(2);
+        $twoDayBeforeNow = Carbon::now()->addDay();
 
         if ($productionDate < $twoDayBeforeNow) {
             return response([
