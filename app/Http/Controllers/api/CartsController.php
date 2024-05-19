@@ -75,7 +75,7 @@ class CartsController extends Controller
 
         if ($productionDate < $twoDayBeforeNow && $storeData['status_item'] == 'Pre-Order') {
             return response([
-                'message' => 'Minimum order H-2 from today',
+                'message' => 'Minimum order H+2 from today',
             ], 400);
         }
 
