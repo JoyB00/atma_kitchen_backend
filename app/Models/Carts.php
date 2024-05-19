@@ -15,8 +15,10 @@ class Carts extends Model
         'user_id',
         'product_id',
         'hampers_id',
+        'status_item',
         'order_date',
         'quantity',
+        'limit_item',
         'total_price'
     ];
 
