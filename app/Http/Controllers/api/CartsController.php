@@ -97,17 +97,10 @@ class CartsController extends Controller
         $update = $request->all();
         $validate = Validator::make($update, [
             'quantity' => 'required|numeric|min:1',
-            'order_date' => 'required|date'
         ]);
-        $productionDate = Carbon::parse($update['order_date']);
-        $oneDayBeforeNow = Carbon::now()->subDay();
         if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()->first()
-            ], 400);
-        } else if ($productionDate < $oneDayBeforeNow) {
-            return response([
-                'message' => 'Order date cannot be before today',
             ], 400);
         }
 
