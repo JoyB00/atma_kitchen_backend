@@ -114,7 +114,18 @@ class CartsController extends Controller
     public function destroyListItem(Request $request)
     {
         $data = $request->all();
-        dd($data);
+        $cart = Carts::where('order_date', $data['order_date'])->get();
+
+        if (is_null($cart)) {
+            return response([
+                'message' => 'Data Not Found',
+                'data' => $cart
+            ], 404);
+        }
+        return response([
+            'message' => 'all Data Retrivied',
+            'data' => $cart
+        ], 200);
     }
 
     public function destroy($id)
