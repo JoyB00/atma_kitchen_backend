@@ -78,7 +78,7 @@ class HampersController extends Controller
     public function getHampers($id)
     {
         $hampers = Hampers::find($id);
-        $hampers_detail = HampersDetails::with('Product', 'Ingredients')->where('hampers_id', $id)->get();
+        $hampers_detail = HampersDetails::with('Product', 'Product.Categories', 'Product.AllLimit', 'Ingredients')->where('hampers_id', $id)->get();
 
         if (is_null($hampers)) {
             return response([
