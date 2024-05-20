@@ -8,6 +8,7 @@ use App\Models\HampersDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class HampersController extends Controller
 {
@@ -80,6 +81,10 @@ class HampersController extends Controller
         $hampers = Hampers::find($id);
         $hampers_detail = HampersDetails::with('Product', 'Product.Categories', 'Product.AllLimit', 'Ingredients')->where('hampers_id', $id)->get();
 
+        $ready_stock = Hampers::select(DB::raw('MIN(products.ready_stock) as min_ready_stock'))->join('hampers_detail', 'hampers.id', '=', 'hampers_detail.hampers_id')->join('products', 'product.id', '=', 'hampers_detail.product_id')->where('hampers.id', '=', $id)->get();
+
+
+
         if (is_null($hampers)) {
             return response([
                 'message' => "Hampers not found"
@@ -90,7 +95,8 @@ class HampersController extends Controller
             'message' => 'Retrieve Hampers Successfully',
             'data' => [
                 'hampers' => $hampers,
-                'details' => $hampers_detail
+                'details' => $hampers_detail,
+                'ready_stock' => $ready_stock
             ]
         ], 200);
     }
