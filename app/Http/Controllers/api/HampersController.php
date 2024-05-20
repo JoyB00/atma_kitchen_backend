@@ -81,7 +81,7 @@ class HampersController extends Controller
         $hampers = Hampers::find($id);
         $hampers_detail = HampersDetails::with('Product', 'Product.Categories', 'Product.AllLimit', 'Ingredients')->where('hampers_id', $id)->get();
 
-        $ready_stock = Hampers::select(DB::raw('MIN(products.ready_stock) as min_ready_stock'))->join('hampers_details', 'hampers.id', '=', 'hampers_details.hampers_id')->join('products', 'product.id', '=', 'hampers_details.product_id')->where('hampers.id', '=', $id)->get();
+        $ready_stock = Hampers::select(DB::raw('MIN(products.ready_stock) as min_ready_stock'))->join('hampers_details', 'hampers.id', '=', 'hampers_details.hampers_id')->join('products', 'products.id', '=', 'hampers_details.product_id')->where('hampers.id', '=', $id)->get();
 
 
 
