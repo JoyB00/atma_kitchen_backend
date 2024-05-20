@@ -111,6 +111,12 @@ class CartsController extends Controller
         ], 200);
     }
 
+    public function destroyListItem(Request $request)
+    {
+        $data = $request->all();
+        dd($data);
+    }
+
     public function destroy($id)
     {
         $cart = Carts::find($id);

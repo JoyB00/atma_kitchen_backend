@@ -150,6 +150,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::delete('/customer/{id}', [CustomerController::class, 'destroy']);
 
     // cart
+    Route::post('/destroyListCart', [CartsController::class, 'destroyListItem']);
     Route::post('/cart', [CartsController::class, 'store']);
     Route::put('/cart/{id}', [CartsController::class, 'update']);
     Route::delete('/cart/{id}', [CartsController::class, 'destroy']);
