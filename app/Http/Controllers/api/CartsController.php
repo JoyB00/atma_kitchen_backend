@@ -118,12 +118,17 @@ class CartsController extends Controller
 
         if (is_null($cart)) {
             return response([
-                'message' => 'Data Not Found',
+                'message' => 'Cart List Not Found',
                 'data' => $cart
             ], 404);
         }
+
+        foreach ($cart as $item) {
+            $item->delete();
+        }
+
         return response([
-            'message' => 'all Data Retrivied',
+            'message' => 'Cart List Deleted Successfully',
             'data' => $cart
         ], 200);
     }
