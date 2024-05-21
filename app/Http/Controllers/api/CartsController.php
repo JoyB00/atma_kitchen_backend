@@ -60,7 +60,7 @@ class CartsController extends Controller
             if (!is_null($storeData['product_id'])) {
                 $exists = DB::table('carts')
                     ->where('product_id', $storeData['product_id'])
-                    ->where('order_date', $storeData['order_date'])
+                    ->where('order_date', Carbon::parse($storeData['order_date'])->toDateString())
                     ->exists();
                 if ($exists) {
                     $validator->errors()->add('product_id', 'The Product with this order date is already in your cart');
@@ -68,7 +68,7 @@ class CartsController extends Controller
             } else if (!is_null($storeData['hampers_id'])) {
                 $exists = DB::table('carts')
                     ->where('hampers_id', $storeData['hampers_id'])
-                    ->where('order_date', $storeData['order_date'])
+                    ->where('order_date', Carbon::parse($storeData['order_date'])->toDateString())
                     ->exists();
                 if ($exists) {
                     $validator->errors()->add('hampers_id', 'The Hampers with this order date is already in your cart');
@@ -83,9 +83,6 @@ class CartsController extends Controller
         $productionDate = Carbon::parse($storeData['order_date'])->toDateString();
         $oneDayBeforeNow = Carbon::now()->addDay()->toDateString();
         $now = Carbon::now()->subDay()->toDateString();
-        Log::info('Production Date: ' . $productionDate);
-        Log::info('One Day Before Now: ' . $oneDayBeforeNow);
-        Log::info('Now: ' . $now);
 
         if ($productionDate < $oneDayBeforeNow && $storeData['status_item'] == 'Pre-Order') {
             return response([
