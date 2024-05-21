@@ -80,8 +80,8 @@ class CartsController extends Controller
             ], 400);
         }
         $productionDate = Carbon::parse($storeData['order_date'])->toDateString();
-        $oneDayBeforeNow = Carbon::now()->addDay();
-        $now = Carbon::now()->subDay();
+        $oneDayBeforeNow = Carbon::now()->addDay()->toDateString();
+        $now = Carbon::now()->subDay()->toDateString();
 
 
         if ($productionDate < $oneDayBeforeNow && $storeData['status_item'] == 'Pre-Order') {
