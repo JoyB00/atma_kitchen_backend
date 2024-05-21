@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CartsController extends Controller
 {
@@ -82,7 +83,9 @@ class CartsController extends Controller
         $productionDate = Carbon::parse($storeData['order_date'])->toDateString();
         $oneDayBeforeNow = Carbon::now()->addDay()->toDateString();
         $now = Carbon::now()->subDay()->toDateString();
-
+        Log::info('Production Date: ' . $productionDate);
+        Log::info('One Day Before Now: ' . $oneDayBeforeNow);
+        Log::info('Now: ' . $now);
 
         if ($productionDate < $oneDayBeforeNow && $storeData['status_item'] == 'Pre-Order') {
             return response([
