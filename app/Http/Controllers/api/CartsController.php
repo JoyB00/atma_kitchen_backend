@@ -57,17 +57,14 @@ class CartsController extends Controller
         );
         $validate->after(function ($validator) use ($storeData) {
             $exists = DB::table('carts')
-                ->where(function ($query) use ($storeData) {
-                    $query->where('product_id', $storeData['product_id'])
-                        ->orWhere('hampers_id', $storeData['hampers_id']);
-                })
+                ->where('product_id', $storeData['product_id'])->orWhere('hampers_id', $storeData['hampers_id'])
                 ->where('order_date', $storeData['order_date'])
                 ->exists();
 
             if ($exists && isset($storeData['product_id'])) {
                 $validator->errors()->add('product_id', 'The Product with this order date is already in your cart');
-            }else if($exists && isset($storeData['hampers_id'])){
-                $validator->errors()->add('Hampers_id', 'The Hampers with this order date is already in your cart');
+            } else if ($exists && isset($storeData['hampers_id'])) {
+                $validator->errors()->add('hampers_id', 'The Hampers with this order date is already in your cart');
             }
         });
         if ($validate->fails()) {
