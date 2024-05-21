@@ -59,8 +59,8 @@ class CartsController extends Controller
         $validate->after(function ($validator) use ($storeData) {
             if (!is_null($storeData['product_id'])) {
                 $exists = DB::table('carts')
-                    ->where('product_id', $storeData['product_id'])
-                    ->where('order_date', Carbon::parse($storeData['order_date'])->toDateString())
+                    ->where('product_id', 49)
+                    ->whereDate('order_date', Carbon::parse($storeData['order_date'])->toDateString())
                     ->exists();
                 if ($exists) {
                     $validator->errors()->add('product_id', 'The Product with this order date is already in your cart');
