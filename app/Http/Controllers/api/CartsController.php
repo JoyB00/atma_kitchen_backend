@@ -79,9 +79,9 @@ class CartsController extends Controller
                 'message' => $validate->errors()->first()
             ], 400);
         }
-        $productionDate = Carbon::parse($storeData['order_date']);
-        $oneDayBeforeNow = Carbon::now()->addDay();
-        $now = Carbon::now()->subDay();
+        $productionDate = Carbon::parse($storeData['order_date'])->format('Y-m-d');
+        $oneDayBeforeNow = Carbon::now()->addDay()->format('Y-m-d');;
+        $now = Carbon::now()->subDay()->format('Y-m-d');;
 
         if ($productionDate < $oneDayBeforeNow && $storeData['status_item'] == 'Pre-Order') {
             return response([
