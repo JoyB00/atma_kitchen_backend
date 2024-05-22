@@ -77,6 +77,7 @@ class TransactionController extends Controller
                 TransactionDetail::create([
                     'transaction_id' => $transaction->id,
                     'product_id' => $item['product_id'],
+                    'status_item'=>$item['status_item'],
                     'quantity' => $item['quantity'],
                     'price' => $item['products']['product_price'],
                     'total_price' => $item['total_price']
@@ -85,6 +86,7 @@ class TransactionController extends Controller
                 TransactionDetail::create([
                     'transaction_id' => $transaction->id,
                     'hampers_id' => $item['hampers_id'],
+                    'status_item'=>$item['status_item'],
                     'quantity' => $item['quantity'],
                     'price' => $item['hampers']['hampers_price'],
                     'total_price' => $item['total_price']
