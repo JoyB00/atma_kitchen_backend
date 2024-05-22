@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\TransactionDetail;
 use App\Models\Transactions;
 use App\Models\Customers;
+use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
@@ -39,7 +40,8 @@ class TransactionController extends Controller
         $data = $request->all();
         $cart = Carts::where('order_date', $data['order_date'])->get();
         $transaction = Transactions::create([
-            'order_date' => $data['order_date'],
+            'order_date' => Carbon::now()->toDateTimeString(),
+            'pickup_date' => $data['order_date'],
             'customer_id' => auth()->user()->id,
             'status' => 'notPaid',
             'total_price' => $data['total']
