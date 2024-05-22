@@ -34,6 +34,25 @@ class TransactionController extends Controller
             ]
         ], 200);
     }
+    public function getDetailOrderAuth($id)
+    {
+        $transaction = Transactions::find($id);
+        $detailOrders = TransactionDetail::with('Product', 'Hampers')->where('transaction_id', $id)->get();
+
+        if ($transaction->customer_id != auth()->user()->id) {
+            return response([
+                'message' => 'Cannot Access This Page'
+            ], 400);
+        }
+
+        return response([
+            'message' => 'All data Retrievied',
+            'data' => [
+                'transaction' => $transaction,
+                'details' => $detailOrders
+            ]
+        ], 200);
+    }
 
     public function store(Request $request)
     {
