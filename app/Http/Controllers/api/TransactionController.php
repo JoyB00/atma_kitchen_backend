@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Carts;
 use Illuminate\Http\Request;
 use App\Models\TransactionDetail;
 use App\Models\Transactions;
@@ -36,6 +37,7 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
+        $cart = Carts::where('order_date', $data['order_date'])->get();
         $transaction = Transactions::create([
             'order_date' => $data['order_date'],
             'customer_id' => auth()->user()->id,
@@ -60,6 +62,10 @@ class TransactionController extends Controller
                     'total_price' => $item['total_price']
                 ]);
             }
+        }
+
+        foreach ($cart as $item) {
+            $item->delete();
         }
 
         return response([
