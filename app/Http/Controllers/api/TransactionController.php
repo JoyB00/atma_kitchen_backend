@@ -40,7 +40,7 @@ class TransactionController extends Controller
             'order_date' => $data['order_date'],
             'customer_id' => auth()->user()->id,
             'status' => 'notPaid',
-            'total' => $data['total']
+            'total_price' => $data['total']
         ]);
         foreach ($data['data'] as $item) {
             if (!is_null($item['product_id'])) {
@@ -48,7 +48,7 @@ class TransactionController extends Controller
                     'transaction_id' => $transaction->id,
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
-                    'price' => $item['products']->product_price,
+                    'price' => $item['products']['product_price'],
                     'total_price' => $item['total_price']
                 ]);
             } else if (!is_null($item['hampers_id'])) {
@@ -56,7 +56,7 @@ class TransactionController extends Controller
                     'transaction_id' => $transaction->id,
                     'hampers_id' => $item['hampers_id'],
                     'quantity' => $item['quantity'],
-                    'price' => $item['hampers']->hampers_price,
+                    'price' => $item['hampers']['hampers_price'],
                     'total_price' => $item['total_price']
                 ]);
             }
