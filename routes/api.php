@@ -161,4 +161,5 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::delete('/address/{id}', [AddressController::class, 'destroy']);
     // Transaction
     Route::post('/order', [TransactionController::class, 'store']);
+    Route::get('/orderDetail/{id}', [TransactionController::class, 'getDetailOrderAuth']);
 });
