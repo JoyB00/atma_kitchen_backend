@@ -32,6 +32,44 @@ class TransactionController extends Controller
             ]
         ], 200);
     }
+
+    public function store(Request $request)
+    {
+        $data = $request->all();
+        $transaction = Transactions::create([
+            'order_date' => $data['order_date'],
+            'customer_id' => auth()->user()->id,
+            'status' => 'notPaid',
+            'total' => $data['total']
+        ]);
+        foreach ($data['data'] as $item) {
+            if (!is_null($item['product_id'])) {
+                TransactionDetail::create([
+                    'transaction_id' => $transaction->id,
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'price' => $item['products']->product_price,
+                    'total_price' => $item['total_price']
+                ]);
+            } else if (!is_null($item['hampers_id'])) {
+                TransactionDetail::create([
+                    'transaction_id' => $transaction->id,
+                    'hampers_id' => $item['hampers_id'],
+                    'quantity' => $item['quantity'],
+                    'price' => $item['hampers']->hampers_price,
+                    'total_price' => $item['total_price']
+                ]);
+            }
+        }
+
+        return response([
+            'message' => 'Transaction Added Successfully',
+            'data' => [
+                'transaction' => $transaction,
+            ]
+        ], 200);
+    }
+
     public function searchProductNameInTransactions($term)
     {
         $customerId = Customers::where('user_id', auth()->user()->id)->first();
