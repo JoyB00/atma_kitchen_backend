@@ -37,6 +37,13 @@ class TransactionController extends Controller
     public function getDetailOrderAuth($id)
     {
         $transaction = Transactions::find($id);
+
+        if (is_null($transaction)) {
+            return response([
+                'message' => 'Page Not Found'
+            ], 404);
+        }
+
         $detailOrders = TransactionDetail::with('Product', 'Hampers')->where('transaction_id', $id)->get();
 
         if ($transaction->customer_id != auth()->user()->id) {
