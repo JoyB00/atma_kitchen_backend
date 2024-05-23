@@ -45,9 +45,9 @@ class TransactionController extends Controller
         }
 
         $detailOrders = TransactionDetail::with('Product', 'Hampers')->where('transaction_id', $id)->get();
-        $customer = Customers::where('user_id', auth()->user()->id)->first();
+        $customer = Customers::find($transaction->customer_id);
 
-        if (is_null($customer)) {
+        if ($customer->user_id != auth()->user()->id) {
             return response([
                 'message' => 'Cannot Access This Page'
             ], 400);
