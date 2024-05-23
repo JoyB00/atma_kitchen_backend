@@ -22,4 +22,13 @@ class Customers extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function BalanceHistory()
+    {
+        return $this->hasMany(BalanceHistories::class, 'customer_id', 'id');
+    }
+    public function Addresses()
+    {
+        return $this->hasMany(Addresses::class, 'customer_id', 'id');
+    }
 }
