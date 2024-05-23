@@ -22,13 +22,13 @@ class PaymentController extends Controller
         foreach ($details as $item) {
             if (is_null($item['hampers_id'])) {
                 $items[] = [
-                    "price" => $item['product']->price,
+                    "price" => $item['product']['product_price'],
                     "quantity" => $item['quantity'],
                     "name" => $item['product']->product_name,
                 ];
             } else if (is_null($item['product_id'])) {
                 $items[] = [
-                    "price" => $item['hampers']->price,
+                    "price" => $item['hampers']['hampers_price'],
                     "quantity" => $item['quantity'],
                     "name" => $item['hampers']->hampers_name,
                 ];
