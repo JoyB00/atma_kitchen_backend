@@ -6,7 +6,6 @@ use App\Http\Middleware\UserRoleCheck;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/employee', [AuthController::class, 'employeeRegister']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -23,6 +22,9 @@ Route::get('/hampers/{id}', [HampersController::class, 'getHampers']);
 
 // Category
 Route::get('/category', [CategoryController::class, 'index']);
+
+// General Info
+Route::get('/generalInfo', [GeneralInfoController::class, 'index']);
 
 Route::middleware('auth:api')->group(function () { // all logged in user
     Route::post('/changePassword', [AuthController::class, 'changePassword']);
@@ -80,6 +82,9 @@ Route::middleware('auth:api')->group(function () { // all logged in user
 
     // Address
     Route::get('/address/{id}', [AddressController::class, 'show']);
+
+    // General Info
+    Route::post('/generalInfo', [GeneralInfoController::class, 'store']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () { // logged in and have Owner role
