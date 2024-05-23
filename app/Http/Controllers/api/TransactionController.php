@@ -36,7 +36,7 @@ class TransactionController extends Controller
     }
     public function getDetailOrderAuth($id)
     {
-        $transaction = Transactions::with(['Customer, Customer.Users, Customer.BalanceHistory, Customer.Addresses, Employee, Employee.Users, Delivery'])->where('id', $id)->first();
+        $transaction = Transactions::with('Customer', 'Customer.Users', 'Customer.BalanceHistory', 'Customer.Addresses', 'Employee', 'Employee.Users', 'Delivery')->where('id', $id)->first();
 
         if (is_null($transaction)) {
             return response([
