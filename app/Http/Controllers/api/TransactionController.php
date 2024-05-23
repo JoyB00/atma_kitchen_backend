@@ -65,10 +65,11 @@ class TransactionController extends Controller
     {
         $data = $request->all();
         $cart = Carts::where('order_date', $data['order_date'])->get();
+        $customer = Customers::where('user_id', auth()->user()->id)->first();
         $transaction = Transactions::create([
             'order_date' => Carbon::now()->toDateTimeString(),
             'pickup_date' => $data['order_date'],
-            'customer_id' => auth()->user()->id,
+            'customer_id' => $customer->id,
             'status' => 'notPaid',
             'total_price' => $data['total']
         ]);
