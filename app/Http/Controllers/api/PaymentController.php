@@ -16,7 +16,7 @@ class PaymentController extends Controller
         Config::$isSanitized = true;
         Config::$is3ds = true;
 
-        $details = $request->input('details');
+        $details = $request->input('details', []);
 
         $items = [];
         foreach ($details as $item) {
