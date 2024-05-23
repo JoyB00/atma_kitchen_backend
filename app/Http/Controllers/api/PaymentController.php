@@ -40,7 +40,7 @@ class PaymentController extends Controller
                 'order_id' => uniqid(),
                 'gross_amount' => $request->amount,
             ],
-            "item_detail" => $items,
+            "item_details" => $items,
             'customer_details' => [
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
@@ -51,7 +51,7 @@ class PaymentController extends Controller
 
         try {
             $snapToken = Snap::getSnapToken($params);
-            return response(['snapToken' => $snapToken, $items]);
+            return response(['snapToken' => $snapToken, $items[0]]);
         } catch (\Exception $e) {
             return response(['error' => $e->getMessage()], 500);
         }
