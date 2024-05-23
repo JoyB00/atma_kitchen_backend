@@ -51,7 +51,7 @@ class PaymentController extends Controller
 
         try {
             $snapToken = Snap::getSnapToken($params);
-            return response(['snapToken' => $snapToken, $items[0]]);
+            return response(['snapToken' => $snapToken, $items]);
         } catch (\Exception $e) {
             return response(['error' => $e->getMessage()], 500);
         }
