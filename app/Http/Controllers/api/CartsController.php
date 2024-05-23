@@ -81,10 +81,10 @@ class CartsController extends Controller
             ], 400);
         }
         $productionDate = Carbon::parse($storeData['order_date'])->toDateString();
-        $oneDayBeforeNow = Carbon::now()->addDay()->toDateString();
+        $twoDayAfterNow = Carbon::now()->addDays(2)->toDateString();
         $now = Carbon::now()->subDay()->toDateString();
 
-        if ($productionDate < $oneDayBeforeNow && $storeData['status_item'] == 'Pre-Order') {
+        if ($productionDate < $twoDayAfterNow && $storeData['status_item'] == 'Pre-Order') {
             return response([
                 'message' => 'Minimum order H+2 from today',
             ], 400);
