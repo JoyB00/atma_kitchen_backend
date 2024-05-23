@@ -23,4 +23,21 @@ class DeliveryController extends Controller
             'data' => $delivery
         ], 200);
     }
+
+    public function update(Request $request, $id)
+    {
+        $data = $request->all();
+        $delivery = Deliveries::find($id);
+        if (is_null($delivery)) {
+            return response([
+                'message' => 'Data not found',
+                'data' => $delivery
+            ], 404);
+        }
+        $delivery->update($data);
+        return response([
+            'message' => 'The delivery has been successfully updated.',
+            'data' => $delivery
+        ], 200);
+    }
 }
