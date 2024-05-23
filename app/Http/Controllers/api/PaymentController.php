@@ -18,7 +18,7 @@ class PaymentController extends Controller
 
         $params = [
             'transaction_details' => [
-                'order_id' => $request->id,
+                'order_id' => uniqid(),
                 'gross_amount' => $request->amount,
             ],
             'customer_details' => [
