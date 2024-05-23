@@ -27,17 +27,17 @@ class Transactions extends Model
         'tip'
     ];
 
-    public function Employees()
+    public function Employee()
     {
         return $this->belongsTo(Employees::class, 'employee_id');
     }
 
-    public function Customers()
+    public function Customer()
     {
         return $this->belongsTo(Customers::class, 'customer_id');
     }
 
-    public function Deliveries()
+    public function Delivery()
     {
         return $this->belongsTo(Deliveries::class, 'delivery_id');
     }
