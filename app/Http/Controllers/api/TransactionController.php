@@ -53,11 +53,33 @@ class TransactionController extends Controller
             ], 400);
         }
 
+        $points = 0;
+        $temp_total_price = $transaction->total_price;
+        if ($temp_total_price >= 1000000) {
+            $points += (int)($transaction->total_price / 1000000) * 200;
+            $temp_total_price = $temp_total_price % 1000000;
+        }
+
+        if ($temp_total_price >= 500000) {
+            $points += (int)($temp_total_price / 500000) * 75;
+            $temp_total_price = $temp_total_price % 500000;
+        }
+
+        if ($temp_total_price >= 100000) {
+            $points += (int)($temp_total_price / 100000) * 15;
+            $temp_total_price = $temp_total_price % 100000;
+        }
+
+        if ($temp_total_price >= 10000) {
+            $points += (int)($temp_total_price / 10000);
+        }
+
         return response([
             'message' => 'All data Retrievied',
             'data' => [
                 'transaction' => $transaction,
-                'details' => $detailOrders
+                'details' => $detailOrders,
+                'getPoint' => $points,
             ]
         ], 200);
     }
