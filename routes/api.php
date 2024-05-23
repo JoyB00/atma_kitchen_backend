@@ -168,4 +168,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     // Delivery
     Route::post('/delivery', [DeliveryController::class, 'store']);
     Route::put('/delivery/{id}', [DeliveryController::class, 'update']);
+
+    // Payment
+    Route::post('/payment', [PaymentController::class, 'getSnapToken']);
 });
