@@ -169,8 +169,10 @@ class TransactionController extends Controller
                             'production_date' => $transaction->pickup_date,
                         ]);
                     } else {
-                        $limit->limit_amount = $limit->limit_amount - $item->quantity;
-                        $limit->save();
+                        // $limit->limit_amount = $limit->limit_amount - $item->quantity;
+                        $limit->update([
+                            'limit_amount' => $limit->limit_amount - $item->quantity,
+                        ]);
                     }
                 }
                 $product->save();
@@ -192,15 +194,17 @@ class TransactionController extends Controller
                                     'production_date' => $transaction->pickup_date,
                                 ]);
                             } else {
-                                $limit->limit_amount = $limit->limit_amount - $item->quantity;
-                                $limit->save();
+                                $limit->update([
+                                    'limit_amount' => $limit->limit_amount - $item->quantity,
+                                ]);
                             }
                         }
                         $p->save();
                     } else if (!is_null($dh->ingredient_id)) {
                         $i = Ingredients::find($dh->ingredient_id);
-                        $i->quantity = $i->quantity - 1;
-                        $i->save();
+                        $i->update([
+                            'quantity' => $i->quantity - 1
+                        ]);
                     }
                 }
             }
