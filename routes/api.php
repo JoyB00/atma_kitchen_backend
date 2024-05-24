@@ -117,6 +117,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () 
 
     // Delivery Distance
     Route::get('/deliveryDistance', [DeliveryDistanceController::class, 'show']);
+    Route::post('/deliveryDistance', [DeliveryDistanceController::class, 'store']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () { // logged in and have MO role
