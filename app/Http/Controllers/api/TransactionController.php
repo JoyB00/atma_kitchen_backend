@@ -179,12 +179,7 @@ class TransactionController extends Controller
             } else if (!is_null($item->hampers_id)) {
                 $detailHampers = HampersDetails::where('hampers_id', $item->hampers_id)->get();
 
-                if (is_null($detailHampers)) {
-                    return response([
-                        'message' => 'Hampers not found',
-                        'data' => $detailHampers
-                    ], 404);
-                }
+
 
                 foreach ($detailHampers as $dh) {
                     if (!is_null($dh->product_id)) {
@@ -193,6 +188,13 @@ class TransactionController extends Controller
                             $p->ready_stock = $p->ready_stock - $item->quantity;
                         } else {
                             $limit = ProductLimits::where('production_date', Carbon::parse($transaction->pickup_date)->toDateString())->where('product_id', $p->id)->first();
+
+                            if (is_null($p)) {
+                                return response([
+                                    'message' => 'Hampers not found',
+                                    'data' => $p
+                                ], 404);
+                            }
 
                             if (is_null($limit)) {
                                 ProductLimits::create([
