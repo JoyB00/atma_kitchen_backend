@@ -225,12 +225,17 @@ class TransactionController extends Controller
         $transaction = Transactions::find($id);
 
         $uploadFolder = 'payment_evidence';
-        $image = $request->file('picture');
+        $image = $request->file('payment_evidence');
         $imageUpladedPath = $image->store($uploadFolder, 'public');
         $uploadedImageResponse = basename($imageUpladedPath);
 
         $transaction->payment_evidence = $uploadedImageResponse;
         $transaction->save();
+
+        return response([
+            'message' => 'Payment Evidence Uploaded',
+            'data' => $transaction
+        ], 200);
     }
 
     public function searchProductNameInTransactions($term)
