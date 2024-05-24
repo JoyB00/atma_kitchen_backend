@@ -141,10 +141,14 @@ class TransactionController extends Controller
         $transaction = Transactions::find($id);
         $transaction->paidoff_date = Carbon::now()->toDateTimeString();
         $transaction->payment_method = $data['payment_method'];
+        if ($data['payment_method'] == '"E-Money"') {
+            $transaction->payment_amount = $data['total_price'];
+        }
         $transaction->used_point = $data['point'];
         $transaction->earned_point = $data['point_earned'];
         $transaction->total_price = $data['total_price'];
         $transaction->status = 'alreadyPaid';
+
         $transaction->save();
 
         $customer = Customers::find($transaction->customer_id);
