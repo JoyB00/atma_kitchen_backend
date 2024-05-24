@@ -40,7 +40,7 @@ class DeliveryDistanceController extends Controller
 //            $query->where('distance', '==', null)->where('delivery_method', '==', 'Delivery Courier');
 //        })->get();
 //        $deliveries = Deliveries::where('distance', null)->where('delivery_method', 'Delivery Courier')->get();
-        $deliveries = Transactions::with('Delivery')->where('delivery_id', '!=', null)->whereHas('deliveries', function ($query) {
+        $deliveries = Transactions::with('Delivery')->where('delivery_id', '!=', null)->whereHas('Delivery', function ($query) {
             $query->where('distance', null);
         })->get();
 
