@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Deliveries;
 use App\Models\Transactions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -12,11 +13,13 @@ class DeliveryDistanceController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
+        $delivery = Deliveries::find($data['id']);
+
         $validate = Validator::make(
             $data,
             [
                 'id' => 'required',
-                'distance' => 'required',
+                'distance' => 'required|min:0',
             ],
         );
         if ($validate->fails()) {
@@ -25,12 +28,23 @@ class DeliveryDistanceController extends Controller
             ], 400);
         }
 
+        $distance = $data['distance'];
         // set shipping cost
-        $data['shipping_cost'] = 0;
+        if ($distance < 5) {
+            $shippingCost = 10000;
+        } elseif ($distance < 10) {
+            $shippingCost = 15000;
+        } elseif ($distance < 15) {
+            $shippingCost = 20000;
+        } else {
+            $shippingCost = 25000;
+        }
+        $data['shipping_cost'] = $shippingCost;
 
+        $delivery->update($data);
         return response([
-            'message' => 'The delivery distance has been successfully added.',
-//            'data' => $delivery
+            'message' => 'The delivery distance and shipping cost has been successfully added.',
+            'data' => $delivery
         ], 200);
     }
 
