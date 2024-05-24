@@ -179,8 +179,6 @@ class TransactionController extends Controller
             } else if (!is_null($item->hampers_id)) {
                 $detailHampers = HampersDetails::where('hampers_id', $item->hampers_id)->get();
 
-
-
                 foreach ($detailHampers as $dh) {
                     if (!is_null($dh->product_id)) {
                         $p = Product::find($dh->product_id);
@@ -189,16 +187,10 @@ class TransactionController extends Controller
                         } else {
                             $limit = ProductLimits::where('production_date', Carbon::parse($transaction->pickup_date)->toDateString())->where('product_id', $p->id)->first();
 
-                            if (is_null($p)) {
-                                return response([
-                                    'message' => 'Hampers not found',
-                                    'data' => $p
-                                ], 404);
-                            }
 
                             if (is_null($limit)) {
                                 ProductLimits::create([
-                                    'product_id' =>  $p->product_id,
+                                    'product_id' =>  $p->id,
                                     'limit_amount' => $p->daily_stock - $item->quantity,
                                     'production_date' => $transaction->pickup_date,
                                 ]);
