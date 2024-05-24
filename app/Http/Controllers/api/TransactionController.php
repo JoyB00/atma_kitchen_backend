@@ -160,7 +160,7 @@ class TransactionController extends Controller
                 if ($item->status_item == 'Ready') {
                     $product->ready_stock = $product->ready_stock - $item->quantity;
                 } else {
-                    $limit = ProductLimits::where('production_date',  $transaction->pickup_date)->where('product_id', $item->product_id)->first();
+                    $limit = ProductLimits::where('production_date', Carbon::parse($transaction->pickup_date)->toDateString())->where('product_id', $item->product_id)->first();
 
                     if (is_null($limit)) {
                         ProductLimits::create([
@@ -183,7 +183,7 @@ class TransactionController extends Controller
                         if ($item->status_item == 'Ready') {
                             $p->ready_stock = $p->ready_stock - $item->quantity;
                         } else {
-                            $limit = ProductLimits::where('production_date',  $transaction->pickup_date)->where('product_id', $p->id)->first();
+                            $limit = ProductLimits::where('production_date', Carbon::parse($transaction->pickup_date)->toDateString())->where('product_id', $p->id)->first();
 
                             if (is_null($limit)) {
                                 ProductLimits::create([
