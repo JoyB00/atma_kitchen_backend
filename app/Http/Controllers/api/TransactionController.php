@@ -111,11 +111,6 @@ class TransactionController extends Controller
             'status' => 'notPaid',
             'total_price' => $data['total']
         ]);
-        $date = Carbon::parse($transaction->order_date);
-        $transaction->transaction_number = $date->format('y') . "." . $date->format('m') . "." . $transaction->id;
-        $transaction->save();
-
-
 
         foreach ($data['data'] as $item) {
             if (!is_null($item['product_id'])) {
@@ -164,6 +159,9 @@ class TransactionController extends Controller
         $transaction->earned_point = $data['point_earned'];
         $transaction->total_price = $data['total_price'];
         $transaction->status = 'alreadyPaid';
+
+        $date = Carbon::parse($transaction->order_date);
+        $transaction->transaction_number = $date->format('y') . "." . $date->format('m') . "." . $transaction->id;
 
         $transaction->save();
 
