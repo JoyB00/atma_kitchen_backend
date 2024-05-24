@@ -82,7 +82,7 @@ class TransactionController extends Controller
         $threeDaysAfterBirthday = Carbon::parse($customer['users']['dateOfBirth'])->addDays(3);
         $threeDaysBeforeBirthday = Carbon::parse($customer['users']['dateOfBirth'])->subDays(3);
 
-        if (Carbon::parse($transaction->order_date)->toDateString() >= $threeDaysAfterBirthday && Carbon::parse($transaction->order_date)->toDateString() <=  $threeDaysBeforeBirthday) {
+        if (Carbon::parse($transaction->order_date)->toDateString() >= $threeDaysBeforeBirthday && Carbon::parse($transaction->order_date)->toDateString() <=   $threeDaysAfterBirthday) {
             $points = $points * 2;
         }
 
