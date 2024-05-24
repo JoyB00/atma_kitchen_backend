@@ -9,6 +9,7 @@ use App\Models\TransactionDetail;
 use App\Models\Transactions;
 use App\Models\Customers;
 use App\Models\Hampers;
+use App\Models\HampersDetails;
 use App\Models\Ingredients;
 use App\Models\Product;
 use App\Models\ProductLimits;
@@ -174,32 +175,33 @@ class TransactionController extends Controller
                 }
                 $product->save();
             } else if (!is_null($item->hampers_id)) {
-                $hampers = Hampers::find($item->hampers_id);
-                $product = Product::where('id', $hampers->product_id)->get();
-                $ingredient = Ingredients::where('id', $hampers->ingredient_id)->get();
+                $detailHampers = HampersDetails::where('hampers_id', $item->hampers_id)->get();
 
-                foreach ($product as $p) {
-                    if ($item->status_item == 'Ready') {
-                        $p->ready_stock = $p->ready_stock - $item->quantity;
-                    } else {
-                        $limit = ProductLimits::where('production_date',  $transaction->pickup_date)->where('product_id', $p->id)->first();
-
-                        if (is_null($limit)) {
-                            ProductLimits::create([
-                                'product_id' =>  $p->product_id,
-                                'limit_amount' => $p->daily_stock - $item->quantity,
-                                'production_date' => $transaction->pickup_date,
-                            ]);
+                foreach ($detailHampers as $dh) {
+                    if (!is_null($dh->product_id)) {
+                        $p = Product::find($dh->product_id);
+                        if ($item->status_item == 'Ready') {
+                            $p->ready_stock = $p->ready_stock - $item->quantity;
                         } else {
-                            $limit->limit_amount = $limit->limit_amount - $item->quantity;
-                            $limit->save();
+                            $limit = ProductLimits::where('production_date',  $transaction->pickup_date)->where('product_id', $p->id)->first();
+
+                            if (is_null($limit)) {
+                                ProductLimits::create([
+                                    'product_id' =>  $p->product_id,
+                                    'limit_amount' => $p->daily_stock - $item->quantity,
+                                    'production_date' => $transaction->pickup_date,
+                                ]);
+                            } else {
+                                $limit->limit_amount = $limit->limit_amount - $item->quantity;
+                                $limit->save();
+                            }
                         }
+                        $p->save();
+                    } else if (!is_null($dh->ingredient_id)) {
+                        $i = Ingredients::find($dh->ingredient_id);
+                        $i->quantity = $i->quantity - 1;
+                        $i->save();
                     }
-                    $p->save();
-                }
-                foreach ($ingredient as $i) {
-                    $i->quantity = $i->quantity - 1;
-                    $i->save();
                 }
             }
         }
