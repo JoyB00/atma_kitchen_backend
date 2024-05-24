@@ -179,6 +179,13 @@ class TransactionController extends Controller
             } else if (!is_null($item->hampers_id)) {
                 $detailHampers = HampersDetails::where('hampers_id', $item->hampers_id)->get();
 
+                if (is_null($detailHampers)) {
+                    return response([
+                        'message' => 'Hampers not found',
+                        'data' => $detailHampers
+                    ], 404);
+                }
+
                 foreach ($detailHampers as $dh) {
                     if (!is_null($dh->product_id)) {
                         $p = Product::find($dh->product_id);
