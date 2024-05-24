@@ -19,12 +19,17 @@ class DeliveryDistanceController extends Controller
             $data,
             [
                 'id' => 'required',
-                'distance' => 'required|min:0',
+                'distance' => 'required',
             ],
         );
         if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()->first()
+            ], 400);
+        }
+        if ($data['distance'] <= 0.0) {
+            return response([
+                'message' => 'Distance must be greater than 0'
             ], 400);
         }
 
