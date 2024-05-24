@@ -180,5 +180,5 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     // Payment
     Route::post('/payment', [PaymentController::class, 'getSnapToken']);
     Route::put('/payment/{id}', [TransactionController::class, 'paymentCustomer']);
-    Route::put('/payment/evidence/{id}', [TransactionController::class, 'storePaymentEvidence']);
+    Route::post('/payment/evidence/{id}', [TransactionController::class, 'storePaymentEvidence']);
 });

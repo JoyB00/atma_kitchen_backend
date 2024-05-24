@@ -224,7 +224,7 @@ class TransactionController extends Controller
     {
         $transaction = Transactions::find($id);
 
-        $uploadFolder = 'product';
+        $uploadFolder = 'payment_evidence';
         $image = $request->file('payment_evidence');
         $imageUpladedPath = $image->store($uploadFolder, 'public');
         $uploadedImageResponse = basename($imageUpladedPath);
