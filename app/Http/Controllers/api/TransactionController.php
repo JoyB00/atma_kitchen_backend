@@ -50,7 +50,7 @@ class TransactionController extends Controller
         }
 
         $detailOrders = TransactionDetail::with('Product', 'Hampers')->where('transaction_id', $id)->get();
-        $customer = Customers::find($transaction->customer_id);
+        $customer = Customers::with('Users')->find($transaction->customer_id);
 
         if ($customer->user_id != auth()->user()->id) {
             return response([
@@ -77,6 +77,13 @@ class TransactionController extends Controller
 
         if ($temp_total_price >= 10000) {
             $points += (int)($temp_total_price / 10000);
+        }
+
+        $threeDaysAfterBirthday = Carbon::parse($customer['users']['dateOfBirth'])->addDays(3);
+        $threeDaysBeforeBirthday = Carbon::parse($customer['users']['dateOfBirth'])->subDays(3);
+
+        if (Carbon::parse($transaction->order_date)->toDateString() >= $threeDaysAfterBirthday && Carbon::parse($transaction->order_date)->toDateString() <=  $threeDaysBeforeBirthday) {
+            $points = $points * 2;
         }
 
         return response([
