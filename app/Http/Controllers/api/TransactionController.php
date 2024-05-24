@@ -173,7 +173,6 @@ class TransactionController extends Controller
                             'production_date' => $transaction->pickup_date,
                         ]);
                     } else {
-                        // $limit->limit_amount = $limit->limit_amount - $item->quantity;
                         $limit->update([
                             'limit_amount' => $limit->limit_amount - $item->quantity,
                         ]);
@@ -219,6 +218,19 @@ class TransactionController extends Controller
             'message' => 'Payment Successfull',
             'data' => $transaction, $limit
         ], 200);
+    }
+
+    public function storePaymentEvidence(Request $request, $id)
+    {
+        $transaction = Transactions::find($id);
+
+        $uploadFolder = 'payment_evidence';
+        $image = $request->file('picture');
+        $imageUpladedPath = $image->store($uploadFolder, 'public');
+        $uploadedImageResponse = basename($imageUpladedPath);
+
+        $transaction->payment_evidence = $uploadedImageResponse;
+        $transaction->save();
     }
 
     public function searchProductNameInTransactions($term)
