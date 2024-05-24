@@ -85,6 +85,8 @@ class TransactionController extends Controller
         if (Carbon::parse($transaction->order_date)->toDateString() >= $threeDaysBeforeBirthday && Carbon::parse($transaction->order_date)->toDateString() <=   $threeDaysAfterBirthday) {
             $points = $points * 2;
         }
+        $date = Carbon::parse($transaction->order_date);
+        $dates = $date->year('y') + "." + $date->year('m') + "." + $transaction->id;
 
         return response([
             'message' => 'All data Retrievied',
@@ -92,6 +94,7 @@ class TransactionController extends Controller
                 'transaction' => $transaction,
                 'details' => $detailOrders,
                 'getPoint' => $points,
+                'dates' => $dates
             ]
         ], 200);
     }
@@ -108,6 +111,11 @@ class TransactionController extends Controller
             'status' => 'notPaid',
             'total_price' => $data['total']
         ]);
+        $date = Carbon::parse($transaction->order_date);
+        $transaction->transaction_number = $date->year('y') + "." + $date->year('m') + "." + $transaction->id;
+
+
+
         foreach ($data['data'] as $item) {
             if (!is_null($item['product_id'])) {
                 TransactionDetail::create([
