@@ -25,10 +25,10 @@ class DeliveryDistanceController extends Controller
 
     public function show()
     {
-        $deliveries = Transactions::with('Delivery')->whereHas('Delivery', function ($query) {
-            $query->where('delivery_method', '==', 'Delivery Courier');
-            $query->where('distance', '==', null);
-        })->get();
+//        $deliveries = Transactions::with('Delivery')->whereHas('Delivery', function ($query) {
+//            $query->where('distance', '==', null)->where('delivery_method', '==', 'Delivery Courier');
+//        })->get();
+        $deliveries = Deliveries::where('distance', null)->where('delivery_method', 'Delivery Courier')->get();
 
         return response([
             'message' => 'All data Retrievied',
