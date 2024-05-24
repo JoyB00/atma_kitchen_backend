@@ -113,6 +113,7 @@ class TransactionController extends Controller
         ]);
         $date = Carbon::parse($transaction->order_date);
         $transaction->transaction_number = $date->format('y') . "." . $date->format('m') . "." . $transaction->id;
+        $transaction->save();
 
 
 
