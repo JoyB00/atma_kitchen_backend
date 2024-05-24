@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 use App\Models\TransactionDetail;
 use App\Models\Transactions;
 use App\Models\Customers;
+use App\Models\Hampers;
+use App\Models\Ingredients;
+use App\Models\Product;
+use App\Models\ProductLimits;
 use Carbon\Carbon;
 
 class TransactionController extends Controller
@@ -127,6 +131,77 @@ class TransactionController extends Controller
             'data' => [
                 'transaction' => $transaction,
             ]
+        ], 200);
+    }
+
+    public function paymentCustomer(Request $request, $id)
+    {
+        $data = $request->all();
+        $transaction = Transactions::find($id);
+        $transaction->paidoff_date = Carbon::now();
+        $transaction->payment_method = $data['payment_method'];
+        $transaction->used_point = $data['point'];
+        $transaction->earned_point = $data['point_earned'];
+        $transaction->total_price = $data['total_price'];
+        $transaction->status = 'alreadyPaid';
+        $transaction->save();
+
+        $details = TransactionDetail::where('transaction_id', $id)->get();
+
+        foreach ($details as $item) {
+            if (!is_null($item->product_id)) {
+                $product = Product::find($item->product_id);
+                if ($item->status_item == 'Ready') {
+                    $product->ready_stock = $product->ready_stock - $item->quantity;
+                } else {
+                    $limit = ProductLimits::where('production_date',  $transaction->pickup_date)->where('product_id', $item->product_id)->first();
+
+                    if (is_null($limit)) {
+                        ProductLimits::create([
+                            'product_id' =>  $item->product_id,
+                            'limit_amount' => $product->daily_stock - $item->quantity,
+                            'production_date' => $transaction->pickup_date,
+                        ]);
+                    } else {
+                        $limit->limit_amount = $limit->limit_amount - $item->quantity;
+                        $limit->save();
+                    }
+                }
+                $product->save();
+            } else if (!is_null($item->hampers_id)) {
+                $hampers = Hampers::find($item->hampers_id);
+                $product = Product::where('id', $hampers->product_id)->get();
+                $ingredient = Ingredients::where('id', $hampers->ingredient_id)->get();
+
+                foreach ($product as $p) {
+                    if ($item->status_item == 'Ready') {
+                        $p->ready_stock = $p->ready_stock - $item->quantity;
+                    } else {
+                        $limit = ProductLimits::where('production_date',  $transaction->pickup_date)->where('product_id', $p->id)->first();
+
+                        if (is_null($limit)) {
+                            ProductLimits::create([
+                                'product_id' =>  $p->product_id,
+                                'limit_amount' => $p->daily_stock - $item->quantity,
+                                'production_date' => $transaction->pickup_date,
+                            ]);
+                        } else {
+                            $limit->limit_amount = $limit->limit_amount - $item->quantity;
+                            $limit->save();
+                        }
+                    }
+                    $p->save();
+                }
+                foreach ($ingredient as $i) {
+                    $i->quantity = $i->quantity - 1;
+                    $i->save();
+                }
+            }
+        }
+
+        return response([
+            'message' => 'Payment Successfull',
+            'data' => $transaction
         ], 200);
     }
 
