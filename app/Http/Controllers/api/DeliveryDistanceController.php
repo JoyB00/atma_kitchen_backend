@@ -29,7 +29,7 @@ class DeliveryDistanceController extends Controller
 
         return response([
             'message' => 'The delivery distance has been successfully added.',
-            'data' => $delivery
+//            'data' => $delivery
         ], 200);
     }
 
