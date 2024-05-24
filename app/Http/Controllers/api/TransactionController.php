@@ -139,7 +139,7 @@ class TransactionController extends Controller
     {
         $data = $request->all();
         $transaction = Transactions::find($id);
-        $transaction->paidoff_date = Carbon::now();
+        $transaction->paidoff_date = Carbon::now()->toDateTimeString();
         $transaction->payment_method = $data['payment_method'];
         $transaction->used_point = $data['point'];
         $transaction->earned_point = $data['point_earned'];
