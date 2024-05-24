@@ -146,6 +146,11 @@ class TransactionController extends Controller
         $transaction->status = 'alreadyPaid';
         $transaction->save();
 
+        $customer = Customers::find($transaction->customer_id);
+        $customer->point = $customer->point - $data['point'] + $data['point_earned'];
+
+        $customer->save();
+
         $details = TransactionDetail::where('transaction_id', $id)->get();
 
         foreach ($details as $item) {
