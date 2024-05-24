@@ -86,7 +86,7 @@ class TransactionController extends Controller
             $points = $points * 2;
         }
         $date = Carbon::parse($transaction->order_date);
-        $dates = $date->format('y') + "." + $date->format('m') + "." + $transaction->id;
+        $dates = $date->format('y') . "." . $date->format('m') . "." + $transaction->id;
 
         return response([
             'message' => 'All data Retrievied',
@@ -112,7 +112,7 @@ class TransactionController extends Controller
             'total_price' => $data['total']
         ]);
         $date = Carbon::parse($transaction->order_date);
-        $transaction->transaction_number = $date->format('y') + "." + $date->format('m') + "." + $transaction->id;
+        $transaction->transaction_number = $date->format('y') . "." . $date->format('m') . "." + $transaction->id;
 
 
 
