@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Middleware\UserRoleCheck;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -28,7 +27,7 @@ Route::get('/generalInfo', [GeneralInfoController::class, 'index']);
 
 Route::middleware('auth:api')->group(function () { // all logged in user
     Route::post('/changePassword', [AuthController::class, 'changePassword']);
-    Route::post('/logout',   [AuthController::class, 'logout']);
+    Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/showUser', [AuthController::class, 'getUserByToken']);
 
     // Customer
@@ -115,6 +114,9 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () 
 
     // Category
     Route::delete('/category/{id}', [CategoryController::class, 'destroy']);
+
+    // Delivery Distance
+    Route::get('/deliveryDistance', [DeliveryDistanceController::class, 'show']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () { // logged in and have MO role
