@@ -150,6 +150,7 @@ class TransactionController extends Controller
     {
         $data = $request->all();
         $transaction = Transactions::find($id);
+        $customer = Customers::find($transaction->customer_id);
         $transaction->paidoff_date = Carbon::now()->toDateTimeString();
         $transaction->payment_method = $data['payment_method'];
         if ($data['payment_method'] == '"E-Money"') {
@@ -159,13 +160,13 @@ class TransactionController extends Controller
         $transaction->earned_point = $data['point_earned'];
         $transaction->total_price = $data['total_price'];
         $transaction->status = 'alreadyPaid';
+        $transaction->current_point = $customer->point - $data['point'] + $data['point_earned'];
 
         $date = Carbon::parse($transaction->order_date);
         $transaction->transaction_number = $date->format('y') . "." . $date->format('m') . "." . $transaction->id;
 
         $transaction->save();
 
-        $customer = Customers::find($transaction->customer_id);
         $customer->point = $customer->point - $data['point'] + $data['point_earned'];
 
         $customer->save();
