@@ -21,6 +21,7 @@ class Transactions extends Model
         'payment_method',
         'status',
         'payment_evidence',
+        'payment_amount',
         'used_point',
         'earned_point',
         'total_price',
