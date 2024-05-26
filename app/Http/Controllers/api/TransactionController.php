@@ -118,10 +118,10 @@ class TransactionController extends Controller
             ], 400);
         }
         $customer = Customers::where('user_id', auth()->user()->id)->first();
-        if (!is_null($item->product_id)) {
-            $product = Product::where('id', $item->product_id)->first();
-        } else if (!is_null($item->hampers_id)) {
-            $hampers = Hampers::where('id', $item->hampers_id)->first();
+        if (!is_null($item['product_id'])) {
+            $product = Product::where('id', $item['product_id'])->first();
+        } else if (!is_null($item['hampers_id'])) {
+            $hampers = Hampers::where('id', $item['hampers_id'])->first();
         }
         $transaction = Transactions::create([
             'order_date' => Carbon::now()->toDateTimeString(),
@@ -134,20 +134,20 @@ class TransactionController extends Controller
         if (!is_null($item['product_id'])) {
             TransactionDetail::create([
                 'transaction_id' => $transaction->id,
-                'product_id' => $item->product_id,
-                'status_item' => $item->status_item,
-                'quantity' => $item->quantity,
+                'product_id' => $item['product_id'],
+                'status_item' => $item['status_item'],
+                'quantity' => $item['quantity'],
                 'price' => $product->product_price,
-                'total_price' => $item->total_price
+                'total_price' => $item['total_price']
             ]);
         } else if (!is_null($item['hampers_id'])) {
             TransactionDetail::create([
                 'transaction_id' => $transaction->id,
-                'hampers_id' => $item->hampers_id,
-                'status_item' => $item->status_item,
-                'quantity' => $item->quantity,
+                'hampers_id' => $item['hampers_id'],
+                'status_item' => $item['status_item'],
+                'quantity' => $item['quantity'],
                 'price' => $hampers->hampers_price,
-                'total_price' => $item->total_price
+                'total_price' => $item['total_price']
             ]);
         }
 
