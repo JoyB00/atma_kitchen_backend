@@ -228,6 +228,8 @@ class TransactionController extends Controller
                     }
                 }
             }
+        } else {
+            $transaction->save();
         }
 
         return response([
