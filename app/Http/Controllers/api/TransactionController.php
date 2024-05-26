@@ -151,79 +151,80 @@ class TransactionController extends Controller
         $data = $request->all();
         $transaction = Transactions::find($id);
         $customer = Customers::find($transaction->customer_id);
-        $transaction->paidoff_date = Carbon::now()->toDateTimeString();
         $transaction->payment_method = $data['payment_method'];
+        $transaction->paidoff_date = Carbon::now()->toDateTimeString();
         if ($data['payment_method'] == '"E-Money"') {
             $transaction->payment_amount = $data['total_price'];
             $transaction->status = 'alreadyPaid';
-        }
-        $transaction->used_point = $data['point'];
-        $transaction->earned_point = $data['point_earned'];
-        $transaction->total_price = $data['total_price'];
-        $transaction->current_point = $customer->point - $data['point'] + $data['point_earned'];
 
-        $date = Carbon::parse($transaction->order_date);
-        $transaction->transaction_number = $date->format('y') . "." . $date->format('m') . "." . $transaction->id;
+            $transaction->used_point = $data['point'];
+            $transaction->earned_point = $data['point_earned'];
+            $transaction->total_price = $data['total_price'];
+            $transaction->current_point = $customer->point - $data['point'] + $data['point_earned'];
 
-        $transaction->save();
+            $date = Carbon::parse($transaction->order_date);
+            $transaction->transaction_number = $date->format('y') . "." . $date->format('m') . "." . $transaction->id;
 
-        $customer->point = $customer->point - $data['point'] + $data['point_earned'];
+            $transaction->save();
 
-        $customer->save();
+            $customer->point = $customer->point - $data['point'] + $data['point_earned'];
 
-        $details = TransactionDetail::where('transaction_id', $id)->get();
+            $customer->save();
 
-        foreach ($details as $item) {
-            if (!is_null($item->product_id)) {
-                $product = Product::find($item->product_id);
-                if ($item->status_item == 'Ready') {
-                    $product->ready_stock = $product->ready_stock - $item->quantity;
-                } else {
-                    $limit = ProductLimits::where('production_date', Carbon::parse($transaction->pickup_date)->toDateString())->where('product_id', $item->product_id)->first();
+            $details = TransactionDetail::where('transaction_id', $id)->get();
 
-                    if (is_null($limit)) {
-                        ProductLimits::create([
-                            'product_id' =>  $item->product_id,
-                            'limit_amount' => $product->daily_stock - $item->quantity,
-                            'production_date' => $transaction->pickup_date,
-                        ]);
+            foreach ($details as $item) {
+                if (!is_null($item->product_id)) {
+                    $product = Product::find($item->product_id);
+                    if ($item->status_item == 'Ready') {
+                        $product->ready_stock = $product->ready_stock - $item->quantity;
                     } else {
-                        $limit->update([
-                            'limit_amount' => $limit->limit_amount - $item->quantity,
-                        ]);
-                    }
-                }
-                $product->save();
-            } else if (!is_null($item->hampers_id)) {
-                $detailHampers = HampersDetails::where('hampers_id', $item->hampers_id)->get();
+                        $limit = ProductLimits::where('production_date', Carbon::parse($transaction->pickup_date)->toDateString())->where('product_id', $item->product_id)->first();
 
-                foreach ($detailHampers as $dh) {
-                    if (!is_null($dh->product_id)) {
-                        $p = Product::find($dh->product_id);
-                        if ($item->status_item == 'Ready') {
-                            $p->ready_stock = $p->ready_stock - $item->quantity;
+                        if (is_null($limit)) {
+                            ProductLimits::create([
+                                'product_id' =>  $item->product_id,
+                                'limit_amount' => $product->daily_stock - $item->quantity,
+                                'production_date' => $transaction->pickup_date,
+                            ]);
                         } else {
-                            $limit = ProductLimits::where('production_date', Carbon::parse($transaction->pickup_date)->toDateString())->where('product_id', $p->id)->first();
-
-
-                            if (is_null($limit)) {
-                                ProductLimits::create([
-                                    'product_id' =>  $p->id,
-                                    'limit_amount' => $p->daily_stock - $item->quantity,
-                                    'production_date' => $transaction->pickup_date,
-                                ]);
-                            } else {
-                                $limit->update([
-                                    'limit_amount' => $limit->limit_amount - $item->quantity,
-                                ]);
-                            }
+                            $limit->update([
+                                'limit_amount' => $limit->limit_amount - $item->quantity,
+                            ]);
                         }
-                        $p->save();
-                    } else if (!is_null($dh->ingredient_id)) {
-                        $i = Ingredients::find($dh->ingredient_id);
-                        $i->update([
-                            'quantity' => $i->quantity - 1
-                        ]);
+                    }
+                    $product->save();
+                } else if (!is_null($item->hampers_id)) {
+                    $detailHampers = HampersDetails::where('hampers_id', $item->hampers_id)->get();
+
+                    foreach ($detailHampers as $dh) {
+                        if (!is_null($dh->product_id)) {
+                            $p = Product::find($dh->product_id);
+                            if ($item->status_item == 'Ready') {
+                                $p->ready_stock = $p->ready_stock - $item->quantity;
+                            } else {
+                                $limit = ProductLimits::where('production_date', Carbon::parse($transaction->pickup_date)->toDateString())->where('product_id', $p->id)->first();
+
+
+                                if (is_null($limit)) {
+                                    ProductLimits::create([
+                                        'product_id' =>  $p->id,
+                                        'limit_amount' => $p->daily_stock - $item->quantity,
+                                        'production_date' => $transaction->pickup_date,
+                                    ]);
+                                } else {
+                                    $limit->update([
+                                        'limit_amount' => $limit->limit_amount - $item->quantity,
+                                    ]);
+                                }
+                            }
+                            $p->save();
+                        } else if (!is_null($dh->ingredient_id)) {
+                            $i = Ingredients::find($dh->ingredient_id);
+                            $i->update([
+                                'quantity' => $i->quantity - 1
+                            ]);
+                        }
                     }
                 }
             }
