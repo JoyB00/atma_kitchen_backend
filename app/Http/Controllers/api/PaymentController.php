@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Midtrans\Config;
 use Midtrans\Snap;
+use App\Models\Transactions;
 
 class PaymentController extends Controller
 {
@@ -35,5 +36,30 @@ class PaymentController extends Controller
         } catch (\Exception $e) {
             return response(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function getAllPaymentConfirmation()
+    {
+        $payments = Transactions::where(function ($query) {
+            $query->where('status', '==', 'notPaid')->orwhere('status', '==', 'alreadyPaid');
+        })->get();
+
+        return response([
+            'message' => 'Successful retrieval of payment confirmation data.',
+            'data' => $payments
+        ]);
+    }
+
+    public function confirmPayment($request)
+    {
+        $payment = Transactions::find($request->id);
+        $payment->status = 'paymentValid';
+
+        $payment->save();
+
+        return response([
+            'message' => 'Payment confirmation has been successfully confirmed.',
+            'data' => $payment
+        ]);
     }
 }

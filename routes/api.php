@@ -118,6 +118,10 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () 
     // Delivery Distance
     Route::get('/deliveryDistance', [DeliveryDistanceController::class, 'show']);
     Route::post('/deliveryDistance', [DeliveryDistanceController::class, 'store']);
+
+    // Payment Confirmation
+    Route::get('/paymentConfirmation', [PaymentController::class, 'getAllPaymentConfirmation']);
+    Route::post('/paymentConfirmation', [PaymentController::class, 'confirmPayment']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () { // logged in and have MO role
