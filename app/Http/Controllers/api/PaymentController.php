@@ -75,7 +75,7 @@ class PaymentController extends Controller
         }
         $data['status'] = 'paymentValid';
         $data['paidoff_date'] = date('Y-m-d H:i:s');
-        $data['tip'] - $data['payment_amount'] - $payment->total_price;
+        $data['tip'] = $data['payment_amount'] - $payment->total_price;
 
         $payment->update($data);
         return response([
