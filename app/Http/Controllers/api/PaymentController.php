@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Midtrans\Config;
 use Midtrans\Snap;
+use App\Models\Transactions;
+use Illuminate\Support\Facades\Validator;
 
 class PaymentController extends Controller
 {
@@ -35,5 +37,50 @@ class PaymentController extends Controller
         } catch (\Exception $e) {
             return response(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function getAllPaymentConfirmation()
+    {
+        $payments = Transactions::where(function ($query) {
+            $query->where('status', '=', 'notPaid')->orWhere('status', '=', 'alreadyPaid');
+        })->get();
+
+        return response([
+            'message' => 'Successful retrieval of payment confirmation data.',
+            'data' => $payments
+        ]);
+    }
+
+    public function confirmPayment(Request $request)
+    {
+        $data = $request->all();
+        $validate = Validator::make(
+            $data,
+            [
+                'id' => 'required',
+                'payment_amount' => 'numeric',
+            ],
+        );
+        if ($validate->fails()) {
+            return response([
+                'message' => $validate->errors()->first()
+            ], 400);
+        }
+
+        $payment = Transactions::find($data['id']);
+        if ($data['payment_amount'] < $payment->total_price) {
+            return response([
+                'message' => 'Payment amount is less than the total price.'
+            ], 400);
+        }
+        $data['status'] = 'paymentValid';
+        $data['paidoff_date'] = date('Y-m-d H:i:s');
+        $data['tip'] = $data['payment_amount'] - $payment->total_price;
+
+        $payment->update($data);
+        return response([
+            'message' => 'Payment confirmation has been successfully confirmed.',
+            'data' => $payment
+        ]);
     }
 }
