@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Midtrans\Config;
 use Midtrans\Snap;
 use App\Models\Transactions;
+use Illuminate\Support\Facades\Validator;
 
 class PaymentController extends Controller
 {
@@ -52,11 +53,24 @@ class PaymentController extends Controller
 
     public function confirmPayment($request)
     {
-        $payment = Transactions::find($request->id);
-        $payment->status = 'paymentValid';
+        $data = $request->all();
+        $validate = Validator::make(
+            $data,
+            [
+                'id' => 'required',
+                'payment_amount' => 'numeric',
+            ],
+        );
+        if ($validate->fails()) {
+            return response([
+                'message' => $validate->errors()->first()
+            ], 400);
+        }
 
-        $payment->save();
+        $payment = Transactions::find($data['id']);
+        $data['status'] = 'paymentValid';
 
+        $payment->update($data);
         return response([
             'message' => 'Payment confirmation has been successfully confirmed.',
             'data' => $payment
