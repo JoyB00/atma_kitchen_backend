@@ -153,6 +153,7 @@ class TransactionController extends Controller
         $customer = Customers::find($transaction->customer_id);
         $transaction->payment_method = $data['payment_method'];
         $transaction->paidoff_date = Carbon::now()->toDateTimeString();
+
         if ($data['payment_method'] == '"E-Money"') {
             $transaction->payment_amount = $data['total_price'];
             $transaction->status = 'alreadyPaid';
@@ -229,7 +230,19 @@ class TransactionController extends Controller
                 }
             }
         } else {
+            $transaction->used_point = $data['point'];
+            $transaction->earned_point = $data['point_earned'];
+            $transaction->total_price = $data['total_price'];
+            $transaction->current_point = $customer->point - $data['point'] + $data['point_earned'];
+
+            $date = Carbon::parse($transaction->order_date);
+            $transaction->transaction_number = $date->format('y') . "." . $date->format('m') . "." . $transaction->id;
+
             $transaction->save();
+
+            $customer->point = $customer->point - $data['point'] + $data['point_earned'];
+
+            $customer->save();
         }
 
         return response([
