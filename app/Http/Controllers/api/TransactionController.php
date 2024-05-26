@@ -118,6 +118,11 @@ class TransactionController extends Controller
             ], 400);
         }
         $customer = Customers::where('user_id', auth()->user()->id)->first();
+        if (!is_null($item->product_id)) {
+            $product = Product::where('id', $item->product_id)->first();
+        } else if (!is_null($item->hampers_id)) {
+            $product = Hampers::where('id', $item->hampers_id)->first();
+        }
         $transaction = Transactions::create([
             'order_date' => Carbon::now()->toDateTimeString(),
             'pickup_date' => $data['order_date'],
@@ -132,7 +137,7 @@ class TransactionController extends Controller
                 'product_id' => $item['product_id'],
                 'status_item' => $item['status_item'],
                 'quantity' => $item['quantity'],
-                'price' => $item['products']['product_price'],
+                'price' => $product->product_price,
                 'total_price' => $item['total_price']
             ]);
         } else if (!is_null($item['hampers_id'])) {
@@ -141,7 +146,7 @@ class TransactionController extends Controller
                 'hampers_id' => $item['hampers_id'],
                 'status_item' => $item['status_item'],
                 'quantity' => $item['quantity'],
-                'price' => $item['hampers']['hampers_price'],
+                'price' => $product->hampers_price,
                 'total_price' => $item['total_price']
             ]);
         }
