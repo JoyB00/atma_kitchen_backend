@@ -232,7 +232,7 @@ class TransactionController extends Controller
 
         return response([
             'message' => 'Payment Successfull',
-            'data' => $transaction, $limit
+            'data' => $transaction
         ], 200);
     }
 
