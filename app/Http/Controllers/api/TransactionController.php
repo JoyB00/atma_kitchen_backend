@@ -99,6 +99,60 @@ class TransactionController extends Controller
         ], 200);
     }
 
+    public function storeBuyNow(Request $request)
+    {
+        $data = $request->all();
+        $productionDate = Carbon::parse($data['order_date'])->toDateString();
+        $twoDayAfterNow = Carbon::now()->addDays(2)->toDateString();
+        $now = Carbon::now()->subDay()->toDateString();
+
+        if ($productionDate < $twoDayAfterNow && $data['status_item'] == 'Pre-Order') {
+            return response([
+                'message' => 'Minimum order H+2 from today',
+            ], 400);
+        }
+        if ($productionDate < $now && $data['status_item'] == 'Ready') {
+            return response([
+                'message' => 'Cannot Order before today',
+            ], 400);
+        }
+        $customer = Customers::where('user_id', auth()->user()->id)->first();
+        $transaction = Transactions::create([
+            'order_date' => Carbon::now()->toDateTimeString(),
+            'pickup_date' => $data['order_date'],
+            'customer_id' => $customer->id,
+            'status' => 'notPaid',
+            'total_price' => $data['total']
+        ]);
+        $item = $data['data'];
+        if (!is_null($item['product_id'])) {
+            TransactionDetail::create([
+                'transaction_id' => $transaction->id,
+                'product_id' => $item['product_id'],
+                'status_item' => $item['status_item'],
+                'quantity' => $item['quantity'],
+                'price' => $item['products']['product_price'],
+                'total_price' => $item['total_price']
+            ]);
+        } else if (!is_null($item['hampers_id'])) {
+            TransactionDetail::create([
+                'transaction_id' => $transaction->id,
+                'hampers_id' => $item['hampers_id'],
+                'status_item' => $item['status_item'],
+                'quantity' => $item['quantity'],
+                'price' => $item['hampers']['hampers_price'],
+                'total_price' => $item['total_price']
+            ]);
+        }
+
+        return response([
+            'message' => 'Transaction Added Successfully',
+            'data' => [
+                'transaction' => $transaction,
+            ]
+        ], 200);
+    }
+
     public function store(Request $request)
     {
         $data = $request->all();

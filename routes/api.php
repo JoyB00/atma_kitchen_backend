@@ -175,6 +175,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
 
     // Transaction
     Route::post('/order', [TransactionController::class, 'store']);
+    Route::post('/orderBuyNow', [TransactionController::class, 'storeBuyNow']);
     Route::get('/orderDetail/{id}', [TransactionController::class, 'getDetailOrderAuth']);
 
     // Delivery
