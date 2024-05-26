@@ -19,7 +19,7 @@ class DeliveryDistanceController extends Controller
             $data,
             [
                 'id' => 'required',
-                'distance' => 'required',
+                'distance' => 'required|numeric',
             ],
         );
         if ($validate->fails()) {
