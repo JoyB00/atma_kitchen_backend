@@ -69,6 +69,8 @@ class PaymentController extends Controller
 
         $payment = Transactions::find($data['id']);
         $data['status'] = 'paymentValid';
+        $data['paidoff_date'] = date('Y-m-d H:i:s');
+        $data['tip'] - $data['payment_amount'] - $payment->total_price;
 
         $payment->update($data);
         return response([
