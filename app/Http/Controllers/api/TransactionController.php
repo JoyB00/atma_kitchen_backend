@@ -102,16 +102,17 @@ class TransactionController extends Controller
     public function storeBuyNow(Request $request)
     {
         $data = $request->all();
+        $item = $data['data'];
         $productionDate = Carbon::parse($data['order_date'])->toDateString();
         $twoDayAfterNow = Carbon::now()->addDays(2)->toDateString();
         $now = Carbon::now()->subDay()->toDateString();
 
-        if ($productionDate < $twoDayAfterNow && $data['status_item'] == 'Pre-Order') {
+        if ($productionDate < $twoDayAfterNow && $item['status_item'] == 'Pre-Order') {
             return response([
                 'message' => 'Minimum order H+2 from today',
             ], 400);
         }
-        if ($productionDate < $now && $data['status_item'] == 'Ready') {
+        if ($productionDate < $now && $item['status_item'] == 'Ready') {
             return response([
                 'message' => 'Cannot Order before today',
             ], 400);
@@ -124,7 +125,7 @@ class TransactionController extends Controller
             'status' => 'notPaid',
             'total_price' => $data['total']
         ]);
-        $item = $data['data'];
+
         if (!is_null($item['product_id'])) {
             TransactionDetail::create([
                 'transaction_id' => $transaction->id,
