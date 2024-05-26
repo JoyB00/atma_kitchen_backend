@@ -155,11 +155,11 @@ class TransactionController extends Controller
         $transaction->payment_method = $data['payment_method'];
         if ($data['payment_method'] == '"E-Money"') {
             $transaction->payment_amount = $data['total_price'];
+            $transaction->status = 'alreadyPaid';
         }
         $transaction->used_point = $data['point'];
         $transaction->earned_point = $data['point_earned'];
         $transaction->total_price = $data['total_price'];
-        $transaction->status = 'alreadyPaid';
         $transaction->current_point = $customer->point - $data['point'] + $data['point_earned'];
 
         $date = Carbon::parse($transaction->order_date);
