@@ -51,7 +51,7 @@ class PaymentController extends Controller
         ]);
     }
 
-    public function confirmPayment($request)
+    public function confirmPayment(Request $request)
     {
         $data = $request->all();
         $validate = Validator::make(
@@ -68,6 +68,11 @@ class PaymentController extends Controller
         }
 
         $payment = Transactions::find($data['id']);
+        if ($data['payment_amount'] < $payment->total_price) {
+            return response([
+                'message' => 'Payment amount is less than the total price.'
+            ], 400);
+        }
         $data['status'] = 'paymentValid';
         $data['paidoff_date'] = date('Y-m-d H:i:s');
         $data['tip'] - $data['payment_amount'] - $payment->total_price;
