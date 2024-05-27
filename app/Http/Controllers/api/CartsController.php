@@ -136,12 +136,12 @@ class CartsController extends Controller
         $productionDate = Carbon::parse($updateData['order_date'])->toDateString();
         $twoDayAfterNow = Carbon::now()->addDays(2)->toDateString();
         $now = Carbon::now()->subDay()->toDateString();
-        if ($productionDate < $twoDayAfterNow && $updateData['status_item'] == 'Pre-Order') {
+        if ($productionDate < $twoDayAfterNow) {
             return response([
                 'message' => 'Minimum order H+2 from today',
             ], 400);
         }
-        if ($productionDate < $now && $updateData['status_item'] == 'Ready') {
+        if ($productionDate < $now) {
             return response([
                 'message' => 'Cannot Order before today',
             ], 400);
