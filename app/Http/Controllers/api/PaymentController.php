@@ -82,7 +82,7 @@ class PaymentController extends Controller
         ]);
 
         // change transaction's employee to who reject the transaction
-        $user = User::where('id', Auth::api()->id)->first();
+        $user = User::where('id', auth()->user()->id)->first();
         $employee = Employees::where('user_id', $user->id)->first();
         $data->update(['employee_id' => $employee->id]);
 
@@ -109,7 +109,7 @@ class PaymentController extends Controller
         }
 
         // change transaction's employee to who reject the transaction
-        $user = User::where('id', Auth::api()->id)->first();
+        $user = User::where('id', auth()->user()->id)->first();
         $employee = Employees::where('user_id', $user->id)->first();
         $employee->update(['employee_id' => $employee->id]);
 

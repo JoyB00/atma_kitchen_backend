@@ -18,7 +18,7 @@ class DeliveryDistanceController extends Controller
         $data = $request->all();
         $delivery = Deliveries::find($data['id']);
 
-        $user = User::where('id', Auth::api()->id)->first();
+        $user = User::where('id', auth()->user()->id)->first();
         $employee = Employees::where('user_id', $user->id)->first();
         $transaction = Transactions::where('delivery_id', $data['id'])->first();
 
