@@ -417,6 +417,36 @@ class TransactionController extends Controller
     public function updatePickUpDateTransaction(Request $request, $id)
     {
         $transaction = Transactions::find($id);
+        $details = TransactionDetail::where('transaction_id', $id)->get();
+
+        foreach ($details as $item) {
+            if (!is_null($item->product_id)) {
+                $product = Product::find($item->product_id);
+                $limitProduct = ProductLimits::where('product_id', $item->product_id)->where('production_date', Carbon::parse($transaction->pickup_date)->toDateString())->first();
+                if (!is_null($limitProduct)) {
+                    if ($limitProduct->limit_amount < $item->quantity) {
+                        return response([
+                            'message' => "There are only " . $limitProduct->limit_amount . " " . $product->product_name . " products left."
+                        ], 404);
+                    }
+                }
+            } else if (!is_null($item->hampers_id)) {
+                $hampers = Hampers::with('HampersDetail')->where('id', $item->hampers_id)->first();
+                $hampersDetail = HampersDetails::where('hampers_id', $item->hampers_id)->where('ingredient_id', null)->get();
+                foreach ($hampersDetail as $detail) {
+                    $limitProduct = ProductLimits::where('product_id', $detail->product_id)->where('production_date', Carbon::parse($transaction->pickup_date)->toDateString())->first();
+                    $product = Product::find($detail->product_id);
+                    if (!is_null($limitProduct)) {
+                        if ($limitProduct->limit_amount < $item->quantity) {
+                            return response([
+                                'message' => "In " . $hampers->hampers_name . " there are only " . $limitProduct->limit_amount . " " . $product->product_name . " products left."
+                            ], 404);
+                        }
+                    }
+                }
+            }
+        }
+
         $transaction->pickup_date = $request->pickup_date;
         $transaction->save();
         return response([
