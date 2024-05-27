@@ -164,13 +164,14 @@ class CartsController extends Controller
                 }
             } else if (!is_null($item->hampers_id)) {
                 $hampers = Hampers::with('HampersDetail')->where('id', $item->hampers_id)->first();
-                $hampersDetail = HampersDetails::where('hampers_id', $item->hampers_id)->get();
+                $hampersDetail = HampersDetails::where('hampers_id', $item->hampers_id)->where('ingredient_id', null)->get();
                 foreach ($hampersDetail as $detail) {
                     $limitProduct = ProductLimits::where('product_id', $detail->product_id)->where('production_date', Carbon::parse($updateData['order_date'])->toDateString())->first();
+                    $product = Product::find($detail->product_id);
                     if (!is_null($limitProduct)) {
                         if ($limitProduct->limit_amount < $item->quantity) {
                             return response([
-                                'message' => "In " . $hampers->hampers_name . " there are only " . $limitProduct->limit_amount . " " . $detail->product_name . " products left."
+                                'message' => "In " . $hampers->hampers_name . " there are only " . $limitProduct->limit_amount . " " . $product->product_name . " products left."
                             ], 404);
                         }
                     }
