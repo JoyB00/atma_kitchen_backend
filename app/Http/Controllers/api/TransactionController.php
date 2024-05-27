@@ -17,6 +17,15 @@ use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
+
+    public function index (){
+        $orders = Transactions::with('Delivery', 'Customer', 'Customer.Users', 'Customer.BalanceHistory', 'Customer.Addresses', 'Employee', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->get();
+
+        return response([
+            'message' => 'All data Retrievied',
+            'data' => $orders,
+        ], 200);
+    }
     public function getOrderHistory($id)
     {
         $orders = Transactions::with('Delivery', 'Customer', 'Customer.Users', 'Customer.BalanceHistory', 'Customer.Addresses', 'Employee', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('customer_id', $id)->get();
