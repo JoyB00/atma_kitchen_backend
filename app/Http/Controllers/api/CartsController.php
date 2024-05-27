@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Carts;
+use App\Models\Customers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -124,6 +125,36 @@ class CartsController extends Controller
         return response([
             'message' => 'Update Cart Item Successfully',
             'data' => $cart
+        ], 200);
+    }
+    public function updateListCart(Request $request)
+    {
+        $updateData = $request->all();
+
+        $carts = Carts::where('order_date', $updateData['order_date'])->where('user_id', auth()->user()->id)->get();
+
+        $productionDate = Carbon::parse($updateData['order_date'])->toDateString();
+        $twoDayAfterNow = Carbon::now()->addDays(2)->toDateString();
+        $now = Carbon::now()->subDay()->toDateString();
+        if ($productionDate < $twoDayAfterNow && $updateData['status_item'] == 'Pre-Order') {
+            return response([
+                'message' => 'Minimum order H+2 from today',
+            ], 400);
+        }
+        if ($productionDate < $now && $updateData['status_item'] == 'Ready') {
+            return response([
+                'message' => 'Cannot Order before today',
+            ], 400);
+        }
+
+        foreach ($carts as $item) {
+            $item->update($updateData);
+        }
+
+
+        return response([
+            'message' => 'Update Cart Item Successfully',
+            'data' => $carts
         ], 200);
     }
 

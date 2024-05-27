@@ -165,6 +165,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     // cart
     Route::post('/destroyListCart', [CartsController::class, 'destroyListItem']);
     Route::post('/cart', [CartsController::class, 'store']);
+    Route::post('/cartList', [CartsController::class, 'updateListCart']);
     Route::put('/cart/{id}', [CartsController::class, 'update']);
     Route::delete('/cart/{id}', [CartsController::class, 'destroy']);
     // Address
@@ -175,7 +176,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::delete('/address/{id}', [AddressController::class, 'destroy']);
 
     // Transaction
-   
+
     Route::post('/order', [TransactionController::class, 'store']);
     Route::post('/orderBuyNow', [TransactionController::class, 'storeBuyNow']);
     Route::get('/orderDetail/{id}', [TransactionController::class, 'getDetailOrderAuth']);
