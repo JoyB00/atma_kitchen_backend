@@ -6,6 +6,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Carts;
 use App\Models\Customers;
+use App\Models\Hampers;
+use App\Models\Product;
+use App\Models\ProductLimits;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -145,6 +148,32 @@ class CartsController extends Controller
             return response([
                 'message' => 'Cannot Order before today',
             ], 400);
+        }
+
+        foreach ($carts as $item) {
+            if (!is_null($item->product_id)) {
+                $product = Product::find($item->product_id);
+                $limitProduct = ProductLimits::where('product_id', $item->product_id)->where('production_date', Carbon::parse($updateData['order_date'])->toDateString())->first();
+                if (!is_null($limitProduct)) {
+                    if ($limitProduct->limit_amount < $item->quantity) {
+                        return response([
+                            'message' => "There are only " . $limitProduct->limit_amount . " " . $product->product_name . " products left."
+                        ], 404);
+                    }
+                }
+            } else if (!is_null($item->hampers_id)) {
+                $hampers = Hampers::with('HampersDetail')->where('id', $item->hampers_id)->first();
+                foreach ($hampers->hampers_detail as $detail) {
+                    $limitProduct = ProductLimits::where('product_id', $detail->product_id)->where('production_date', Carbon::parse($updateData['order_date'])->toDateString())->first();
+                    if (!is_null($limitProduct)) {
+                        if ($limitProduct->quantity < $item->quantity) {
+                            return response([
+                                'message' => "In " . $hampers->hampers_name . " there are only " . $limitProduct->limit_amount . " " . $detail->product_name . " products left."
+                            ], 404);
+                        }
+                    }
+                }
+            }
         }
 
         foreach ($carts as $item) {
