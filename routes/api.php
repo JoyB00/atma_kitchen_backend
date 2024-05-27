@@ -44,6 +44,7 @@ Route::middleware('auth:api')->group(function () { // all logged in user
     Route::get('/detailOrder/{id}', [TransactionController::class, 'getDetailOrder']);
     Route::get('/searchProductNameInTransactions/{term}', [TransactionController::class, 'searchProductNameInTransactions']);
     Route::get('/order', [TransactionController::class, 'index']);
+    Route::get('/orderConfirmation', [TransactionController::class, 'getOrderConfirmation']);
 
     // Ingredient
     Route::get('/ingredient', [IngredientController::class, 'index']);
@@ -166,6 +167,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     // cart
     Route::post('/destroyListCart', [CartsController::class, 'destroyListItem']);
     Route::post('/cart', [CartsController::class, 'store']);
+    Route::post('/cartList', [CartsController::class, 'updateListCart']);
     Route::put('/cart/{id}', [CartsController::class, 'update']);
     Route::delete('/cart/{id}', [CartsController::class, 'destroy']);
     // Address
@@ -181,6 +183,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::post('/orderBuyNow', [TransactionController::class, 'storeBuyNow']);
     Route::get('/orderDetail/{id}', [TransactionController::class, 'getDetailOrderAuth']);
 
+    
     // Delivery
     Route::post('/delivery', [DeliveryController::class, 'store']);
     Route::put('/delivery/{id}', [DeliveryController::class, 'update']);
