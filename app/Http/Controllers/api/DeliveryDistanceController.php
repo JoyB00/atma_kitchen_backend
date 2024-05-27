@@ -39,7 +39,7 @@ class DeliveryDistanceController extends Controller
             $shippingCost = 10000;
         } elseif ($distance < 10) {
             $shippingCost = 15000;
-        } elseif ($distance < 15) {
+        } elseif ($distance <= 15) {
             $shippingCost = 20000;
         } else {
             $shippingCost = 25000;
