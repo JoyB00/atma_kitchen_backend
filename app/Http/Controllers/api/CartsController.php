@@ -168,7 +168,7 @@ class CartsController extends Controller
                 foreach ($hampersDetail as $detail) {
                     $limitProduct = ProductLimits::where('product_id', $detail->product_id)->where('production_date', Carbon::parse($updateData['order_date'])->toDateString())->first();
                     if (!is_null($limitProduct)) {
-                        if ($limitProduct->quantity < $item->quantity) {
+                        if ($limitProduct->limit_amount < $item->quantity) {
                             return response([
                                 'message' => "In " . $hampers->hampers_name . " there are only " . $limitProduct->limit_amount . " " . $detail->product_name . " products left."
                             ], 404);
