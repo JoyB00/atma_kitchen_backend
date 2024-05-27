@@ -43,6 +43,7 @@ Route::middleware('auth:api')->group(function () { // all logged in user
     Route::get('/orderHistory/{id}', [TransactionController::class, 'getOrderHistory']);
     Route::get('/detailOrder/{id}', [TransactionController::class, 'getDetailOrder']);
     Route::get('/searchProductNameInTransactions/{term}', [TransactionController::class, 'searchProductNameInTransactions']);
+    Route::get('/order', [TransactionController::class, 'index']);
 
     // Ingredient
     Route::get('/ingredient', [IngredientController::class, 'index']);
@@ -174,6 +175,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::delete('/address/{id}', [AddressController::class, 'destroy']);
 
     // Transaction
+   
     Route::post('/order', [TransactionController::class, 'store']);
     Route::post('/orderBuyNow', [TransactionController::class, 'storeBuyNow']);
     Route::get('/orderDetail/{id}', [TransactionController::class, 'getDetailOrderAuth']);

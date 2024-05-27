@@ -4,19 +4,30 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Carts;
-use Illuminate\Http\Request;
-use App\Models\TransactionDetail;
-use App\Models\Transactions;
 use App\Models\Customers;
 use App\Models\Hampers;
 use App\Models\HampersDetails;
 use App\Models\Ingredients;
 use App\Models\Product;
 use App\Models\ProductLimits;
+use App\Models\TransactionDetail;
+use App\Models\Transactions;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
+
+    public function index()
+    {
+        $orders = Transactions::with('Delivery', 'Customer', 'Customer.Users', 'Customer.BalanceHistory', 'Customer.Addresses', 'Employee', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->get();
+
+        return response([
+            'message' => 'All data Retrievied',
+            'data' => $orders,
+        ], 200);
+    }
+
     public function getOrderHistory($id)
     {
         $orders = Transactions::with('Delivery', 'Customer', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('customer_id', $id)->get();
@@ -26,6 +37,7 @@ class TransactionController extends Controller
             'data' => $orders,
         ], 200);
     }
+
     public function getDetailOrder($id)
     {
         $transaction = Transactions::find($id);
@@ -39,6 +51,7 @@ class TransactionController extends Controller
             ]
         ], 200);
     }
+
     public function getDetailOrderAuth($id)
     {
         $transaction = Transactions::with('Customer', 'Customer.Users', 'Customer.BalanceHistory', 'Customer.Addresses', 'Employee', 'Employee.Users', 'Delivery')->where('id', $id)->first();
@@ -82,7 +95,7 @@ class TransactionController extends Controller
         $threeDaysAfterBirthday = Carbon::parse($customer['users']['dateOfBirth'])->addDays(3);
         $threeDaysBeforeBirthday = Carbon::parse($customer['users']['dateOfBirth'])->subDays(3);
 
-        if (Carbon::parse($transaction->order_date)->toDateString() >= $threeDaysBeforeBirthday && Carbon::parse($transaction->order_date)->toDateString() <=   $threeDaysAfterBirthday) {
+        if (Carbon::parse($transaction->order_date)->toDateString() >= $threeDaysBeforeBirthday && Carbon::parse($transaction->order_date)->toDateString() <= $threeDaysAfterBirthday) {
             $points = $points * 2;
         }
         $date = Carbon::parse($transaction->order_date);
@@ -215,36 +228,43 @@ class TransactionController extends Controller
         $transaction->paidoff_date = Carbon::now()->toDateTimeString();
 
         if ($data['payment_method'] == '"E-Money"') {
+            // payment amount set to total price
+            // change status to already paid (need confirmation
             $transaction->payment_amount = $data['total_price'];
             $transaction->status = 'alreadyPaid';
 
+            // handle point logic
             $transaction->used_point = $data['point'];
             $transaction->earned_point = $data['point_earned'];
             $transaction->total_price = $data['total_price'];
             $transaction->current_point = $customer->point - $data['point'] + $data['point_earned'];
 
+            // generate transaction number
             $date = Carbon::parse($transaction->order_date);
             $transaction->transaction_number = $date->format('y') . "." . $date->format('m') . "." . $transaction->id;
 
+            // save transaction data
             $transaction->save();
 
+            // handle customer point change
             $customer->point = $customer->point - $data['point'] + $data['point_earned'];
-
             $customer->save();
 
+            // handle product stock/quota change
             $details = TransactionDetail::where('transaction_id', $id)->get();
-
             foreach ($details as $item) {
+                // if product then ... else hampers
                 if (!is_null($item->product_id)) {
                     $product = Product::find($item->product_id);
+
+                    // if product status is ready then reduce ready stock, if not then add product limit(?)
                     if ($item->status_item == 'Ready') {
-                        $product->ready_stock = $product->ready_stock - $item->quantity;
+                        $product->ready_stock = $product->ready_stock - $item->quantity; // reduce ready stock (if status is ready)
                     } else {
                         $limit = ProductLimits::where('production_date', Carbon::parse($transaction->pickup_date)->toDateString())->where('product_id', $item->product_id)->first();
-
                         if (is_null($limit)) {
                             ProductLimits::create([
-                                'product_id' =>  $item->product_id,
+                                'product_id' => $item->product_id,
                                 'limit_amount' => $product->daily_stock - $item->quantity,
                                 'production_date' => $transaction->pickup_date,
                             ]);
@@ -269,7 +289,7 @@ class TransactionController extends Controller
 
                                 if (is_null($limit)) {
                                     ProductLimits::create([
-                                        'product_id' =>  $p->id,
+                                        'product_id' => $p->id,
                                         'limit_amount' => $p->daily_stock - $item->quantity,
                                         'production_date' => $transaction->pickup_date,
                                     ]);
