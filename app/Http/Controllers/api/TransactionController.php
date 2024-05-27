@@ -30,7 +30,7 @@ class TransactionController extends Controller
 
     public function getOrderHistory($id)
     {
-        $orders = Transactions::with('Delivery', 'Customer', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('customer_id', $id)->get();
+        $orders = Transactions::with('Delivery', 'Customer', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('customer_id', $id)->orderBy('id', 'desc')->get();
 
         return response([
             'message' => 'All data Retrievied',
