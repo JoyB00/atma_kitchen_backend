@@ -123,6 +123,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () 
     // Payment Confirmation
     Route::get('/paymentConfirmation', [PaymentController::class, 'getAllPaymentConfirmation']);
     Route::post('/paymentConfirmation', [PaymentController::class, 'confirmPayment']);
+    Route::post('/paymentConfirmation/reject/{id}', [PaymentController::class, 'rejectTransaction']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () { // logged in and have MO role
@@ -175,7 +176,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::delete('/address/{id}', [AddressController::class, 'destroy']);
 
     // Transaction
-   
+
     Route::post('/order', [TransactionController::class, 'store']);
     Route::post('/orderBuyNow', [TransactionController::class, 'storeBuyNow']);
     Route::get('/orderDetail/{id}', [TransactionController::class, 'getDetailOrderAuth']);
