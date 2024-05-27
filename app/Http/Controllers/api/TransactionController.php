@@ -250,7 +250,7 @@ class TransactionController extends Controller
             $customer->point = $customer->point - $data['point'] + $data['point_earned'];
             $customer->save();
 
-            // handle product stock change
+            // handle product stock/quota change
             $details = TransactionDetail::where('transaction_id', $id)->get();
             foreach ($details as $item) {
                 // if product then ... else hampers
