@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employees;
 use App\Models\HampersDetails;
 use App\Models\Ingredients;
 use App\Models\Product;
 use App\Models\ProductLimits;
 use App\Models\TransactionDetail;
 use App\Models\Transactions;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Midtrans\Config;
 use Midtrans\Snap;
@@ -64,6 +67,11 @@ class PaymentController extends Controller
             'status' => 'rejected'
         ]);
 
+        // change transaction's employee to who reject the transaction
+        $user = User::where('id', Auth::api()->id)->first();
+        $employee = Employees::where('user_id', $user->id)->first();
+        $data->update(['employee_id' => $employee->id]);
+
         return response([
             'message' => 'Transaction has been successfully rejected.',
             'data' => $data
@@ -86,12 +94,20 @@ class PaymentController extends Controller
             ], 400);
         }
 
+        // change transaction's employee to who reject the transaction
+        $user = User::where('id', Auth::api()->id)->first();
+        $employee = Employees::where('user_id', $user->id)->first();
+        $data->update(['employee_id' => $employee->id]);
+
+        // error handling when payment amount is less than total price
         $transaction = Transactions::find($data['id']);
         if ($data['payment_amount'] < $transaction->total_price && $data['payment_method'] == '"Cash"') {
             return response([
                 'message' => 'Payment amount is less than the total price.'
             ], 400);
         }
+
+        // add additional data
         $data['status'] = 'paymentValid';
         $data['paidoff_date'] = date('Y-m-d H:i:s');
         $data['tip'] = $data['payment_amount'] - $transaction->total_price;
