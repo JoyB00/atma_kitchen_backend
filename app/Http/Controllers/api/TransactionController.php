@@ -20,7 +20,7 @@ class TransactionController extends Controller
 
     public function index()
     {
-        $orders = Transactions::with('Delivery', 'Customer', 'Customer.Users', 'Customer.BalanceHistory', 'Customer.Addresses', 'Employee', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->get();
+        $orders = Transactions::with('Delivery', 'Customer', 'Customer.Users', 'Customer.BalanceHistory', 'Customer.Addresses', 'Employee', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->orderBy('id', 'desc')->get();
 
         return response([
             'message' => 'All data Retrievied',
@@ -30,7 +30,7 @@ class TransactionController extends Controller
 
     public function getOrderHistory($id)
     {
-        $orders = Transactions::with('Delivery', 'Customer', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('customer_id', $id)->get();
+        $orders = Transactions::with('Delivery', 'Customer', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('customer_id', $id)->orderBy('id', 'desc')->get();
 
         return response([
             'message' => 'All data Retrievied',
@@ -177,6 +177,25 @@ class TransactionController extends Controller
         $data = $request->all();
         $cart = Carts::where('order_date', $data['order_date'])->get();
         $customer = Customers::where('user_id', auth()->user()->id)->first();
+
+
+        $productionDate = Carbon::parse($data['order_date'])->toDateString();
+        $twoDayAfterNow = Carbon::now()->addDays(2)->toDateString();
+        $now = Carbon::now()->subDay()->toDateString();
+
+        foreach ($data['data'] as $item) {
+            if ($productionDate < $twoDayAfterNow && $item['status_item'] == 'Pre-Order') {
+                return response([
+                    'message' => 'Minimum order H+2 from today',
+                ], 400);
+            }
+            if ($productionDate < $now && $item['status_item'] == 'Ready') {
+                return response([
+                    'message' => 'Cannot Order before today',
+                ], 400);
+            }
+        }
+
         $transaction = Transactions::create([
             'order_date' => Carbon::now()->toDateTimeString(),
             'pickup_date' => $data['order_date'],
