@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Customers;
 use App\Models\HampersDetails;
 use App\Models\Ingredients;
 use App\Models\Product;
@@ -88,8 +87,7 @@ class PaymentController extends Controller
         }
 
         $transaction = Transactions::find($data['id']);
-        $customer = Customers::find($transaction->customer_id);
-        if ($data['payment_amount'] < $transaction->total_price) {
+        if ($data['payment_amount'] < $transaction->total_price && $data['payment_method'] == '"Cash"') {
             return response([
                 'message' => 'Payment amount is less than the total price.'
             ], 400);
