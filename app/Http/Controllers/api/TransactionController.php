@@ -27,6 +27,15 @@ class TransactionController extends Controller
             'data' => $orders,
         ], 200);
     }
+    public function getOrderConfirmation()
+    {
+        $orders = Transactions::with('Delivery', 'Customer', 'Customer.Users', 'Customer.BalanceHistory', 'Customer.Addresses', 'Employee', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('status','paymentValid')->orderBy('id', 'desc')->get();
+
+        return response([
+            'message' => 'All data Retrievied',
+            'data' => $orders,
+        ], 200);
+    }
 
     public function getOrderHistory($id)
     {

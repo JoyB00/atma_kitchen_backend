@@ -44,6 +44,7 @@ Route::middleware('auth:api')->group(function () { // all logged in user
     Route::get('/detailOrder/{id}', [TransactionController::class, 'getDetailOrder']);
     Route::get('/searchProductNameInTransactions/{term}', [TransactionController::class, 'searchProductNameInTransactions']);
     Route::get('/order', [TransactionController::class, 'index']);
+    Route::get('/orderConfirmation', [TransactionController::class, 'getOrderConfirmation']);
 
     // Ingredient
     Route::get('/ingredient', [IngredientController::class, 'index']);
