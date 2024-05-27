@@ -422,7 +422,7 @@ class TransactionController extends Controller
         foreach ($details as $item) {
             if (!is_null($item->product_id)) {
                 $product = Product::find($item->product_id);
-                $limitProduct = ProductLimits::where('product_id', $item->product_id)->where('production_date', Carbon::parse($transaction->pickup_date)->toDateString())->first();
+                $limitProduct = ProductLimits::where('product_id', $item->product_id)->where('production_date', Carbon::parse($request->pickup_date)->toDateString())->first();
                 if (!is_null($limitProduct)) {
                     if ($limitProduct->limit_amount < $item->quantity) {
                         return response([
@@ -434,7 +434,7 @@ class TransactionController extends Controller
                 $hampers = Hampers::with('HampersDetail')->where('id', $item->hampers_id)->first();
                 $hampersDetail = HampersDetails::where('hampers_id', $item->hampers_id)->where('ingredient_id', null)->get();
                 foreach ($hampersDetail as $detail) {
-                    $limitProduct = ProductLimits::where('product_id', $detail->product_id)->where('production_date', Carbon::parse($transaction->pickup_date)->toDateString())->first();
+                    $limitProduct = ProductLimits::where('product_id', $detail->product_id)->where('production_date', Carbon::parse($request->pickup_date)->toDateString())->first();
                     $product = Product::find($detail->product_id);
                     if (!is_null($limitProduct)) {
                         if ($limitProduct->limit_amount < $item->quantity) {
