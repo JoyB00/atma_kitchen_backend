@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Deliveries;
+use App\Models\Employees;
 use App\Models\Transactions;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class DeliveryDistanceController extends Controller
@@ -14,6 +17,10 @@ class DeliveryDistanceController extends Controller
     {
         $data = $request->all();
         $delivery = Deliveries::find($data['id']);
+
+        $user = User::where('id', Auth::api()->id)->first();
+        $employee = Employees::where('user_id', $user->id)->first();
+        $transaction = Transactions::where('delivery_id', $data['id'])->first();
 
         $validate = Validator::make(
             $data,
@@ -45,6 +52,9 @@ class DeliveryDistanceController extends Controller
             $shippingCost = 25000;
         }
         $data['shipping_cost'] = $shippingCost;
+
+        //update employee in transaction (who have updated the delivery distance)
+        $transaction->update(['employee_id' => $employee->id]);
 
         $delivery->update($data);
         return response([
