@@ -26,6 +26,7 @@ class TransactionController extends Controller
             'data' => $orders,
         ], 200);
     }
+    
     public function getOrderHistory($id)
     {
         $orders = Transactions::with('Delivery', 'Customer', 'Customer.Users', 'Customer.BalanceHistory', 'Customer.Addresses', 'Employee', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('customer_id', $id)->get();
@@ -35,6 +36,7 @@ class TransactionController extends Controller
             'data' => $orders,
         ], 200);
     }
+
     public function getDetailOrder($id)
     {
         $transaction = Transactions::find($id);
