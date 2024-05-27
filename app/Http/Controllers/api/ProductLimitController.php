@@ -10,7 +10,7 @@ class ProductLimitController extends Controller
 {
     public function getLimitByDate(Request $request, $id)
     {
-        $limit = ProductLimits::where('production_date', $request->production_date)->where('product_id', $id)->orderBy('production_date', 'desc')->first();
+        $limit = ProductLimits::where('production_date', $request->production_date)->where('product_id', $id)->first();
         if (is_null($limit)) {
             return response([
                 'message' => "Limit Not available, Please fill the daily limit field",

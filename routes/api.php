@@ -157,6 +157,9 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
     Route::post('/role', [RoleController::class, 'store']);
     Route::put('/role/{id}', [RoleController::class, 'update']);
     Route::delete('/role/{id}', [RoleController::class, 'destroy']);
+
+    // Transaction Confirmation
+    Route::post('/transactionConfirmation', [TransactionConfirmationController::class, 'MoConfirmation']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () { // logged in and have Customer role

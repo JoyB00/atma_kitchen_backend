@@ -275,7 +275,7 @@ class TransactionController extends Controller
             $transaction->save();
 
             // handle customer point change
-            $customer->point = $customer->point - $data['point'] + $data['point_earned'];
+            // $customer->point = $customer->point - $data['point'] + $data['point_earned'];
             $customer->save();
 
             // handle product stock/quota change
@@ -364,7 +364,7 @@ class TransactionController extends Controller
 
             $transaction->save();
 
-            $customer->point = $customer->point - $data['point'] + $data['point_earned'];
+            // $customer->point = $customer->point - $data['point'] + $data['point_earned'];
 
             $customer->save();
         }
