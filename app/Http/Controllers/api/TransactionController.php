@@ -20,7 +20,7 @@ class TransactionController extends Controller
 
     public function index()
     {
-        $orders = Transactions::with('Delivery', 'Customer', 'Customer.Users', 'Customer.BalanceHistory', 'Customer.Addresses', 'Employee', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->orderBy('id','asc')->get();
+        $orders = Transactions::with('Delivery', 'Customer', 'Customer.Users', 'Customer.BalanceHistory', 'Customer.Addresses', 'Employee', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->orderBy('id', 'desc')->get();
 
         return response([
             'message' => 'All data Retrievied',
