@@ -110,7 +110,7 @@ class PaymentController extends Controller
         // change transaction's employee to who reject the transaction
         $user = User::where('id', Auth::api()->id)->first();
         $employee = Employees::where('user_id', $user->id)->first();
-        $data->update(['employee_id' => $employee->id]);
+        $employee->update(['employee_id' => $employee->id]);
 
         // error handling when payment amount is less than total price
         $transaction = Transactions::find($data['id']);
