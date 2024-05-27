@@ -309,7 +309,8 @@ class TransactionController extends Controller
                     }
                 }
             }
-        } else {
+        } else { // handle cash payment method
+            // point logic for cash method
             $transaction->used_point = $data['point'];
             $transaction->earned_point = $data['point_earned'];
             $transaction->total_price = $data['total_price'];
