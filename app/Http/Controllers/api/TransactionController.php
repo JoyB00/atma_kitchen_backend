@@ -413,4 +413,30 @@ class TransactionController extends Controller
             'data' => $filteredList,
         ], 200);
     }
+
+    public function updatePickUpDateTransaction(Request $request, $id)
+    {
+        $transaction = Transactions::find($id);
+        $transaction->pickup_date = $request->pickup_date;
+        $transaction->save();
+        return response([
+            'message' => 'Transaction Updated',
+            'data' => $transaction
+        ], 200);
+    }
+
+    public function deleteTransaction($id)
+    {
+        $transaction = Transactions::find($id);
+        if (is_null($transaction)) {
+            return response([
+                'message' => 'Transaction Not Found',
+            ], 404);
+        }
+        $transaction->delete();
+        return response([
+            'message' => 'Transaction Deleted',
+            'data' => $transaction
+        ], 200);
+    }
 }

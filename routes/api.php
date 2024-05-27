@@ -180,10 +180,11 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     // Transaction
 
     Route::post('/order', [TransactionController::class, 'store']);
+    Route::put('/order/{id}', [TransactionController::class, 'updatePickUpDateTransaction']);
+    Route::delete('/order/{id}', [TransactionController::class, 'deleteTransaction']);
     Route::post('/orderBuyNow', [TransactionController::class, 'storeBuyNow']);
     Route::get('/orderDetail/{id}', [TransactionController::class, 'getDetailOrderAuth']);
 
-    
     // Delivery
     Route::post('/delivery', [DeliveryController::class, 'store']);
     Route::put('/delivery/{id}', [DeliveryController::class, 'update']);
