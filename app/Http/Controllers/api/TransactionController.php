@@ -29,7 +29,7 @@ class TransactionController extends Controller
     }
     public function getOrderConfirmation()
     {
-        $orders = Transactions::with('Delivery', 'Customer', 'Customer.Users', 'Customer.BalanceHistory', 'Customer.Addresses', 'Employee', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('status','paymentValid')->orderBy('id', 'desc')->get();
+        $orders = Transactions::with('Delivery', 'Customer', 'Customer.Users', 'Customer.BalanceHistory', 'Customer.Addresses', 'Employee', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('status', 'paymentValid')->orderBy('id', 'desc')->get();
 
         return response([
             'message' => 'All data Retrievied',
@@ -339,6 +339,21 @@ class TransactionController extends Controller
             }
         } else { // handle cash payment method
             // point logic for cash method
+
+            $productionDate = Carbon::parse($transaction->pickup_date)->toDateString();
+            $twoDayAfterNow = Carbon::now()->addDays(2)->toDateString();
+            $now = Carbon::now()->subDay()->toDateString();
+            if ($productionDate < $twoDayAfterNow) {
+                return response([
+                    'message' => 'Your order was expired, please change the order date or delete your orders',
+                ], 400);
+            }
+            if ($productionDate < $now) {
+                return response([
+                    'message' => 'Cannot Order before today',
+                ], 400);
+            }
+
             $transaction->used_point = $data['point'];
             $transaction->earned_point = $data['point_earned'];
             $transaction->total_price = $data['total_price'];

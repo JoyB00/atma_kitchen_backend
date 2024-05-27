@@ -19,6 +19,19 @@ class PaymentController extends Controller
 {
     public function getSnapToken(Request $request)
     {
+        $productionDate = Carbon::parse($request->pickup_date)->toDateString();
+        $twoDayAfterNow = Carbon::now()->addDays(2)->toDateString();
+        $now = Carbon::now()->subDay()->toDateString();
+        if ($productionDate < $twoDayAfterNow) {
+            return response([
+                'message' => 'Your order was expired, please change the order date or delete your orders',
+            ], 400);
+        }
+        if ($productionDate < $now) {
+            return response([
+                'message' => 'Cannot Order before today',
+            ], 400);
+        }
         Config::$serverKey = env('MIDTRANS_SERVER_KEY');
         Config::$isProduction = env('MIDTRANS_IS_PRODUCTION');
         Config::$isSanitized = true;
