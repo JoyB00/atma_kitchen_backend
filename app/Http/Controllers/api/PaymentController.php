@@ -22,7 +22,8 @@ class PaymentController extends Controller
 {
     public function getSnapToken(Request $request)
     {
-        $productionDate = Carbon::parse($request->pickup_date)->toDateString();
+        $transaction = Transactions::find($request->id);
+        $productionDate = Carbon::parse($transaction->pickup_date)->toDateString();
         $twoDayAfterNow = Carbon::now()->addDays(2)->toDateString();
         $now = Carbon::now()->subDay()->toDateString();
         if ($productionDate < $twoDayAfterNow) {
