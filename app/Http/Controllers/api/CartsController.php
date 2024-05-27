@@ -180,7 +180,39 @@ class CartsController extends Controller
         }
 
         foreach ($carts as $item) {
-            $item->update($updateData);
+            if (!is_null($item->product_id)) {
+                $product = Product::find($item->product_id);
+                $limitProduct = ProductLimits::where('product_id', $item->product_id)->where('production_date', Carbon::parse($updateData['order_date'])->toDateString())->first();
+                if (!is_null($limitProduct)) {
+                    $item->update([
+                        'order_date' => Carbon::parse($updateData['order_date'])->toDateString(),
+                        'limit_item' => $limitProduct->limit_amount,
+                    ]);
+                } else {
+                    $item->update([
+                        'order_date' => Carbon::parse($updateData['order_date'])->toDateString(),
+                        'limit_item' => $product->daily_stock,
+                    ]);
+                }
+            } else if (!is_null($item->hampers_id)) {
+                $productLimits = [];
+                $hampers = Hampers::where('id', $item->hampers_id)->first();
+                $hampersDetail = HampersDetails::where('hampers_id', $item->hampers_id)->where('ingredient_id', null)->get();
+                foreach ($hampersDetail as $detail) {
+                    $limitProduct = ProductLimits::where('product_id', $detail->product_id)->where('production_date', Carbon::parse($updateData['order_date'])->toDateString())->first();
+                    $product = Product::find($detail->product_id);
+                    if (!is_null($limitProduct)) {
+                        $productLimits[$detail->id] = $limitProduct->limit_amount;
+                    } else {
+                        $productLimits[$detail->id] = $product->daily_stock;
+                    }
+                }
+                $minLimit = min($productLimits);
+                $item->update([
+                    'order_date' => Carbon::parse($updateData['order_date'])->toDateString(),
+                    'limit_item' =>  $minLimit,
+                ]);
+            }
         }
 
 
