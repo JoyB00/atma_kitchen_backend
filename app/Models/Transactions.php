@@ -42,4 +42,9 @@ class Transactions extends Model
     {
         return $this->belongsTo(Deliveries::class, 'delivery_id');
     }
+
+    public function TransactionDetails()
+    {
+        return $this->hasMany(TransactionDetail::class, 'transaction_id', 'id');
+    }
 }
