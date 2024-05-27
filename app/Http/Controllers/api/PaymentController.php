@@ -58,6 +58,19 @@ class PaymentController extends Controller
         ]);
     }
 
+    public function rejectTransaction($id)
+    {
+        $data = Transactions::find($id);
+        $data->update([
+            'status' => 'rejected'
+        ]);
+
+        return response([
+            'message' => 'Transaction has been successfully rejected.',
+            'data' => $data
+        ]);
+    }
+
     public function confirmPayment(Request $request)
     {
         $data = $request->all();
