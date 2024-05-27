@@ -48,7 +48,7 @@ class PaymentController extends Controller
 
     public function getAllPaymentConfirmation()
     {
-        $payments = Transactions::with('Customer')::where(function ($query) {
+        $payments = Transactions::with('Customer')->where(function ($query) {
             $query->where('status', '=', 'notPaid')->orWhere('status', '=', 'alreadyPaid');
         })->get();
 
