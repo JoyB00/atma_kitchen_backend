@@ -131,7 +131,7 @@ class CartsController extends Controller
     {
         $updateData = $request->all();
 
-        $carts = Carts::where('order_date', $updateData['order_date'])->where('user_id', auth()->user()->id)->get();
+        $carts = Carts::where('order_date', $updateData['late_order_date'])->where('user_id', auth()->user()->id)->get();
 
         $productionDate = Carbon::parse($updateData['order_date'])->toDateString();
         $twoDayAfterNow = Carbon::now()->addDays(2)->toDateString();
