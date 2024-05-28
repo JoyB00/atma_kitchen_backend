@@ -125,7 +125,7 @@ class TransactionController extends Controller
     {
         if (is_null(auth()->user()->id)) {
             return response([
-                'message' => 'Unauthorized'
+                'message' => 'Please Login or Register Before'
             ], 401);
         }
         $data = $request->all();
