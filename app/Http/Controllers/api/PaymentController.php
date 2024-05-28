@@ -120,11 +120,16 @@ class PaymentController extends Controller
                 'message' => 'Payment amount is less than the total price.'
             ], 400);
         }
+        $date = Carbon::parse($transaction->order_date);
+        $transaction->transaction_number = $date->format('y') . "." . $date->format('m') . "." . $transaction->id;
+
+        $transaction->save();
 
         // add additional data
         $data['status'] = 'paymentValid';
         $data['paidoff_date'] = date('Y-m-d H:i:s');
         $data['tip'] = $data['payment_amount'] - $transaction->total_price;
+
 
         // handle quota (see TransactionController.php for E-money version)
         if ($data['payment_method'] == '"Cash"') {
