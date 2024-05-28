@@ -69,7 +69,7 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
     "repositories": [
         {
             "type": "vcs",
@@ -81,5 +81,5 @@
             "type": "vcs",
             "url": "https://github.com/OneSignal/onesignal-php-api.git"
         }
-    ],
+    ]
 }
