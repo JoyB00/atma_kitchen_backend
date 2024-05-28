@@ -68,8 +68,10 @@ class TransactionConfirmationController extends Controller
                     }
                 }
             }
+            $transaction->status = 'rejected';
             $customer->point = $customer->point +  $transaction->used_point - $transaction->earned_point;
             $customer->nominal_balance =  $customer->nominal_balance + $transaction->total_price;
+            $transaction->save();
             $customer->save();
             BalanceHistories::create([
                 'customer_id' => $customer->id,
