@@ -82,5 +82,10 @@ class TransactionConfirmationController extends Controller
                 'detail_information' => 'Refund from online purchase'
             ]);
         }
+
+        return response([
+            'message' => 'Transaction Updated',
+            'data' => $data
+        ], 200);
     }
 }
