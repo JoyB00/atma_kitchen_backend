@@ -18,6 +18,7 @@ class NotificationController extends Controller
         $data = $request->all();
         $userId = $data['user_id'];
         $message = $data['message'];
+        $title = $data['title'];
 
         $APP_ID = '2fe3a6db-c004-424c-9b92-099391f7f88b';
         $APP_KEY_TOKEN = 'ZWM0MzQyYWEtMmJlMS00YzE4LWEyMDAtM2JjNmI1OTQ5YzU0';
@@ -33,9 +34,13 @@ class NotificationController extends Controller
         $content = new StringMap();
         $content->setEn($message);
 
+        $heading = new StringMap();
+        $heading->setEn($title);
+
         $notification = new Notification();
         $notification->setAppId($APP_ID);
         $notification->setContents($content);
+        $notification->setHeadings($heading);
 
         $userFilter = new Filter();
         $userFilter->setField('tag');
