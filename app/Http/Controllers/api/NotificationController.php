@@ -36,7 +36,6 @@ class NotificationController extends Controller
 
         $notification = new Notification();
         $notification->setAppId($APP_ID);
-        $notification->
         $notification->setContents($content);
 
         $userFilter = new Filter();
