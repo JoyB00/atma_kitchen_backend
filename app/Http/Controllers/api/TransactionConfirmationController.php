@@ -73,7 +73,7 @@ class TransactionConfirmationController extends Controller
             // $customer->point = $customer->point -  $transaction->used_point - $transaction->earned_point;
             $delivery = Deliveries::find($transaction->delivery_id);
             if (!is_null($delivery->shipping_cost)) {
-                $customer->nominal_balance =  $customer->nominal_balance + $transaction->total_price + $transaction->used_point * 100 - $delivery->shipping_cost;
+                $customer->nominal_balance =  $customer->nominal_balance + $transaction->total_price + $transaction->used_point * 100 + $delivery->shipping_cost;
             } else {
                 $customer->nominal_balance =  $customer->nominal_balance + $transaction->total_price + $transaction->used_point * 100;
             }
