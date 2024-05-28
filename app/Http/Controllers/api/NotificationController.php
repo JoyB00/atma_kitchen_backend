@@ -18,7 +18,6 @@ class NotificationController extends Controller
         $data = $request->all();
         $userId = $data['user_id'];
         $message = $data['message'];
-        $title = $data['title'];
 
         $APP_ID = '2fe3a6db-c004-424c-9b92-099391f7f88b';
         $APP_KEY_TOKEN = 'ZWM0MzQyYWEtMmJlMS00YzE4LWEyMDAtM2JjNmI1OTQ5YzU0';
