@@ -71,11 +71,15 @@ class TransactionConfirmationController extends Controller
             }
             $transaction->status = 'rejected';
             // $customer->point = $customer->point -  $transaction->used_point - $transaction->earned_point;
+            $subtotal = 0;
+            foreach ($details as $item) {
+                $subtotal = $subtotal + $item->total_price;
+            }
             $delivery = Deliveries::find($transaction->delivery_id);
             if (!is_null($delivery->shipping_cost)) {
-                $customer->nominal_balance =  $customer->nominal_balance + $transaction->total_price + $delivery->shipping_cost;
+                $customer->nominal_balance =  $customer->nominal_balance + $subtotal + $delivery->shipping_cost;
             } else {
-                $customer->nominal_balance =  $customer->nominal_balance + $transaction->total_price;
+                $customer->nominal_balance =  $customer->nominal_balance + $subtotal;
             }
             $transaction->save();
             $customer->save();
