@@ -54,6 +54,12 @@ class CartsController extends Controller
     public function store(Request $request)
     {
         $storeData = $request->all();
+
+        if (is_null(auth()->user()->id)) {
+            return response([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
         $validate = Validator::make(
             $storeData,
             [

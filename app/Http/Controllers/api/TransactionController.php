@@ -123,6 +123,11 @@ class TransactionController extends Controller
 
     public function storeBuyNow(Request $request)
     {
+        if (is_null(auth()->user()->id)) {
+            return response([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
         $data = $request->all();
         $item = $data['data'];
         $productionDate = Carbon::parse($data['order_date'])->toDateString();
@@ -184,6 +189,8 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
+
+
         $cart = Carts::where('order_date', Carbon::parse($data['order_date'])->toDateString())->get();
         $customer = Customers::where('user_id', auth()->user()->id)->first();
 
