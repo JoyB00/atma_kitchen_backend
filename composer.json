@@ -13,7 +13,7 @@
         "laravel/passport": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
-        "midtrans/midtrans-php": "^2.5"
+        "midtrans/midtrans-php": "^2.5",
         "onesignal/onesignal-php-api": "*@dev"
     },
     "require-dev": {
@@ -70,6 +70,12 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/OneSignal/onesignal-php-api.git"
+        }
+    ],
     "repositories": [
         {
             "type": "vcs",
