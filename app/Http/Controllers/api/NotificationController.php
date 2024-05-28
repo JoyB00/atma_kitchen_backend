@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use GuzzleHttp;
 use Illuminate\Http\Request;
 use onesignal\client\api\DefaultApi;
 use onesignal\client\Configuration;
