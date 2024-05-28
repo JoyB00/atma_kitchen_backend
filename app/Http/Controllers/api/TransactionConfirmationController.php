@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\BalanceHistories;
 use App\Models\Customers;
+use App\Models\Deliveries;
 use App\Models\HampersDetails;
 use App\Models\Ingredients;
 use App\Models\Product;
@@ -69,8 +70,13 @@ class TransactionConfirmationController extends Controller
                 }
             }
             $transaction->status = 'rejected';
-            $customer->point = $customer->point +  $transaction->used_point - $transaction->earned_point;
-            $customer->nominal_balance =  $customer->nominal_balance + $transaction->total_price;
+            // $customer->point = $customer->point -  $transaction->used_point - $transaction->earned_point;
+            $delivery = Deliveries::find($transaction->delivery_id);
+            if (!is_null($delivery->shipping_cost)) {
+                $customer->nominal_balance =  $customer->nominal_balance + $transaction->total_price + $transaction->used_point * 100 - $delivery->shipping_cost;
+            } else {
+                $customer->nominal_balance =  $customer->nominal_balance + $transaction->total_price + $transaction->used_point * 100;
+            }
             $transaction->save();
             $customer->save();
             BalanceHistories::create([
