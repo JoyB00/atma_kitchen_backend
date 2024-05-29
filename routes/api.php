@@ -24,6 +24,7 @@ Route::get('/category', [CategoryController::class, 'index']);
 
 // General Info
 Route::get('/generalInfo', [GeneralInfoController::class, 'index']);
+Route::get('/shortageIngredient', [TransactionConfirmationController::class, 'showShortageIngredient']);
 
 Route::middleware('auth:api')->group(function () { // all logged in user
     Route::post('/changePassword', [AuthController::class, 'changePassword']);
