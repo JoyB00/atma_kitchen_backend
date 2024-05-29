@@ -154,7 +154,9 @@ class TransactionConfirmationController extends Controller
         });
 
         // Filter out null values from the collection
-        $shortageIngredient = $shortageIngredient->filter();
+        $shortageIngredient = $shortageIngredient->filter(function ($item) {
+            return !is_null($item);
+        });
 
         // If you need to reindex the collection (optional)
         $shortageIngredient = $shortageIngredient->values();
