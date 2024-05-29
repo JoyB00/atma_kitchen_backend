@@ -116,7 +116,7 @@ class TransactionConfirmationController extends Controller
 
         $subquery2 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
             ->join('hampers as h', 'h.id', '=', 'dt.hampers_id')
-            ->join('hamper_details as hd', 'h.id', '=', 'hd.hampers_id')
+            ->join('hampers_details as hd', 'h.id', '=', 'hd.hampers_id')
             ->join('products as p', 'hd.product_id', '=', 'p.id')
             ->join('recipes as r', 'r.product_id', '=', 'p.id')
             ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
