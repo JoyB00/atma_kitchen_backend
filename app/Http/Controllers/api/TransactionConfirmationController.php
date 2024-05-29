@@ -111,7 +111,7 @@ class TransactionConfirmationController extends Controller
             ->where('transactions.id', $transactionId)
             ->groupBy('i.ingredient_name')
             ->select('i.ingredient_name')
-            ->selectRaw('SUM(r.quantity) as quantity')
+            ->selectRaw('CAST(SUM(r.quantity) AS DECIMAL) as quantity')
             ->get();
 
         $subquery2 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
@@ -123,7 +123,7 @@ class TransactionConfirmationController extends Controller
             ->where('transactions.id', $transactionId)
             ->groupBy('i.ingredient_name', 'p.product_name')
             ->select('i.ingredient_name')
-            ->selectRaw('SUM(r.quantity) as quantity')
+            ->selectRaw('CAST(SUM(r.quantity) AS DECIMAL) as quantity')
             ->get();
 
         $subquery3 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
@@ -134,7 +134,7 @@ class TransactionConfirmationController extends Controller
             ->where('transactions.id', $transactionId)
             ->groupBy('i.ingredient_name')
             ->select('i.ingredient_name')
-            ->selectRaw('COUNT(i.ingredient_name) as quantity')
+            ->selectRaw('CAST(COUNT(i.ingredient_name) AS DECIMAL) as quantity')
             ->get();
 
         $results = collect($subquery1)
