@@ -79,7 +79,7 @@ class TransactionController extends Controller
         }
 
         $status = $data['status'];
-        $transactions = Transactions::with('Customer')->where('status', '=', $status)->get();
+        $transactions = Transactions::with('Customer.Users', 'Delivery')->where('status', '=', $status)->get();
 
         return response([
             'message' => 'All data Retrievied',
