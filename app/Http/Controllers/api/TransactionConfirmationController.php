@@ -143,16 +143,21 @@ class TransactionConfirmationController extends Controller
             ->sortBy('ingredient_name')
             ->values();
 
-        $shortageIngredient = $results->map(function($item){
+        $shortageIngredient = $results->map(function ($item) {
             $ingredient = Ingredients::where('ingredient_name', $item->ingredient_name)->first();
-            if($ingredient->quantity < $item->quantity){
-                return[
-                    'ingredient_name'=>$item->ingredient_name,
-                    'quantity'=>$item->quantity - $ingredient->quantity
+            if ($ingredient->quantity < $item->quantity) {
+                return [
+                    'ingredient_name' => $item->ingredient_name,
+                    'quantity' => $item->quantity - $ingredient->quantity
                 ];
             }
-        });    
-            
+        });
+
+        // Filter out null values from the collection
+        $shortageIngredient = $shortageIngredient->filter();
+
+        // If you need to reindex the collection (optional)
+        $shortageIngredient = $shortageIngredient->values();
 
         return response([
             'message' => 'Show all ingredient used',
