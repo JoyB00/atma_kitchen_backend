@@ -32,6 +32,20 @@ class CustomerController extends Controller
         ], 200);
     }
 
+    public function showLoggedIn()
+    {
+        $customer = Customers::with('Users')->where('user_id', auth()->user()->id)->first();
+        if (is_null($customer)) {
+            return response([
+                'message' => 'Customer Not Found'
+            ], 404);
+        }
+        return response([
+            'message' => 'Customer Retrieved Successfully',
+            'data' => $customer
+        ], 200);
+    }
+
     public function update(Request $request, $id)
     {
         $customer = Customers::with('Users')->find($id);
@@ -40,15 +54,11 @@ class CustomerController extends Controller
                 'message' => 'Customer Not Found'
             ], 404);
         }
-        
         $validate = Validator::make($request->all(), [
-            'role_id' => 'required',
             'fullName' => 'required',
             'gender' => 'required',
             'phoneNumber' => 'required|max:13|min:10',
             'dateOfBirth' => 'required',
-            'email' => 'required|email:rfc,dns|unique:users',
-            'password' => 'required|min:8',
         ]);
         if ($validate->fails()) {
             return response([
@@ -59,10 +69,8 @@ class CustomerController extends Controller
 
         $customer->users->update($request->all());
         return response([
-            'message' => 'Customer Updated Successfully',
+            'message' => 'Customer Updated',
             'data' => $customer
         ], 200);
     }
-    
-
 }

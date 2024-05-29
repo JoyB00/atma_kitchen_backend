@@ -13,7 +13,7 @@ class BalanceHistories extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'customer_id', 
-        'balance_nominal', 
+        'nominal_balance', 
         'bank_name', 
         'account_number', 
         'date', 

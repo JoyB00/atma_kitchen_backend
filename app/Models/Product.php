@@ -34,4 +34,9 @@ class Product extends Model
     {
         return $this->belongsTo(Consignors::class, 'consignor_id');
     }
+
+    public function AllLimit()
+    {
+        return $this->hasMany(ProductLimits::class, 'product_id', 'id');
+    }
 }

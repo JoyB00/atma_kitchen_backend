@@ -16,7 +16,7 @@ class CartsSeeder extends Seeder
     DB::table('carts')->insert(
       [
         [
-          "transaction_id" => 1,
+          "transaction_id" => 10,
           "product_id" => 1,
           "hampers_id" => null,
           "quantity" => 1,
@@ -24,7 +24,7 @@ class CartsSeeder extends Seeder
           "total_price" => 850000
         ],
         [
-          "transaction_id" => 2,
+          "transaction_id" => 11,
           "product_id" => 2,
           "hampers_id" => null,
           "quantity" => 1,
@@ -32,7 +32,7 @@ class CartsSeeder extends Seeder
           "total_price" => 450000
         ],
         [
-          "transaction_id" => 3,
+          "transaction_id" => 12,
           "product_id" => 3,
           "hampers_id" => null,
           "quantity" => 1,
@@ -40,7 +40,7 @@ class CartsSeeder extends Seeder
           "total_price" => 550000
         ],
         [
-          "transaction_id" => 4,
+          "transaction_id" => 13,
           "product_id" => 4,
           "hampers_id" => null,
           "quantity" => 1,

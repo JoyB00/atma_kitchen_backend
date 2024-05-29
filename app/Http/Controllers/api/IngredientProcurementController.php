@@ -15,8 +15,8 @@ class IngredientProcurementController extends Controller
 {
     public function index()
     {
-        $data = IngredientProcurements::get();
-        $detail = IngredientsProcurementDetails::get();
+        $data = IngredientProcurements::with('IngredientsProcurementDetails', 'IngredientsProcurementDetails.Ingredients')->orderBy('id', 'desc')->get();
+        $detail = IngredientsProcurementDetails::with('Ingredients')->get();
         if (is_null($data)) {
             return response([
                 'message' => 'Ingredient Procurement Not Found',

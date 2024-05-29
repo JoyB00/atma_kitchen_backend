@@ -16,7 +16,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $produk = Product::with('Categories')->where('active', 1)->get();
+        $produk = Product::with('Categories')->orderBy('id', 'desc')->where('active', 1)->get();
         if (is_null($produk)) {
             return response([
                 'message' => 'No Data Found',
@@ -69,13 +69,13 @@ class ProductController extends Controller
         ]);
         $productionDate = Carbon::parse($storeData['production_date']);
         $oneDayBeforeNow = Carbon::now()->subDay();
-        if ($validate->fails()) {
-            return response([
-                'message' => $validate->errors()->first()
-            ], 400);
-        } else if ($storeData['product_status'] == 'Pre-Order' && $storeData['category_id'] == 4) {
+        if ($storeData['product_status'] == 'Pre-Order' && $storeData['category_id'] == 4) {
             return response([
                 'message' => 'Product Status must be Ready',
+            ], 400);
+        } else if ($validate->fails()) {
+            return response([
+                'message' => $validate->errors()->first()
             ], 400);
         } else if ($storeData['product_status'] == 'Pre-Order' && !isset($storeData['production_date'])) {
             return response([
@@ -164,8 +164,6 @@ class ProductController extends Controller
             'description' => 'required',
             'limit_amount' => 'numeric|min:0'
         ]);
-        $productionDate = Carbon::parse($updateData['production_date']);
-        $oneDayBeforeNow = Carbon::now()->subDay();
         if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()->first()
@@ -177,10 +175,6 @@ class ProductController extends Controller
         } else if ($updateData['product_status'] == 'Pre-Order' && !isset($updateData['production_date'])) {
             return response([
                 'message' => 'The production date field is required.',
-            ], 400);
-        } else if ($productionDate < $oneDayBeforeNow) {
-            return response([
-                'message' => 'Production date cannot be before today',
             ], 400);
         } else if ($updateData['product_status'] == 'Pre-Order' && !isset($updateData['limit_amount'])) {
             return response([

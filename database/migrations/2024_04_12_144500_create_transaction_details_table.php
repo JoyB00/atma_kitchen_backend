@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('carts', function (Blueprint $table) {
+        Schema::create('transaction_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('transaction_id')->references('id')->on('transactions')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');

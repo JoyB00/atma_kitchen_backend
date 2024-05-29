@@ -14,7 +14,7 @@ class EmployeeController extends Controller
     {
         $employee = Employees::with('Users', 'Users', 'Users.Roles', 'Absence')->whereHas('Users', function ($query) {
             $query->where('active', 1);
-        })->get();
+        })->orderBy('id', 'desc')->get();
         return response([
             'message' => "Retrieve All Employee Successfully",
             'data' => $employee,
@@ -46,16 +46,10 @@ class EmployeeController extends Controller
         $validate = Validator::make($request->all(), [
             'role_id' => 'required',
             'fullName' => 'required',
-            'email' => 'required|email:rfc,dns|unique:users',
-            'password' => 'required|min:8',
             'phoneNumber' => 'required|max:13|min:10',
+            'gender' => 'required',
         ]);
-        if ($validate->fails()) {
-            return response([
-                'message' => $validate->errors()->first()
-            ], 400);
-        }
-        
+
         $request['password'] = bcrypt($request->password);
 
         $employee->users->update($request->all());
@@ -76,6 +70,26 @@ class EmployeeController extends Controller
         return response([
             'message' => 'A Employee Retrieved',
             'data' => $employee
+        ], 200);
+    }
+
+    public function changePasswordEmployee(Request $request)
+    {
+        $user = User::find(auth()->user()->id);
+        $oldPassword = $request->oldPassword;
+        $newPassword = $request->newPassword;
+        if (!password_verify($oldPassword, $user->password)) {
+            return response([
+                'message' => 'Old Password is incorrect'
+            ], 400);
+        }
+
+        $user->update([
+            'password' => bcrypt($newPassword)
+        ]);
+
+        return response([
+            'message' => 'Password Changed'
         ], 200);
     }
 

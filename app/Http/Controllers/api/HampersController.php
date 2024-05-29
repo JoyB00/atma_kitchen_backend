@@ -8,12 +8,13 @@ use App\Models\HampersDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class HampersController extends Controller
 {
     public function index()
     {
-        $hampers = Hampers::where('active',1)->orderBy('hampers_name', 'asc')->get();
+        $hampers = Hampers::with('HampersDetail', 'HampersDetail.Product', 'HampersDetail.Ingredients')->where('active', 1)->orderBy('hampers_name', 'asc')->orderBy('id', 'desc')->get();
         $hampers_detail = HampersDetails::with('Hampers', 'Product', 'Ingredients')->get();
         return response([
             'message' => 'All Hampers Retrivied',
@@ -78,7 +79,11 @@ class HampersController extends Controller
     public function getHampers($id)
     {
         $hampers = Hampers::find($id);
-        $hampers_detail = HampersDetails::with('Product', 'Ingredients')->where('hampers_id', $id)->get();
+        $hampers_detail = HampersDetails::with('Product', 'Product.Categories', 'Product.AllLimit', 'Ingredients')->where('hampers_id', $id)->get();
+
+        $ready_stock = Hampers::select(DB::raw('MIN(products.ready_stock) as ready_stock'))->join('hampers_details', 'hampers.id', '=', 'hampers_details.hampers_id')->join('products', 'products.id', '=', 'hampers_details.product_id')->where('hampers.id', '=', $id)->get();
+
+
 
         if (is_null($hampers)) {
             return response([
@@ -90,7 +95,8 @@ class HampersController extends Controller
             'message' => 'Retrieve Hampers Successfully',
             'data' => [
                 'hampers' => $hampers,
-                'details' => $hampers_detail
+                'details' => $hampers_detail,
+                'ready_stock' => $ready_stock
             ]
         ], 200);
     }
