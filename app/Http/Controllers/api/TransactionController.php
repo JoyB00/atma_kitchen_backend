@@ -14,6 +14,7 @@ use App\Models\TransactionDetail;
 use App\Models\Transactions;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TransactionController extends Controller
 {
@@ -27,6 +28,7 @@ class TransactionController extends Controller
             'data' => $orders,
         ], 200);
     }
+
     public function getOrderConfirmation()
     {
         $orders = Transactions::with('Delivery', 'Customer', 'Customer.Users', 'Customer.BalanceHistory', 'Customer.Addresses', 'Employee', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('status', 'paymentValid')->orderBy('id', 'desc')->get();
@@ -58,6 +60,29 @@ class TransactionController extends Controller
                 'transaction' => $transaction,
                 'details' => $detailOrders
             ]
+        ], 200);
+    }
+
+    public function getTransactionWhereStatus(Request $request)
+    {
+        $status = $request->status;
+        $validate = Validator::make(
+            $request->all(),
+            [
+                'status' => 'required|string'
+            ]
+        );
+        if ($validate->fails()) {
+            return response([
+                'message' => $validate->errors()
+            ], 400);
+        }
+
+        $transactions = Transactions::where('status', '=', $status)->get();
+
+        return response([
+            'message' => 'All data Retrievied',
+            'data' => $transactions
         ], 200);
     }
 

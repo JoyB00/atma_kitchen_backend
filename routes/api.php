@@ -128,6 +128,9 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () 
 
     // Notification
     Route::post('/sendNotification', [NotificationController::class, 'sendNotificationToMobile']);
+
+    // Transaction
+    Route::get('/transactionWhereStatus', [TransactionController::class, 'getTransactionWhereStatus']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () { // logged in and have MO role
