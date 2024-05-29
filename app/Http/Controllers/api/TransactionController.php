@@ -65,11 +65,11 @@ class TransactionController extends Controller
 
     public function getTransactionWhereStatus(Request $request)
     {
-        $status = $request->status;
+        $data = $request->all();
         $validate = Validator::make(
-            $request->all(),
+            $data,
             [
-                'status' => 'required|string'
+                'status' => 'required'
             ]
         );
         if ($validate->fails()) {
@@ -78,6 +78,7 @@ class TransactionController extends Controller
             ], 400);
         }
 
+        $status = $data['status'];
         $transactions = Transactions::where('status', '=', $status)->get();
 
         return response([
