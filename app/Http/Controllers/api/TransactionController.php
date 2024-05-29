@@ -74,7 +74,7 @@ class TransactionController extends Controller
         );
         if ($validate->fails()) {
             return response([
-                'message' => $validate->errors()
+                'message' => $validate->errors()->first(),
             ], 400);
         }
 
