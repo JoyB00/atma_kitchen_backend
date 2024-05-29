@@ -144,7 +144,7 @@ class TransactionConfirmationController extends Controller
             ->values();
 
         $shortageIngredient = $results->map(function($item){
-            $ingredient = Ingredients::where('ingredient', $item->ingredient_name)->first();
+            $ingredient = Ingredients::where('ingredient_name', $item->ingredient_name)->first();
             if($ingredient->quantity < $item->quantity){
                 return[
                     'ingredient_name'=>$item->ingredient_name,
