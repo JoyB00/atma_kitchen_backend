@@ -125,6 +125,9 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () 
     Route::get('/paymentConfirmation', [PaymentController::class, 'getAllPaymentConfirmation']);
     Route::post('/paymentConfirmation', [PaymentController::class, 'confirmPayment']);
     Route::post('/paymentConfirmation/reject/{id}', [PaymentController::class, 'rejectTransaction']);
+
+    // Notification
+    Route::post('/sendNotification', [NotificationController::class, 'sendNotificationToMobile']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () { // logged in and have MO role
