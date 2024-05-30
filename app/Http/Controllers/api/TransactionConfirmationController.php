@@ -166,4 +166,21 @@ class TransactionConfirmationController extends Controller
             'data' => $shortageIngredient
         ], 200);
     }
+
+    public function showTransactionNeedToProccess()
+    {
+        $tommorow = Carbon::now()->addDay()->toDateString();
+        $transaction = Transactions::where('status', 'accepted')->whereDate('pickup_date', $tommorow)->get();
+        if (is_null($transaction)) {
+            return response([
+                'message' => 'No transaction need to proccess',
+                'data' => null
+            ], 404);
+        }
+
+        return response([
+            'message' => 'Show all transaction need to proccess',
+            'data' => $transaction
+        ], 200);
+    }
 }
