@@ -24,7 +24,6 @@ Route::get('/category', [CategoryController::class, 'index']);
 
 // General Info
 Route::get('/generalInfo', [GeneralInfoController::class, 'index']);
-Route::get('/shortageIngredient/{id}', [TransactionConfirmationController::class, 'showShortageIngredient']);
 
 Route::middleware('auth:api')->group(function () { // all logged in user
     Route::post('/changePassword', [AuthController::class, 'changePassword']);
@@ -170,6 +169,8 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
 
     // Transaction Confirmation
     Route::post('/transactionConfirmation', [TransactionConfirmationController::class, 'MoConfirmation']);
+    Route::get('/shortageIngredient/{id}', [TransactionConfirmationController::class, 'showShortageIngredient']);
+    Route::get('/transactionConfirmation/proccess', [TransactionConfirmationController::class, 'showTransactionNeedToProccess']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () { // logged in and have Customer role
