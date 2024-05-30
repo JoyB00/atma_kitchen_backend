@@ -89,7 +89,6 @@ Route::middleware('auth:api')->group(function () { // all logged in user
 
     // Transaction
     Route::post('/changeTransactionStatus', [TransactionController::class, 'changeTransactionStatus']);
-    Route::post('/transactionWhereStatus', [TransactionController::class, 'getTransactionWhereStatus']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () { // logged in and have Owner role
@@ -132,6 +131,9 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () 
 
     // Notification
     Route::post('/sendNotification', [NotificationController::class, 'sendNotificationToMobile']);
+
+    // Transaction
+    Route::post('/transactionWhereStatus', [TransactionController::class, 'getTransactionWhereStatus']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () { // logged in and have MO role
