@@ -103,12 +103,12 @@ class TransactionController extends Controller
         }
 
         $status = $data['status'];
-        $customer_id = Customers::where('user_id', auth()->user()->id)->first();
-        $transactions = Transactions::with('Customer.Users', 'Delivery')->where('status', '=', $status)->where('customer_id', '=', $customer_id['user_id'])->get();
+        $customer = Customers::where('user_id', auth()->user()->id)->first();
+        $transactions = Transactions::with('Customer.Users', 'Delivery')->where('status', '=', $status)->where('customer_id', '=', $customer['id'])->get();
 
         return response([
             'message' => 'All data Retrieved',
-            'customer_id' => $customer_id['user_id'],
+            'customer_id' => $customer,
             'data' => $transactions
         ], 200);
     }
