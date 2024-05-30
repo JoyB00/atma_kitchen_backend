@@ -140,6 +140,7 @@ class TransactionConfirmationController extends Controller
             ->merge($subquery2)
             ->merge($subquery3)
             ->groupBy('ingredient_name')
+            ->orderBy('ingredient_name')
             ->map(function ($group) {
                 return [
                     'ingredient_name' => $group->first()->ingredient_name,
@@ -164,6 +165,7 @@ class TransactionConfirmationController extends Controller
         }
 
         $recapIngredient = $this->usedIngredient($transaksiID_array);
+
 
         return response([
             'message' => 'All Recap Retrivied',
