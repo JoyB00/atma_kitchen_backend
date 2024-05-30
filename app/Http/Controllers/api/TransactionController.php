@@ -110,9 +110,7 @@ class TransactionController extends Controller
             ], 404);
         }
 
-        $transaction->update([
-            'status' => $data['status']
-        ]);
+        $transaction->update($data);
         return response([
             'message' => 'Transaction status successfully changed',
             'data' => $transaction
