@@ -87,6 +87,38 @@ class TransactionController extends Controller
         ], 200);
     }
 
+    public function changeTransactionStatus(Request $request)
+    {
+        $data = $request->all();
+        $validate = Validator::make(
+            $data,
+            [
+                'id' => 'required',
+                'status' => 'required'
+            ]
+        );
+        if ($validate->fails()) {
+            return response([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $transaction = Transactions::find($data['id']);
+        if (is_null($transaction)) {
+            return response([
+                'message' => 'Transaction Not Found',
+            ], 404);
+        }
+
+        $transaction->update([
+            'status' => $data['status']
+        ]);
+        return response([
+            'message' => 'Transaction status successfully changed',
+            'data' => $transaction
+        ], 200);
+    }
+
     public function getDetailOrderAuth($id)
     {
         $transaction = Transactions::with('Customer', 'Customer.Users', 'Customer.BalanceHistory', 'Customer.Addresses', 'Employee', 'Employee.Users', 'Delivery')->where('id', $id)->first();

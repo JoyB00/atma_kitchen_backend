@@ -87,6 +87,9 @@ Route::middleware('auth:api')->group(function () { // all logged in user
 
     // General Info
     Route::post('/generalInfo', [GeneralInfoController::class, 'store']);
+
+    // Transaction
+    Route::post('/changeTransactionStatus', [TransactionController::class, 'changeTransactionStatus']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () { // logged in and have Owner role
