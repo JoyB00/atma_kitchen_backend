@@ -100,13 +100,13 @@ class TransactionConfirmationController extends Controller
         ], 200);
     }
 
-    public function shortageIngredient($transactionId)
+    public function usedIngredient(array $transactionIds)
     {
         $subquery1 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
             ->join('products as p', 'dt.product_id', '=', 'p.id')
             ->join('recipes as r', 'r.product_id', '=', 'p.id')
             ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
-            ->where('transactions.id', $transactionId)
+            ->whereIn('transactions.id', $transactionIds)
             ->groupBy('i.ingredient_name')
             ->select('i.ingredient_name')
             ->selectRaw('CAST(SUM(r.quantity) AS DECIMAL) as quantity')
@@ -118,7 +118,7 @@ class TransactionConfirmationController extends Controller
             ->join('products as p', 'hd.product_id', '=', 'p.id')
             ->join('recipes as r', 'r.product_id', '=', 'p.id')
             ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
-            ->where('transactions.id', $transactionId)
+            ->whereIn('transactions.id', $transactionIds)
             ->groupBy('i.ingredient_name', 'p.product_name')
             ->select('i.ingredient_name')
             ->selectRaw('CAST(SUM(r.quantity) AS DECIMAL) as quantity')
@@ -129,49 +129,59 @@ class TransactionConfirmationController extends Controller
             ->join('hampers_details as hd', 'h.id', '=', 'hd.hampers_id')
             ->leftJoin('products as p', 'hd.product_id', '=', 'p.id')
             ->join('ingredients as i', 'i.id', '=', 'hd.ingredient_id')
-            ->where('transactions.id', $transactionId)
+            ->whereIn('transactions.id', $transactionIds)
             ->groupBy('i.ingredient_name')
             ->select('i.ingredient_name')
             ->selectRaw('CAST(COUNT(i.ingredient_name) AS DECIMAL) as quantity')
             ->get();
 
+        // Merging and summing up quantities from all subqueries
         $results = collect($subquery1)
             ->merge($subquery2)
             ->merge($subquery3)
-            ->sortBy('ingredient_name')
+            ->groupBy('ingredient_name')
+            ->map(function ($group) {
+                return [
+                    'ingredient_name' => $group->first()->ingredient_name,
+                    'quantity' => $group->sum('quantity')
+                ];
+            })
             ->values();
 
         return $results;
     }
 
+
     public function showShortageIngredient($id)
     {
-        $transactionId = $id;
-        $results = $this->shortageIngredient($transactionId);
+        $transactionId = [$id, 74, 86];
+        $results = $this->usedIngredient($transactionId);
 
-        // $shortageIngredient = $results->map(function ($item) {
-        //     $ingredient = Ingredients::where('ingredient_name', $item->ingredient_name)->first();
-        //     if ($ingredient->quantity < $item->quantity) {
-        //         return [
-        //             'ingredient_name' => $item->ingredient_name,
-        //             'quantity' => $item->quantity - $ingredient->quantity
-        //         ];
-        //     }
-        // });
+        $shortageIngredient = $results->map(function ($item) {
+            $ingredient = Ingredients::where('ingredient_name', $item['ingredient_name'])->first();
+            if ($ingredient->quantity < $item['quantity']) {
+                return [
+                    'ingredient_name' => $item['ingredient_name'],
+                    'quantity' => $item['quantity'] - $ingredient->quantity
+                ];
+            }
+        });
 
-        // // Filter out null values from the collection
-        // $shortageIngredient = $shortageIngredient->filter(function ($item) {
-        //     return !is_null($item);
-        // });
+        // Filter out null values from the collection
+        $shortageIngredient = $shortageIngredient->filter(function ($item) {
+            return !is_null($item);
+        });
 
-        // // If you need to reindex the collection (optional)
-        // $shortageIngredient = $shortageIngredient->values();
+        // If you need to reindex the collection (optional)
+        $shortageIngredient = $shortageIngredient->values();
 
         return response([
             'message' => 'Show all ingredient used',
-            'data' => $results
+            'data' => $shortageIngredient
         ], 200);
     }
+
+
 
     public function showTransactionNeedToProccess()
     {
