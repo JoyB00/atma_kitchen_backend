@@ -170,7 +170,7 @@ class TransactionConfirmationController extends Controller
     public function showTransactionNeedToProccess()
     {
         $tommorow = Carbon::now()->addDay()->toDateString();
-        $transaction = Transactions::where('status', 'accepted')->where(Carbon::parse('pickup_date')->toDateString(), $tommorow)->get();
+        $transaction = Transactions::where('status', 'accepted')->whereDate('pickup_date', $tommorow)->get();
         if (is_null($transaction)) {
             return response([
                 'message' => 'No transaction need to proccess',
