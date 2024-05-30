@@ -108,6 +108,7 @@ class TransactionController extends Controller
 
         return response([
             'message' => 'All data Retrieved',
+            'customer_id' => $customer_id,
             'data' => $transactions
         ], 200);
     }
