@@ -157,27 +157,27 @@ class TransactionConfirmationController extends Controller
         $transactionId = [$id, 74, 86];
         $results = $this->usedIngredient($transactionId);
 
-        $shortageIngredient = $results->map(function ($item) {
-            $ingredient = Ingredients::where('ingredient_name', $item['ingredient_name'])->first();
-            if ($ingredient->quantity < $item['quantity']) {
-                return [
-                    'ingredient_name' => $item['ingredient_name'],
-                    'quantity' => $item['quantity'] - $ingredient->quantity
-                ];
-            }
-        });
+        // $shortageIngredient = $results->map(function ($item) {
+        //     $ingredient = Ingredients::where('ingredient_name', $item['ingredient_name'])->first();
+        //     if ($ingredient->quantity < $item['quantity']) {
+        //         return [
+        //             'ingredient_name' => $item['ingredient_name'],
+        //             'quantity' => $item['quantity'] - $ingredient->quantity
+        //         ];
+        //     }
+        // });
 
-        // Filter out null values from the collection
-        $shortageIngredient = $shortageIngredient->filter(function ($item) {
-            return !is_null($item);
-        });
+        // // Filter out null values from the collection
+        // $shortageIngredient = $shortageIngredient->filter(function ($item) {
+        //     return !is_null($item);
+        // });
 
-        // If you need to reindex the collection (optional)
-        $shortageIngredient = $shortageIngredient->values();
+        // // If you need to reindex the collection (optional)
+        // $shortageIngredient = $shortageIngredient->values();
 
         return response([
             'message' => 'Show all ingredient used',
-            'data' => $shortageIngredient
+            'data' => $results
         ], 200);
     }
 
