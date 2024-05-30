@@ -171,7 +171,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
     Route::post('/transactionConfirmation', [TransactionConfirmationController::class, 'MoConfirmation']);
     Route::get('/shortageIngredient/{id}', [TransactionConfirmationController::class, 'showShortageIngredient']);
     Route::get('/transactionConfirmation/proccess', [TransactionConfirmationController::class, 'showTransactionNeedToProccess']);
-    Route::get('/transactionConfirmation/proccess/recap', [TransactionConfirmationController::class, 'recapUsedIngredient']);
+    Route::post('/transactionConfirmation/proccess/recap', [TransactionConfirmationController::class, 'recapUsedIngredient']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () { // logged in and have Customer role
