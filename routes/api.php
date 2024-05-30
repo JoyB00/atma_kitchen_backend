@@ -192,12 +192,12 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::delete('/address/{id}', [AddressController::class, 'destroy']);
 
     // Transaction
-
     Route::post('/order', [TransactionController::class, 'store']);
     Route::put('/order/{id}', [TransactionController::class, 'updatePickUpDateTransaction']);
     Route::delete('/order/{id}', [TransactionController::class, 'deleteTransaction']);
     Route::post('/orderBuyNow', [TransactionController::class, 'storeBuyNow']);
     Route::get('/orderDetail/{id}', [TransactionController::class, 'getDetailOrderAuth']);
+    Route::post('/transactionWhereStatusCustomer', [TransactionController::class, 'getTransactionWhereStatusWithAuth']);
 
     // Delivery
     Route::post('/delivery', [DeliveryController::class, 'store']);

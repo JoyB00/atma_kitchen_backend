@@ -82,7 +82,32 @@ class TransactionController extends Controller
         $transactions = Transactions::with('Customer.Users', 'Delivery')->where('status', '=', $status)->get();
 
         return response([
-            'message' => 'All data Retrievied',
+            'message' => 'All data Retrieved',
+            'data' => $transactions
+        ], 200);
+    }
+
+    public function getTransactionWhereStatusWithAuth(Request $request)
+    {
+        $data = $request->all();
+        $validate = Validator::make(
+            $data,
+            [
+                'status' => 'required'
+            ]
+        );
+        if ($validate->fails()) {
+            return response([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $status = $data['status'];
+        $customer_id = Customers::where('user_id', auth()->user()->id)->first();
+        $transactions = Transactions::with('Customer.Users', 'Delivery')->where('status', '=', $status)->where('customer_id', $customer_id)->get();
+
+        return response([
+            'message' => 'All data Retrieved',
             'data' => $transactions
         ], 200);
     }
