@@ -100,9 +100,53 @@ class TransactionConfirmationController extends Controller
         ], 200);
     }
 
+    public function shortageIngredient($transactionId)
+    {
+        $subquery1 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
+            ->join('products as p', 'dt.product_id', '=', 'p.id')
+            ->join('recipes as r', 'r.product_id', '=', 'p.id')
+            ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
+            ->where('transactions.id', $transactionId)
+            ->groupBy('i.ingredient_name')
+            ->select('i.ingredient_name')
+            ->selectRaw('CAST(SUM(r.quantity) AS DECIMAL) as quantity')
+            ->get();
+
+        $subquery2 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
+            ->join('hampers as h', 'h.id', '=', 'dt.hampers_id')
+            ->join('hampers_details as hd', 'h.id', '=', 'hd.hampers_id')
+            ->join('products as p', 'hd.product_id', '=', 'p.id')
+            ->join('recipes as r', 'r.product_id', '=', 'p.id')
+            ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
+            ->where('transactions.id', $transactionId)
+            ->groupBy('i.ingredient_name', 'p.product_name')
+            ->select('i.ingredient_name')
+            ->selectRaw('CAST(SUM(r.quantity) AS DECIMAL) as quantity')
+            ->get();
+
+        $subquery3 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
+            ->join('hampers as h', 'h.id', '=', 'dt.hampers_id')
+            ->join('hampers_details as hd', 'h.id', '=', 'hd.hampers_id')
+            ->leftJoin('products as p', 'hd.product_id', '=', 'p.id')
+            ->join('ingredients as i', 'i.id', '=', 'hd.ingredient_id')
+            ->where('transactions.id', $transactionId)
+            ->groupBy('i.ingredient_name')
+            ->select('i.ingredient_name')
+            ->selectRaw('CAST(COUNT(i.ingredient_name) AS DECIMAL) as quantity')
+            ->get();
+
+        $results = collect($subquery1)
+            ->merge($subquery2)
+            ->merge($subquery3)
+            ->sortBy('ingredient_name')
+            ->values();
+
+        return $results;
+    }
+
     public function showShortageIngredient($id)
     {
-        $transactionId = $id;
+        $transactionId = [$id, 70, 86];
 
         $subquery1 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
             ->join('products as p', 'dt.product_id', '=', 'p.id')
@@ -170,7 +214,7 @@ class TransactionConfirmationController extends Controller
     public function showTransactionNeedToProccess()
     {
         $tommorow = Carbon::now()->addDay()->toDateString();
-        $transaction = Transactions::with('Delivery', 'Customer', 'Customer.users','TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('status', 'accepted')->whereDate('pickup_date', $tommorow)->get();
+        $transaction = Transactions::with('Delivery', 'Customer', 'Customer.users', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('status', 'accepted')->whereDate('pickup_date', $tommorow)->get();
         if (is_null($transaction)) {
             return response([
                 'message' => 'No transaction need to proccess',
