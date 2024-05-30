@@ -100,15 +100,13 @@ class TransactionConfirmationController extends Controller
         ], 200);
     }
 
-    public function showShortageIngredient($id)
+    public function usedIngredient(array $transactionIds)
     {
-        $transactionId = $id;
-
         $subquery1 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
             ->join('products as p', 'dt.product_id', '=', 'p.id')
             ->join('recipes as r', 'r.product_id', '=', 'p.id')
             ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
-            ->where('transactions.id', $transactionId)
+            ->whereIn('transactions.id', $transactionIds)
             ->groupBy('i.ingredient_name')
             ->select('i.ingredient_name')
             ->selectRaw('CAST(SUM(r.quantity) AS DECIMAL) as quantity')
@@ -120,7 +118,7 @@ class TransactionConfirmationController extends Controller
             ->join('products as p', 'hd.product_id', '=', 'p.id')
             ->join('recipes as r', 'r.product_id', '=', 'p.id')
             ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
-            ->where('transactions.id', $transactionId)
+            ->whereIn('transactions.id', $transactionIds)
             ->groupBy('i.ingredient_name', 'p.product_name')
             ->select('i.ingredient_name')
             ->selectRaw('CAST(SUM(r.quantity) AS DECIMAL) as quantity')
@@ -131,24 +129,61 @@ class TransactionConfirmationController extends Controller
             ->join('hampers_details as hd', 'h.id', '=', 'hd.hampers_id')
             ->leftJoin('products as p', 'hd.product_id', '=', 'p.id')
             ->join('ingredients as i', 'i.id', '=', 'hd.ingredient_id')
-            ->where('transactions.id', $transactionId)
+            ->whereIn('transactions.id', $transactionIds)
             ->groupBy('i.ingredient_name')
             ->select('i.ingredient_name')
             ->selectRaw('CAST(COUNT(i.ingredient_name) AS DECIMAL) as quantity')
             ->get();
 
+        // Merging and summing up quantities from all subqueries
         $results = collect($subquery1)
             ->merge($subquery2)
             ->merge($subquery3)
-            ->sortBy('ingredient_name')
+            ->groupBy('ingredient_name')
+            ->map(function ($group) {
+                return [
+                    'ingredient_name' => $group->first()->ingredient_name,
+                    'quantity' => $group->sum('quantity')
+                ];
+            })
             ->values();
 
+        return $results;
+    }
+
+    public function recapUsedIngredient(Request $request)
+    {
+        $data = $request->all();
+        $transaksiArray = [];
+        $transaksiID_array = [];
+        foreach ($data['item'] as $key => $item) {
+            $temp = Transactions::with('Customer', 'Customer.Users', 'TransactionDetails', 'TramsactionDetails.Product', 'TramsactionDetails.Hampers', 'TramsactionDetails.Product.AllRecipes', 'TramsactionDetails.Product.AllRecipes.Ingredients')->find($item['id']);
+            $transaksiArray[$key] = $temp;
+            $transaksiID_array[$key] = $temp->id;
+        }
+
+        $recapIngredient = $this->usedIngredient($transaksiID_array);
+
+        return response([
+            'message' => 'All Recap Retrivied',
+            'data' => [
+                'transaction' => $transaksiArray,
+                'recapIngredient' => $recapIngredient
+            ]
+        ], 200);
+    }
+
+    public function showShortageIngredient($id)
+    {
+        $transactionId = $id;
+        $results = $this->usedIngredient($transactionId);
+
         $shortageIngredient = $results->map(function ($item) {
-            $ingredient = Ingredients::where('ingredient_name', $item->ingredient_name)->first();
-            if ($ingredient->quantity < $item->quantity) {
+            $ingredient = Ingredients::where('ingredient_name', $item['ingredient_name'])->first();
+            if ($ingredient->quantity < $item['quantity']) {
                 return [
-                    'ingredient_name' => $item->ingredient_name,
-                    'quantity' => $item->quantity - $ingredient->quantity
+                    'ingredient_name' => $item['ingredient_name'],
+                    'quantity' => $item['quantity'] - $ingredient->quantity
                 ];
             }
         });
@@ -163,14 +198,16 @@ class TransactionConfirmationController extends Controller
 
         return response([
             'message' => 'Show all ingredient used',
-            'data' => $shortageIngredient
+            'data' => $results
         ], 200);
     }
+
+
 
     public function showTransactionNeedToProccess()
     {
         $tommorow = Carbon::now()->addDay()->toDateString();
-        $transaction = Transactions::where('status', 'accepted')->whereDate('pickup_date', $tommorow)->get();
+        $transaction = Transactions::with('Delivery', 'Customer', 'Customer.users', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('status', 'accepted')->whereDate('pickup_date', $tommorow)->get();
         if (is_null($transaction)) {
             return response([
                 'message' => 'No transaction need to proccess',
