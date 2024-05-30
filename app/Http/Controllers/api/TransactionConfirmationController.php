@@ -151,29 +151,50 @@ class TransactionConfirmationController extends Controller
         return $results;
     }
 
+    public function recapUsedIngredient(Request $request)
+    {
+        $data = $request->all();
+        $transaksiArray = [];
+        $transaksiID_array = [];
+        foreach ($data['item'] as $key => $item) {
+            $temp = Transactions::with('Customer', 'Customer.Users', 'TransactionDetails', 'TramsactionDetails.Product', 'TramsactionDetails.Hampers', 'TramsactionDetails.Product.AllRecipes', 'TramsactionDetails.Product.AllRecipes.Ingredients')->find($item['id']);
+            $transaksiArray[$key] = $temp;
+            $transaksiID_array[$key] = $temp->id;
+        }
+
+        $recapIngredient = $this->usedIngredient($transaksiID_array);
+
+        return response([
+            'message' => 'All Recap Retrivied',
+            'data' => [
+                'transaction' => $transaksiArray,
+                'recapIngredient' => $recapIngredient
+            ]
+        ], 200);
+    }
 
     public function showShortageIngredient($id)
     {
-        $transactionId = [$id, 74, 86];
+        $transactionId = $id;
         $results = $this->usedIngredient($transactionId);
 
-        // $shortageIngredient = $results->map(function ($item) {
-        //     $ingredient = Ingredients::where('ingredient_name', $item['ingredient_name'])->first();
-        //     if ($ingredient->quantity < $item['quantity']) {
-        //         return [
-        //             'ingredient_name' => $item['ingredient_name'],
-        //             'quantity' => $item['quantity'] - $ingredient->quantity
-        //         ];
-        //     }
-        // });
+        $shortageIngredient = $results->map(function ($item) {
+            $ingredient = Ingredients::where('ingredient_name', $item['ingredient_name'])->first();
+            if ($ingredient->quantity < $item['quantity']) {
+                return [
+                    'ingredient_name' => $item['ingredient_name'],
+                    'quantity' => $item['quantity'] - $ingredient->quantity
+                ];
+            }
+        });
 
-        // // Filter out null values from the collection
-        // $shortageIngredient = $shortageIngredient->filter(function ($item) {
-        //     return !is_null($item);
-        // });
+        // Filter out null values from the collection
+        $shortageIngredient = $shortageIngredient->filter(function ($item) {
+            return !is_null($item);
+        });
 
-        // // If you need to reindex the collection (optional)
-        // $shortageIngredient = $shortageIngredient->values();
+        // If you need to reindex the collection (optional)
+        $shortageIngredient = $shortageIngredient->values();
 
         return response([
             'message' => 'Show all ingredient used',
