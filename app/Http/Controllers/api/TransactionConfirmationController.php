@@ -158,7 +158,7 @@ class TransactionConfirmationController extends Controller
         $transaksiID_array = [];
 
         foreach ($data['item'] as $key => $i) {
-            $temp = Transactions::with('Customer', 'Customer.Users', 'TransactionDetails', 'TramsactionDetails.Product', 'TramsactionDetails.Hampers', 'TramsactionDetails.Product.AllRecipes', 'TramsactionDetails.Product.AllRecipes.Ingredients')->find($i['id']);
+            $temp = Transactions::with('Customer', 'Customer.Users', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers', 'TransactionDetails.Product.AllRecipes', 'TransactionDetails.Product.AllRecipes.Ingredients')->find($i['id']);
             $transaksiArray[$key] = $temp;
             $transaksiID_array[$key] = $temp->id;
         }
