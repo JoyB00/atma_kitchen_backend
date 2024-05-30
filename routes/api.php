@@ -86,6 +86,9 @@ Route::middleware('auth:api')->group(function () { // all logged in user
 
     // General Info
     Route::post('/generalInfo', [GeneralInfoController::class, 'store']);
+
+    // Transaction
+    Route::post('/changeTransactionStatus', [TransactionController::class, 'changeTransactionStatus']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () { // logged in and have Owner role
@@ -128,6 +131,9 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () 
 
     // Notification
     Route::post('/sendNotification', [NotificationController::class, 'sendNotificationToMobile']);
+
+    // Transaction
+    Route::post('/transactionWhereStatus', [TransactionController::class, 'getTransactionWhereStatus']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () { // logged in and have MO role
@@ -163,6 +169,9 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
 
     // Transaction Confirmation
     Route::post('/transactionConfirmation', [TransactionConfirmationController::class, 'MoConfirmation']);
+    Route::get('/shortageIngredient/{id}', [TransactionConfirmationController::class, 'showShortageIngredient']);
+    Route::get('/transactionConfirmation/proccess', [TransactionConfirmationController::class, 'showTransactionNeedToProccess']);
+    Route::post('/transactionConfirmation/proccess/recap', [TransactionConfirmationController::class, 'recapUsedIngredient']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () { // logged in and have Customer role
@@ -184,12 +193,12 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::delete('/address/{id}', [AddressController::class, 'destroy']);
 
     // Transaction
-
     Route::post('/order', [TransactionController::class, 'store']);
     Route::put('/order/{id}', [TransactionController::class, 'updatePickUpDateTransaction']);
     Route::delete('/order/{id}', [TransactionController::class, 'deleteTransaction']);
     Route::post('/orderBuyNow', [TransactionController::class, 'storeBuyNow']);
     Route::get('/orderDetail/{id}', [TransactionController::class, 'getDetailOrderAuth']);
+    Route::post('/transactionWhereStatusCustomer', [TransactionController::class, 'getTransactionWhereStatusWithAuth']);
 
     // Delivery
     Route::post('/delivery', [DeliveryController::class, 'store']);

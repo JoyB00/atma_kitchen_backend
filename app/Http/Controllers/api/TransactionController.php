@@ -14,6 +14,7 @@ use App\Models\TransactionDetail;
 use App\Models\Transactions;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TransactionController extends Controller
 {
@@ -27,6 +28,7 @@ class TransactionController extends Controller
             'data' => $orders,
         ], 200);
     }
+
     public function getOrderConfirmation()
     {
         $orders = Transactions::with('Delivery', 'Customer', 'Customer.Users', 'Customer.BalanceHistory', 'Customer.Addresses', 'Employee', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('status', 'paymentValid')->orderBy('id', 'desc')->get();
@@ -58,6 +60,86 @@ class TransactionController extends Controller
                 'transaction' => $transaction,
                 'details' => $detailOrders
             ]
+        ], 200);
+    }
+
+    public function getTransactionWhereStatus(Request $request)
+    {
+        $data = $request->all();
+        $validate = Validator::make(
+            $data,
+            [
+                'status' => 'required'
+            ]
+        );
+        if ($validate->fails()) {
+            return response([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $status = $data['status'];
+        $transactions = Transactions::with('Customer.Users', 'Delivery')->where('status', '=', $status)->get();
+
+        return response([
+            'message' => 'All data Retrieved',
+            'data' => $transactions
+        ], 200);
+    }
+
+    public function getTransactionWhereStatusWithAuth(Request $request)
+    {
+        $data = $request->all();
+        $validate = Validator::make(
+            $data,
+            [
+                'status' => 'required'
+            ]
+        );
+        if ($validate->fails()) {
+            return response([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $status = $data['status'];
+        $customer = Customers::where('user_id', auth()->user()->id)->first();
+        $transactions = Transactions::with('Customer.Users', 'Delivery')->where('status', '=', $status)->where('customer_id', '=', $customer['id'])->get();
+
+        return response([
+            'message' => 'All data Retrieved',
+            'customer_id' => $customer,
+            'data' => $transactions
+        ], 200);
+    }
+
+    public function changeTransactionStatus(Request $request)
+    {
+        $data = $request->all();
+        $validate = Validator::make(
+            $data,
+            [
+                'id' => 'required',
+                'status' => 'required'
+            ]
+        );
+        if ($validate->fails()) {
+            return response([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $transaction = Transactions::find($data['id']);
+        if (is_null($transaction)) {
+            return response([
+                'message' => 'Transaction Not Found',
+            ], 404);
+        }
+
+        $transaction->update($data);
+        return response([
+            'message' => 'Transaction status successfully changed',
+            'data' => $transaction
         ], 200);
     }
 

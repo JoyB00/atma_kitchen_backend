@@ -39,4 +39,9 @@ class Product extends Model
     {
         return $this->hasMany(ProductLimits::class, 'product_id', 'id');
     }
+
+    public function AllRecipes()
+    {
+        return $this->hasMany(Recipes::class, 'product_id','id');
+    }
 }
