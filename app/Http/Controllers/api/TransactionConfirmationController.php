@@ -149,66 +149,27 @@ class TransactionConfirmationController extends Controller
         $transactionId = $id;
         $results = $this->shortageIngredient($transactionId);
 
-        // $subquery1 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
-        //     ->join('products as p', 'dt.product_id', '=', 'p.id')
-        //     ->join('recipes as r', 'r.product_id', '=', 'p.id')
-        //     ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
-        //     ->where('transactions.id', $transactionId)
-        //     ->groupBy('i.ingredient_name')
-        //     ->select('i.ingredient_name')
-        //     ->selectRaw('CAST(SUM(r.quantity) AS DECIMAL) as quantity')
-        //     ->get();
+        // $shortageIngredient = $results->map(function ($item) {
+        //     $ingredient = Ingredients::where('ingredient_name', $item->ingredient_name)->first();
+        //     if ($ingredient->quantity < $item->quantity) {
+        //         return [
+        //             'ingredient_name' => $item->ingredient_name,
+        //             'quantity' => $item->quantity - $ingredient->quantity
+        //         ];
+        //     }
+        // });
 
-        // $subquery2 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
-        //     ->join('hampers as h', 'h.id', '=', 'dt.hampers_id')
-        //     ->join('hampers_details as hd', 'h.id', '=', 'hd.hampers_id')
-        //     ->join('products as p', 'hd.product_id', '=', 'p.id')
-        //     ->join('recipes as r', 'r.product_id', '=', 'p.id')
-        //     ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
-        //     ->where('transactions.id', $transactionId)
-        //     ->groupBy('i.ingredient_name', 'p.product_name')
-        //     ->select('i.ingredient_name')
-        //     ->selectRaw('CAST(SUM(r.quantity) AS DECIMAL) as quantity')
-        //     ->get();
+        // // Filter out null values from the collection
+        // $shortageIngredient = $shortageIngredient->filter(function ($item) {
+        //     return !is_null($item);
+        // });
 
-        // $subquery3 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
-        //     ->join('hampers as h', 'h.id', '=', 'dt.hampers_id')
-        //     ->join('hampers_details as hd', 'h.id', '=', 'hd.hampers_id')
-        //     ->leftJoin('products as p', 'hd.product_id', '=', 'p.id')
-        //     ->join('ingredients as i', 'i.id', '=', 'hd.ingredient_id')
-        //     ->where('transactions.id', $transactionId)
-        //     ->groupBy('i.ingredient_name')
-        //     ->select('i.ingredient_name')
-        //     ->selectRaw('CAST(COUNT(i.ingredient_name) AS DECIMAL) as quantity')
-        //     ->get();
-
-        // $results = collect($subquery1)
-        //     ->merge($subquery2)
-        //     ->merge($subquery3)
-        //     ->sortBy('ingredient_name')
-        //     ->values();
-
-        $shortageIngredient = $results->map(function ($item) {
-            $ingredient = Ingredients::where('ingredient_name', $item->ingredient_name)->first();
-            if ($ingredient->quantity < $item->quantity) {
-                return [
-                    'ingredient_name' => $item->ingredient_name,
-                    'quantity' => $item->quantity - $ingredient->quantity
-                ];
-            }
-        });
-
-        // Filter out null values from the collection
-        $shortageIngredient = $shortageIngredient->filter(function ($item) {
-            return !is_null($item);
-        });
-
-        // If you need to reindex the collection (optional)
-        $shortageIngredient = $shortageIngredient->values();
+        // // If you need to reindex the collection (optional)
+        // $shortageIngredient = $shortageIngredient->values();
 
         return response([
             'message' => 'Show all ingredient used',
-            'data' => $shortageIngredient
+            'data' => $results
         ], 200);
     }
 
