@@ -139,16 +139,18 @@ class TransactionConfirmationController extends Controller
         $results = collect($subquery1)
             ->merge($subquery2)
             ->merge($subquery3)
-            ->groupBy(['ingredient_name', 'product_name'])
-            ->map(function ($group) {
+            ->groupBy(function ($item) {
+                return $item->ingredient_name ?? $item->product_name;
+            })
+            ->map(function ($group, $key) {
+                $quantity = $group->sum('quantity');
                 return [
-                    'ingredient_name' => $group->first()->ingredient_name,
-                    'product_name' => $group->first()->product_name,
-                    'quantity' => $group->sum('quantity')
+                    'name' => $key,
+                    'quantity' => $quantity
                 ];
             })
             ->values()
-            ->sortBy(['ingredient_name', 'product_name'])
+            ->sortBy('name')
             ->values();
 
         return $results;
