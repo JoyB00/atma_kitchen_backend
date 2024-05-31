@@ -119,8 +119,8 @@ class TransactionConfirmationController extends Controller
             ->join('recipes as r', 'r.product_id', '=', 'p.id')
             ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
             ->whereIn('transactions.id', $transactionIds)
-            ->groupBy('i.ingredient_name', 'p.product_name')
-            ->select('i.ingredient_name', 'p.product_name')
+            ->groupBy('i.ingredient_name')
+            ->select('i.ingredient_name')
             ->selectRaw('CAST(SUM(r.quantity * dt.quantity) AS DECIMAL) as quantity')
             ->get();
 
@@ -131,8 +131,8 @@ class TransactionConfirmationController extends Controller
             ->join('recipes as r', 'r.product_id', '=', 'p.id')
             ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
             ->whereIn('transactions.id', $transactionIds)
-            ->groupBy('i.ingredient_name', 'p.product_name')
-            ->select('i.ingredient_name', 'p.product_name')
+            ->groupBy('i.ingredient_name')
+            ->select('i.ingredient_name')
             ->selectRaw('CAST(SUM(r.quantity * dt.quantity) AS DECIMAL) as quantity')
             ->get();
 
@@ -142,8 +142,8 @@ class TransactionConfirmationController extends Controller
             ->leftJoin('products as p', 'hd.product_id', '=', 'p.id')
             ->join('ingredients as i', 'i.id', '=', 'hd.ingredient_id')
             ->whereIn('transactions.id', $transactionIds)
-            ->groupBy('i.ingredient_name', 'p.product_name')
-            ->select('i.ingredient_name', 'p.product_name')
+            ->groupBy('i.ingredient_name')
+            ->select('i.ingredient_name')
             ->selectRaw('CAST(COUNT(p.product_name) AS DECIMAL) as quantity')
             ->get();
 
@@ -151,44 +151,45 @@ class TransactionConfirmationController extends Controller
         $results = collect($subquery1)
             ->merge($subquery2)
             ->merge($subquery3)
-            ->groupBy(['ingredient_name', 'product_name'])
+            ->groupBy('ingredient_name')
             ->map(function ($group) use ($specialProducts, $fullSizeProductIds) {
-                $productName = $group->first()->product_name;
                 $ingredientName = $group->first()->ingredient_name;
                 $quantity = $group->sum('quantity');
 
                 // Adjust quantity if product has a special mapping and quantity is 1
-                if (isset($specialProducts[$productName]) && $quantity == 1) {
-                    $fullSizeProductName = $specialProducts[$productName];
-                    // Check if we have the full-size product's recipe quantity
-                    if (isset($fullSizeProductIds[$fullSizeProductName])) {
-                        // Fetch the recipe for the full-size product
-                        $fullSizeRecipe = DB::table('recipes')
-                            ->where('product_id', $fullSizeProductIds[$fullSizeProductName])
-                            ->where('ingredient_id', function ($query) use ($ingredientName) {
-                                $query->select('id')
-                                    ->from('ingredients')
-                                    ->where('ingredient_name', $ingredientName);
-                            })
-                            ->first();
-                        if ($fullSizeRecipe) {
-                            $quantity = $fullSizeRecipe->quantity;
+                foreach ($group as $item) {
+                    if (isset($specialProducts[$item->product_name]) && $item->quantity == 1) {
+                        $fullSizeProductName = $specialProducts[$item->product_name];
+                        // Check if we have the full-size product's recipe quantity
+                        if (isset($fullSizeProductIds[$fullSizeProductName])) {
+                            // Fetch the recipe for the full-size product
+                            $fullSizeRecipe = DB::table('recipes')
+                                ->where('product_id', $fullSizeProductIds[$fullSizeProductName])
+                                ->where('ingredient_id', function ($query) use ($ingredientName) {
+                                    $query->select('id')
+                                        ->from('ingredients')
+                                        ->where('ingredient_name', $ingredientName);
+                                })
+                                ->first();
+                            if ($fullSizeRecipe) {
+                                $quantity += $fullSizeRecipe->quantity;
+                            }
                         }
                     }
                 }
 
                 return [
                     'ingredient_name' => $ingredientName,
-                    'product_name' => $productName,
                     'quantity' => $quantity
                 ];
             })
             ->values()
-            ->sortBy(['ingredient_name', 'product_name'])
+            ->sortBy('ingredient_name')
             ->values();
 
         return $results;
     }
+
 
 
     public function recapUsedIngredient(Request $request)
