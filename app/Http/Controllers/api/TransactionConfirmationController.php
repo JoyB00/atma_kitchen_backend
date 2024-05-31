@@ -15,6 +15,7 @@ use App\Models\Transactions;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class TransactionConfirmationController extends Controller
 {
@@ -102,7 +103,6 @@ class TransactionConfirmationController extends Controller
 
     public function usedIngredient(array $transactionIds)
     {
-        // Subquery 1: Produk langsung dari transaksi
         $subquery1 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
             ->join('products as p', 'dt.product_id', '=', 'p.id')
             ->join('recipes as r', 'r.product_id', '=', 'p.id')
@@ -113,7 +113,8 @@ class TransactionConfirmationController extends Controller
             ->selectRaw('SUM(r.quantity) as quantity')
             ->get();
 
-        // Subquery 2: Produk dalam hampers
+        Log::info('Subquery 1 results', ['data' => $subquery1]);
+
         $subquery2 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
             ->join('hampers as h', 'h.id', '=', 'dt.hampers_id')
             ->join('hampers_details as hd', 'h.id', '=', 'hd.hampers_id')
@@ -126,7 +127,8 @@ class TransactionConfirmationController extends Controller
             ->selectRaw('SUM(r.quantity) as quantity')
             ->get();
 
-        // Subquery 3: Bahan baku langsung dalam hampers
+        Log::info('Subquery 2 results', ['data' => $subquery2]);
+
         $subquery3 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
             ->join('hampers as h', 'h.id', '=', 'dt.hampers_id')
             ->join('hampers_details as hd', 'h.id', '=', 'hd.hampers_id')
@@ -134,21 +136,23 @@ class TransactionConfirmationController extends Controller
             ->whereIn('transactions.id', $transactionIds)
             ->groupBy('i.ingredient_name')
             ->select('i.ingredient_name')
-            ->selectRaw('CAST(COUNT(i.ingredient_name) AS DECIMAL) as quantity') // Assuming hd.quantity stores the amount of ingredient
+            ->selectRaw('CAST(COUNT(i.ingredient_name) AS DECIMAL) as quantity')
             ->get();
 
-        // Menggabungkan hasil dari semua subquery
+        Log::info('Subquery 3 results', ['data' => $subquery3]);
+
         $allSubqueries = collect($subquery1)->merge($subquery2)->merge($subquery3);
 
-        // Memproses data untuk memperlakukan 1/2 loyang sebagai 1 loyang jika kuantitasnya hanya 1
+        // Log merged data
+        Log::info('All Subqueries Merged', ['data' => $allSubqueries]);
+
         $processedData = [];
         foreach ($allSubqueries as $item) {
-            $productName = $item->product_name;
+            $productName = $item->product_name ?? null; // Ensure it handles missing product_name gracefully
             $ingredientName = $item->ingredient_name;
             $quantity = $item->quantity;
 
-            // Cek apakah produk adalah 1/2 loyang
-            if (strpos($productName, '1/2 Loyang') !== false) {
+            if ($productName && strpos($productName, '1/2 Loyang') !== false) {
                 $fullProductName = str_replace('1/2 Loyang', '1 Loyang', $productName);
 
                 if (!isset($processedData[$fullProductName])) {
@@ -157,7 +161,6 @@ class TransactionConfirmationController extends Controller
 
                 $processedData[$fullProductName]['quantity'] += $quantity;
 
-                // Jika hanya ada 1 1/2 Loyang, perlakukan sebagai 1 Loyang
                 if ($processedData[$fullProductName]['quantity'] == 0.5) {
                     $processedData[$fullProductName]['quantity'] = 1;
                 }
@@ -169,7 +172,9 @@ class TransactionConfirmationController extends Controller
             }
         }
 
-        // Mengelompokkan kembali hasil berdasarkan ingredient_name
+        // Log processed data
+        Log::info('Processed Data', ['data' => $processedData]);
+
         $finalResults = [];
         foreach ($processedData as $data) {
             $ingredientName = $data['ingredient_name'];
@@ -181,7 +186,6 @@ class TransactionConfirmationController extends Controller
             $finalResults[$ingredientName] += $quantity;
         }
 
-        // Mengubah hasil menjadi koleksi untuk pengurutan
         $finalResultsCollection = collect($finalResults)->map(function ($quantity, $ingredientName) {
             return [
                 'ingredient_name' => $ingredientName,
@@ -189,6 +193,8 @@ class TransactionConfirmationController extends Controller
             ];
         })->sortBy('ingredient_name')->values();
 
+        // Log final results
+        Log::info('Final Results', ['data' => $finalResultsCollection]);
         return $finalResultsCollection;
     }
 
