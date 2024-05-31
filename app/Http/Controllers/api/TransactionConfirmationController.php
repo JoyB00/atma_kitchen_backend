@@ -108,8 +108,8 @@ class TransactionConfirmationController extends Controller
             ->join('recipes as r', 'r.product_id', '=', 'p.id')
             ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
             ->whereIn('transactions.id', $transactionIds)
-            ->groupBy('i.ingredient_name', 'p.product_name')
-            ->select('i.ingredient_name', 'p.product_name')
+            ->groupBy('i.ingredient_name')
+            ->select('i.ingredient_name')
             ->selectRaw('SUM(r.quantity) as quantity')
             ->get();
 
@@ -120,8 +120,8 @@ class TransactionConfirmationController extends Controller
             ->join('recipes as r', 'r.product_id', '=', 'p.id')
             ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
             ->whereIn('transactions.id', $transactionIds)
-            ->groupBy('i.ingredient_name', 'p.product_name')
-            ->select('i.ingredient_name', 'p.product_name')
+            ->groupBy('i.ingredient_name')
+            ->select('i.ingredient_name')
             ->selectRaw('SUM(r.quantity) as quantity')
             ->get();
 
@@ -132,62 +132,32 @@ class TransactionConfirmationController extends Controller
             ->whereIn('transactions.id', $transactionIds)
             ->groupBy('i.ingredient_name')
             ->select('i.ingredient_name')
-            ->selectRaw('CAST(COUNT(i.ingredient_name) AS DECIMAL) as quantity')
+            ->selectRaw('SUM(hd.quantity) as quantity') // assuming hd.quantity stores the amount of ingredient
             ->get();
 
         $allSubqueries = collect($subquery1)->merge($subquery2)->merge($subquery3);
 
         $processedData = [];
         foreach ($allSubqueries as $item) {
-            $productName = $item->product_name ?? null; // Ensure it handles missing product_name gracefully
             $ingredientName = $item->ingredient_name;
             $quantity = $item->quantity;
 
-            if ($productName && strpos($productName, '1/2 Loyang') !== false) {
-                $fullProductName = str_replace('1/2 Loyang', '1 Loyang', $productName);
-
-                if (!isset($processedData[$fullProductName])) {
-                    $processedData[$fullProductName] = [];
-                }
-
-                $processedData[$fullProductName][] = [
-                    'ingredient_name' => $ingredientName,
-                    'quantity' => $quantity == 0.5 ? 1 : $quantity
-                ];
-            } else {
-                if (!isset($processedData[$productName])) {
-                    $processedData[$productName] = [];
-                }
-                $processedData[$productName][] = [
-                    'ingredient_name' => $ingredientName,
-                    'quantity' => $quantity
-                ];
+            if (!isset($processedData[$ingredientName])) {
+                $processedData[$ingredientName] = 0;
             }
+
+            $processedData[$ingredientName] += $quantity;
         }
 
         $finalResults = [];
-        foreach ($processedData as $productName => $ingredients) {
-            foreach ($ingredients as $data) {
-                $ingredientName = $data['ingredient_name'];
-                $quantity = $data['quantity'];
-
-                if (!isset($finalResults[$ingredientName])) {
-                    $finalResults[$ingredientName] = [];
-                }
-                $finalResults[$ingredientName][] = [
-                    'product_name' => $productName,
-                    'quantity' => $quantity
-                ];
-            }
+        foreach ($processedData as $ingredientName => $quantity) {
+            $finalResults[] = [
+                'ingredient_name' => $ingredientName,
+                'quantity' => $quantity
+            ];
         }
 
-        // Flatten final results and sort by ingredient name
-        $finalResultsCollection = collect($finalResults)->map(function ($items, $ingredientName) {
-            return [
-                'ingredient_name' => $ingredientName,
-                'products' => $items
-            ];
-        })->sortBy('ingredient_name')->values();
+        $finalResultsCollection = collect($finalResults)->sortBy('ingredient_name')->values();
         return $finalResultsCollection;
     }
 
