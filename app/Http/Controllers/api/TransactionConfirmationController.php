@@ -134,7 +134,7 @@ class TransactionConfirmationController extends Controller
             ->whereIn('transactions.id', $transactionIds)
             ->groupBy('i.ingredient_name')
             ->select('i.ingredient_name')
-            ->selectRaw('SUM(hd.quantity) as quantity') // Assuming hd.quantity stores the amount of ingredient
+            ->selectRaw('CAST(COUNT(i.ingredient_name) AS DECIMAL) as quantity') // Assuming hd.quantity stores the amount of ingredient
             ->get();
 
         // Menggabungkan hasil dari semua subquery
