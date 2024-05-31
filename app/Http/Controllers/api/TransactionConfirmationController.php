@@ -109,6 +109,7 @@ class TransactionConfirmationController extends Controller
             ->whereIn('transactions.id', $transactionIds)
             ->groupBy('i.ingredient_name')
             ->select('i.ingredient_name')
+            ->select('i.unit')
             ->selectRaw('CAST(SUM(r.quantity * dt.quantity) AS DECIMAL) as quantity')
             ->get();
 
@@ -121,6 +122,7 @@ class TransactionConfirmationController extends Controller
             ->whereIn('transactions.id', $transactionIds)
             ->groupBy('i.ingredient_name', 'p.product_name')
             ->select('i.ingredient_name')
+            ->select('i.unit')
             ->selectRaw('CAST(SUM(r.quantity * dt.quantity) AS DECIMAL) as quantity')
             ->get();
 
@@ -132,6 +134,7 @@ class TransactionConfirmationController extends Controller
             ->whereIn('transactions.id', $transactionIds)
             ->groupBy('i.ingredient_name')
             ->select('i.ingredient_name')
+            ->select('i.unit')
             ->selectRaw('CAST(COUNT(i.ingredient_name) AS DECIMAL) as quantity')
             ->get();
 
