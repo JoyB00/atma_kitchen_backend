@@ -140,8 +140,8 @@ class TransactionConfirmationController extends Controller
                     ->whereIn('t.id', $transactionIds)
                     ->groupBy('i.ingredient_name');
             })
-            ->groupBy('i.ingredient_name')
-            ->orderBy('i.ingredient_name')
+            ->groupBy('ingredient_name')
+            ->orderBy('ingredient_name')
             ->get();
 
         // Menghitung total quantity per ingredient
@@ -155,6 +155,7 @@ class TransactionConfirmationController extends Controller
 
         return $totalQuantities;
     }
+
 
 
     public function recapUsedIngredient(Request $request)
