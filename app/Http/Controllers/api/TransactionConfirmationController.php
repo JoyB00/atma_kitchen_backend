@@ -168,6 +168,8 @@ class TransactionConfirmationController extends Controller
                 'TransactionDetails.Hampers',
                 'TransactionDetails.Hampers.HampersDetail',
                 'TransactionDetails.Hampers.HampersDetail.Product',
+                'TransactionDetails.Hampers.HampersDetail.Product.AllRecipes',
+                'TransactionDetails.Hampers.HampersDetail.Product.AllRecipes.Ingredients',
                 'TransactionDetails.Product.AllRecipes',
                 'TransactionDetails.Product.AllRecipes.Ingredients'
             )->find($i['id']);
