@@ -113,8 +113,6 @@ class TransactionConfirmationController extends Controller
             ->selectRaw('SUM(r.quantity) as quantity')
             ->get();
 
-        Log::info('Subquery 1 results', ['data' => $subquery1]);
-
         $subquery2 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
             ->join('hampers as h', 'h.id', '=', 'dt.hampers_id')
             ->join('hampers_details as hd', 'h.id', '=', 'hd.hampers_id')
@@ -127,8 +125,6 @@ class TransactionConfirmationController extends Controller
             ->selectRaw('SUM(r.quantity) as quantity')
             ->get();
 
-        Log::info('Subquery 2 results', ['data' => $subquery2]);
-
         $subquery3 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
             ->join('hampers as h', 'h.id', '=', 'dt.hampers_id')
             ->join('hampers_details as hd', 'h.id', '=', 'hd.hampers_id')
@@ -139,12 +135,7 @@ class TransactionConfirmationController extends Controller
             ->selectRaw('CAST(COUNT(i.ingredient_name) AS DECIMAL) as quantity')
             ->get();
 
-        Log::info('Subquery 3 results', ['data' => $subquery3]);
-
         $allSubqueries = collect($subquery1)->merge($subquery2)->merge($subquery3);
-
-        // Log merged data
-        Log::info('All Subqueries Merged', ['data' => $allSubqueries]);
 
         $processedData = [];
         foreach ($allSubqueries as $item) {
@@ -156,45 +147,47 @@ class TransactionConfirmationController extends Controller
                 $fullProductName = str_replace('1/2 Loyang', '1 Loyang', $productName);
 
                 if (!isset($processedData[$fullProductName])) {
-                    $processedData[$fullProductName] = ['ingredient_name' => $ingredientName, 'quantity' => 0];
+                    $processedData[$fullProductName] = [];
                 }
 
-                $processedData[$fullProductName]['quantity'] += $quantity;
-
-                if ($processedData[$fullProductName]['quantity'] == 0.5) {
-                    $processedData[$fullProductName]['quantity'] = 1;
-                }
+                $processedData[$fullProductName][] = [
+                    'ingredient_name' => $ingredientName,
+                    'quantity' => $quantity == 0.5 ? 1 : $quantity
+                ];
             } else {
                 if (!isset($processedData[$productName])) {
-                    $processedData[$productName] = ['ingredient_name' => $ingredientName, 'quantity' => 0];
+                    $processedData[$productName] = [];
                 }
-                $processedData[$productName]['quantity'] += $quantity;
+                $processedData[$productName][] = [
+                    'ingredient_name' => $ingredientName,
+                    'quantity' => $quantity
+                ];
             }
         }
-
-        // Log processed data
-        Log::info('Processed Data', ['data' => $processedData]);
 
         $finalResults = [];
-        foreach ($processedData as $data) {
-            $ingredientName = $data['ingredient_name'];
-            $quantity = $data['quantity'];
+        foreach ($processedData as $productName => $ingredients) {
+            foreach ($ingredients as $data) {
+                $ingredientName = $data['ingredient_name'];
+                $quantity = $data['quantity'];
 
-            if (!isset($finalResults[$ingredientName])) {
-                $finalResults[$ingredientName] = 0;
+                if (!isset($finalResults[$ingredientName])) {
+                    $finalResults[$ingredientName] = [];
+                }
+                $finalResults[$ingredientName][] = [
+                    'product_name' => $productName,
+                    'quantity' => $quantity
+                ];
             }
-            $finalResults[$ingredientName] += $quantity;
         }
 
-        $finalResultsCollection = collect($finalResults)->map(function ($quantity, $ingredientName) {
+        // Flatten final results and sort by ingredient name
+        $finalResultsCollection = collect($finalResults)->map(function ($items, $ingredientName) {
             return [
                 'ingredient_name' => $ingredientName,
-                'quantity' => $quantity
+                'products' => $items
             ];
         })->sortBy('ingredient_name')->values();
-
-        // Log final results
-        Log::info('Final Results', ['data' => $finalResultsCollection]);
         return $finalResultsCollection;
     }
 
@@ -214,6 +207,7 @@ class TransactionConfirmationController extends Controller
                 'TransactionDetails.Hampers',
                 'TransactionDetails.Hampers.HampersDetail',
                 'TransactionDetails.Hampers.HampersDetail.Product',
+                'TransactionDetails.Hampers.HampersDetail.Product.AllRecipes',
                 'TransactionDetails.Product.AllRecipes',
                 'TransactionDetails.Product.AllRecipes.Ingredients'
             )->find($i['id']);
