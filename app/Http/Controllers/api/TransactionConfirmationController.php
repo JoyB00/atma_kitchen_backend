@@ -143,6 +143,7 @@ class TransactionConfirmationController extends Controller
             ->map(function ($group) {
                 return [
                     'ingredient_name' => $group->first()->ingredient_name,
+                    'unit' => $group->first()->unit,
                     'quantity' => $group->sum('quantity')
                 ];
             })
