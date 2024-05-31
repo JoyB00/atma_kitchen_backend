@@ -102,16 +102,18 @@ class TransactionConfirmationController extends Controller
 
     public function usedIngredient(array $transactionIds)
     {
+        // Subquery 1: Produk langsung dari transaksi
         $subquery1 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
             ->join('products as p', 'dt.product_id', '=', 'p.id')
             ->join('recipes as r', 'r.product_id', '=', 'p.id')
             ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
             ->whereIn('transactions.id', $transactionIds)
-            ->groupBy('i.ingredient_name')
-            ->select('i.ingredient_name')
-            ->selectRaw('CAST(SUM(r.quantity) AS DECIMAL) as quantity')
+            ->groupBy('i.ingredient_name', 'p.product_name')
+            ->select('i.ingredient_name', 'p.product_name')
+            ->selectRaw('SUM(r.quantity) as quantity')
             ->get();
 
+        // Subquery 2: Produk dalam hampers
         $subquery2 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
             ->join('hampers as h', 'h.id', '=', 'dt.hampers_id')
             ->join('hampers_details as hd', 'h.id', '=', 'hd.hampers_id')
@@ -120,38 +122,76 @@ class TransactionConfirmationController extends Controller
             ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
             ->whereIn('transactions.id', $transactionIds)
             ->groupBy('i.ingredient_name', 'p.product_name')
-            ->select('i.ingredient_name')
-            ->selectRaw('CAST(SUM(r.quantity) AS DECIMAL) as quantity')
+            ->select('i.ingredient_name', 'p.product_name')
+            ->selectRaw('SUM(r.quantity) as quantity')
             ->get();
 
+        // Subquery 3: Bahan baku langsung dalam hampers
         $subquery3 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
             ->join('hampers as h', 'h.id', '=', 'dt.hampers_id')
             ->join('hampers_details as hd', 'h.id', '=', 'hd.hampers_id')
-            ->leftJoin('products as p', 'hd.product_id', '=', 'p.id')
             ->join('ingredients as i', 'i.id', '=', 'hd.ingredient_id')
             ->whereIn('transactions.id', $transactionIds)
             ->groupBy('i.ingredient_name')
             ->select('i.ingredient_name')
-            ->selectRaw('CAST(COUNT(i.ingredient_name) AS DECIMAL) as quantity')
+            ->selectRaw('SUM(hd.quantity) as quantity') // Assuming hd.quantity stores the amount of ingredient
             ->get();
 
-        // Merging and summing up quantities from all subqueries
-        $results = collect($subquery1)
-            ->merge($subquery2)
-            ->merge($subquery3)
-            ->groupBy('ingredient_name')
-            ->map(function ($group) {
-                return [
-                    'ingredient_name' => $group->first()->ingredient_name,
-                    'quantity' => $group->sum('quantity')
-                ];
-            })
-            ->values()
-            ->sortBy('ingredient_name')
-            ->values();
+        // Menggabungkan hasil dari semua subquery
+        $allSubqueries = collect($subquery1)->merge($subquery2)->merge($subquery3);
 
-        return $results;
+        // Memproses data untuk memperlakukan 1/2 loyang sebagai 1 loyang jika kuantitasnya hanya 1
+        $processedData = [];
+        foreach ($allSubqueries as $item) {
+            $productName = $item->product_name;
+            $ingredientName = $item->ingredient_name;
+            $quantity = $item->quantity;
+
+            // Cek apakah produk adalah 1/2 loyang
+            if (strpos($productName, '1/2 Loyang') !== false) {
+                $fullProductName = str_replace('1/2 Loyang', '1 Loyang', $productName);
+
+                if (!isset($processedData[$fullProductName])) {
+                    $processedData[$fullProductName] = ['ingredient_name' => $ingredientName, 'quantity' => 0];
+                }
+
+                $processedData[$fullProductName]['quantity'] += $quantity;
+
+                // Jika hanya ada 1 1/2 Loyang, perlakukan sebagai 1 Loyang
+                if ($processedData[$fullProductName]['quantity'] == 0.5) {
+                    $processedData[$fullProductName]['quantity'] = 1;
+                }
+            } else {
+                if (!isset($processedData[$productName])) {
+                    $processedData[$productName] = ['ingredient_name' => $ingredientName, 'quantity' => 0];
+                }
+                $processedData[$productName]['quantity'] += $quantity;
+            }
+        }
+
+        // Mengelompokkan kembali hasil berdasarkan ingredient_name
+        $finalResults = [];
+        foreach ($processedData as $data) {
+            $ingredientName = $data['ingredient_name'];
+            $quantity = $data['quantity'];
+
+            if (!isset($finalResults[$ingredientName])) {
+                $finalResults[$ingredientName] = 0;
+            }
+            $finalResults[$ingredientName] += $quantity;
+        }
+
+        // Mengubah hasil menjadi koleksi untuk pengurutan
+        $finalResultsCollection = collect($finalResults)->map(function ($quantity, $ingredientName) {
+            return [
+                'ingredient_name' => $ingredientName,
+                'quantity' => $quantity
+            ];
+        })->sortBy('ingredient_name')->values();
+
+        return $finalResultsCollection;
     }
+
 
     public function recapUsedIngredient(Request $request)
     {
