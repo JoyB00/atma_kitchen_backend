@@ -105,7 +105,7 @@ class TransactionConfirmationController extends Controller
     {
         // Mapping products with special quantity requirements to their full-size equivalents
         $specialProducts = [
-            '1/2 loyang' => '1 loyang'
+            '1/2 Loyang' => '1 Loyang'
         ];
 
         // Fetch full-size product ids for special products
@@ -144,7 +144,7 @@ class TransactionConfirmationController extends Controller
             ->whereIn('transactions.id', $transactionIds)
             ->groupBy('i.ingredient_name')
             ->select('i.ingredient_name')
-            ->selectRaw('CAST(COUNT(p.product_name) AS DECIMAL) as quantity')
+            ->selectRaw('CAST(COUNT(p.ingredient_name) AS DECIMAL) as quantity')
             ->get();
 
         // Merging and summing up quantities from all subqueries
