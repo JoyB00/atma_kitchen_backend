@@ -160,17 +160,7 @@ class TransactionConfirmationController extends Controller
         $transaksiID_array = [];
 
         foreach ($data['item'] as $key => $i) {
-            $temp = Transactions::with(
-                'Customer',
-                'Customer.Users',
-                'TransactionDetails',
-                'TransactionDetails.Product',
-                'TransactionDetails.Hampers',
-                'TransactionDetails.Hampers.HampersDetail',
-                'TransactionDetails.Hampers.HampersDetail.Product',
-                'TransactionDetails.Product.AllRecipes',
-                'TransactionDetails.Product.AllRecipes.Ingredients'
-            )->find($i['id']);
+            $temp = Transactions::with('Customer', 'Customer.Users', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers', 'TransactionDetails.Product.AllRecipes', 'TransactionDetails.Product.AllRecipes.Ingredients')->find($i['id']);
             $transaksiArray[$key] = $temp;
             $transaksiID_array[$key] = $temp->id;
         }
@@ -191,7 +181,7 @@ class TransactionConfirmationController extends Controller
     {
         $transactionId = $id;
         $results = $this->usedIngredient($transactionId);
-
+    
         $shortageIngredient = $results->map(function ($item) {
             $ingredient = Ingredients::where('ingredient_name', $item['ingredient_name'])->first();
             if ($ingredient->quantity < $item['quantity']) {
@@ -201,20 +191,19 @@ class TransactionConfirmationController extends Controller
                 ];
             }
         });
-
-        // Filter out null values from the collection
+    
         $shortageIngredient = $shortageIngredient->filter(function ($item) {
             return !is_null($item);
         });
-
-        // If you need to reindex the collection (optional)
+    
         $shortageIngredient = $shortageIngredient->values();
-
+    
         return response([
             'message' => 'Show all ingredient used',
-            'data' => $results
+            'data' => $shortageIngredient
         ], 200);
     }
+    
 
 
 

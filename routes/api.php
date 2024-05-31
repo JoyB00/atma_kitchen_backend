@@ -185,6 +185,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::post('/cartList', [CartsController::class, 'updateListCart']);
     Route::put('/cart/{id}', [CartsController::class, 'update']);
     Route::delete('/cart/{id}', [CartsController::class, 'destroy']);
+
     // Address
     Route::get('/address', [AddressController::class, 'index']);
     Route::get('/address/$id', [AddressController::class, 'show']);
@@ -208,4 +209,8 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::post('/payment', [PaymentController::class, 'getSnapToken']);
     Route::put('/payment/{id}', [TransactionController::class, 'paymentCustomer']);
     Route::post('/payment/evidence/{id}', [TransactionController::class, 'storePaymentEvidence']);
+
+    // Balance
+    Route::get('/balance/{id}', [BalanceController::class, 'showBalance']);
+    Route::post('/withdraw/{id}', [BalanceController::class, 'withdrawBalance']);
 });
