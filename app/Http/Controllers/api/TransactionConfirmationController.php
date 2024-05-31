@@ -15,7 +15,6 @@ use App\Models\Transactions;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 
 class TransactionConfirmationController extends Controller
 {
@@ -103,60 +102,56 @@ class TransactionConfirmationController extends Controller
 
     public function usedIngredient(array $transactionIds)
     {
-        $result = Transactions::whereIn('id', $transactionIds)
-            ->join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
-            ->leftJoin('products as p', 'dt.product_id', '=', 'p.id')
-            ->leftJoin('hampers as h', 'dt.hamper_id', '=', 'h.id')
-            ->leftJoin('hampers_details as hd', 'h.id', '=', 'hd.hamper_id')
-            ->leftJoin('recipes as r', function ($join) {
-                $join->on('p.id', '=', 'r.product_id')
-                    ->orWhere('hd.product_id', '=', 'r.product_id');
-            })
-            ->leftJoin('ingredients as i', 'r.ingredient_id', '=', 'i.id')
-            ->select('i.ingredient_name')
-            ->selectRaw('SUM(r.quantity * dt.quantity) as quantity')
+        $subquery1 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
+            ->join('products as p', 'dt.product_id', '=', 'p.id')
+            ->join('recipes as r', 'r.product_id', '=', 'p.id')
+            ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
+            ->whereIn('transactions.id', $transactionIds)
             ->groupBy('i.ingredient_name')
-            ->unionAll(function ($query) use ($transactionIds) {
-                $query->select('i.ingredient_name')
-                    ->selectRaw('SUM(r.quantity * dt.quantity) as quantity')
-                    ->from('transactions as t')
-                    ->join('transaction_details as dt', 't.id', '=', 'dt.transaction_id')
-                    ->join('hampers as h', 'dt.hamper_id', '=', 'h.id')
-                    ->join('hampers_details as hd', 'h.id', '=', 'hd.hamper_id')
-                    ->join('products as p', 'hd.product_id', '=', 'p.id')
-                    ->join('recipes as r', 'p.id', '=', 'r.product_id')
-                    ->join('ingredients as i', 'r.ingredient_id', '=', 'i.id')
-                    ->whereIn('t.id', $transactionIds)
-                    ->groupBy('i.ingredient_name');
-            })
-            ->unionAll(function ($query) use ($transactionIds) {
-                $query->select('i.ingredient_name')
-                    ->selectRaw('COUNT(i.ingredient_name) * dt.quantity as quantity')
-                    ->from('transactions as t')
-                    ->join('transaction_details as dt', 't.id', '=', 'dt.transaction_id')
-                    ->join('hampers as h', 'dt.hamper_id', '=', 'h.id')
-                    ->join('hampers_details as hd', 'h.id', '=', 'hd.hamper_id')
-                    ->join('ingredients as i', 'hd.ingredient_id', '=', 'i.id')
-                    ->whereIn('t.id', $transactionIds)
-                    ->groupBy('i.ingredient_name');
-            })
-            ->groupBy('ingredient_name')
-            ->orderBy('ingredient_name')
+            ->select('i.ingredient_name')
+            ->selectRaw('CAST(SUM(r.quantity * dt.quantity) AS DECIMAL) as quantity')
             ->get();
 
-        // Menghitung total quantity per ingredient
-        $totalQuantities = $result->groupBy('ingredient_name')->map(function ($group, $ingredientName) {
-            $totalQuantity = $group->sum('quantity');
-            return [
-                'ingredient_name' => $ingredientName,
-                'quantity' => $totalQuantity
-            ];
-        })->values();
+        $subquery2 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
+            ->join('hampers as h', 'h.id', '=', 'dt.hampers_id')
+            ->join('hampers_details as hd', 'h.id', '=', 'hd.hampers_id')
+            ->join('products as p', 'hd.product_id', '=', 'p.id')
+            ->join('recipes as r', 'r.product_id', '=', 'p.id')
+            ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
+            ->whereIn('transactions.id', $transactionIds)
+            ->groupBy('i.ingredient_name', 'p.product_name')
+            ->select('i.ingredient_name')
+            ->selectRaw('CAST(SUM(r.quantity * dt.quantity) AS DECIMAL) as quantity')
+            ->get();
 
-        return $totalQuantities;
+        $subquery3 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
+            ->join('hampers as h', 'h.id', '=', 'dt.hampers_id')
+            ->join('hampers_details as hd', 'h.id', '=', 'hd.hampers_id')
+            ->leftJoin('products as p', 'hd.product_id', '=', 'p.id')
+            ->join('ingredients as i', 'i.id', '=', 'hd.ingredient_id')
+            ->whereIn('transactions.id', $transactionIds)
+            ->groupBy('i.ingredient_name')
+            ->select('i.ingredient_name')
+            ->selectRaw('CAST(COUNT(i.ingredient_name) AS DECIMAL) as quantity')
+            ->get();
+
+        // Merging and summing up quantities from all subqueries
+        $results = collect($subquery1)
+            ->merge($subquery2)
+            ->merge($subquery3)
+            ->groupBy('ingredient_name')
+            ->map(function ($group) {
+                return [
+                    'ingredient_name' => $group->first()->ingredient_name,
+                    'quantity' => $group->sum('quantity')
+                ];
+            })
+            ->values()
+            ->sortBy('ingredient_name')
+            ->values();
+
+        return $results;
     }
-
-
 
     public function recapUsedIngredient(Request $request)
     {
@@ -173,7 +168,6 @@ class TransactionConfirmationController extends Controller
                 'TransactionDetails.Hampers',
                 'TransactionDetails.Hampers.HampersDetail',
                 'TransactionDetails.Hampers.HampersDetail.Product',
-                'TransactionDetails.Hampers.HampersDetail.Product.AllRecipes',
                 'TransactionDetails.Product.AllRecipes',
                 'TransactionDetails.Product.AllRecipes.Ingredients'
             )->find($i['id']);
