@@ -15,6 +15,7 @@ use App\Models\Transactions;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class TransactionConfirmationController extends Controller
 {
@@ -102,6 +103,17 @@ class TransactionConfirmationController extends Controller
 
     public function usedIngredient(array $transactionIds)
     {
+        // Mapping products with special quantity requirements to their full-size equivalents
+        $specialProducts = [
+            '1/2 loyang' => '1 loyang'
+        ];
+
+        // Fetch full-size product ids for special products
+        $fullSizeProductIds = DB::table('products')
+            ->whereIn('product_name', array_values($specialProducts))
+            ->pluck('id', 'product_name')
+            ->toArray();
+
         $subquery1 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
             ->join('products as p', 'dt.product_id', '=', 'p.id')
             ->join('recipes as r', 'r.product_id', '=', 'p.id')
@@ -139,22 +151,45 @@ class TransactionConfirmationController extends Controller
         $results = collect($subquery1)
             ->merge($subquery2)
             ->merge($subquery3)
-            ->groupBy(function ($item) {
-                return $item->ingredient_name ?? $item->product_name;
-            })
-            ->map(function ($group, $key) {
+            ->groupBy(['ingredient_name', 'product_name'])
+            ->map(function ($group) use ($specialProducts, $fullSizeProductIds) {
+                $productName = $group->first()->product_name;
+                $ingredientName = $group->first()->ingredient_name;
                 $quantity = $group->sum('quantity');
+
+                // Adjust quantity if product has a special mapping and quantity is 1
+                if (isset($specialProducts[$productName]) && $quantity == 1) {
+                    $fullSizeProductName = $specialProducts[$productName];
+                    // Check if we have the full-size product's recipe quantity
+                    if (isset($fullSizeProductIds[$fullSizeProductName])) {
+                        // Fetch the recipe for the full-size product
+                        $fullSizeRecipe = DB::table('recipes')
+                            ->where('product_id', $fullSizeProductIds[$fullSizeProductName])
+                            ->where('ingredient_id', function ($query) use ($ingredientName) {
+                                $query->select('id')
+                                    ->from('ingredients')
+                                    ->where('ingredient_name', $ingredientName);
+                            })
+                            ->first();
+                        if ($fullSizeRecipe) {
+                            $quantity = $fullSizeRecipe->quantity;
+                        }
+                    }
+                }
+
                 return [
-                    'name' => $key,
+                    'ingredient_name' => $ingredientName,
+                    'product_name' => $productName,
                     'quantity' => $quantity
                 ];
             })
             ->values()
-            ->sortBy('name')
+            ->sortBy(['ingredient_name', 'product_name'])
             ->values();
 
         return $results;
     }
+
 
     public function recapUsedIngredient(Request $request)
     {
