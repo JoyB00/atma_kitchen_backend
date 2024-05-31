@@ -116,7 +116,7 @@ class TransactionConfirmationController extends Controller
             ->select('i.ingredient_name')
             ->selectRaw('SUM(r.quantity * dt.quantity) as quantity')
             ->groupBy('i.ingredient_name')
-            ->unionAll(function ($query, $transactionIds) {
+            ->unionAll(function ($query) use ($transactionIds) {
                 $query->select('i.ingredient_name')
                     ->selectRaw('SUM(r.quantity * dt.quantity) as quantity')
                     ->from('transactions as t')
@@ -129,7 +129,7 @@ class TransactionConfirmationController extends Controller
                     ->whereIn('t.id', $transactionIds)
                     ->groupBy('i.ingredient_name');
             })
-            ->unionAll(function ($query, $transactionIds) {
+            ->unionAll(function ($query) use ($transactionIds) {
                 $query->select('i.ingredient_name')
                     ->selectRaw('COUNT(i.ingredient_name) * dt.quantity as quantity')
                     ->from('transactions as t')
