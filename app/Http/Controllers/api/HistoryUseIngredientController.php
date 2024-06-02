@@ -27,17 +27,17 @@ class HistoryUseIngredientController extends Controller
         $data = $storeData['recapIngredient'];
         $transaction = $storeData['transaction'];
         foreach ($transaction as $data) {
-            $updateTrasaction = Transactions::find($data->id);
+            $updateTrasaction = Transactions::find($data['id']);
             $updateTrasaction->status = 'onProcess';
             $updateTrasaction->save();
         }
         foreach ($data as $item) {
-            $ingredient = Ingredients::where('ingredient_name', $item->ingredient_name)->first();
-            $ingredient->quantity = $ingredient->quantity -  $item->quantity;
+            $ingredient = Ingredients::where('ingredient_name', $item['ingredient_name'])->first();
+            $ingredient->quantity = $ingredient->quantity -  $item['quantity'];
             $ingredient->save();
             $store = HistoryUseIngredients::create([
                 'ingredient_id' => $ingredient->id,
-                'quantity' => $item->quantity,
+                'quantity' => $item['quantity'],
                 'date' => Carbon::now()->toDateString()
             ]);
         }
