@@ -89,6 +89,8 @@ Route::middleware('auth:api')->group(function () { // all logged in user
 
     // Transaction
     Route::post('/changeTransactionStatus', [TransactionController::class, 'changeTransactionStatus']);
+
+    Route::get('/productSales', [ReportController::class, 'getProductSalesByMonth']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () { // logged in and have Owner role
@@ -97,7 +99,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () 
     Route::delete('/employeeSalary/{id}', [SalariesController::class, 'destroy']);
 
     // Report
-    Route::get('/productSales', [ReportController::class, 'getProductSalesByMonth']);
+
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () { // logged in and have Admin role
