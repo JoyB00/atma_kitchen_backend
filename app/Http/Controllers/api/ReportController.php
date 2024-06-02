@@ -22,7 +22,7 @@ class ReportController extends Controller
                 'transaction_details.price as Price'
             )
             ->whereMonth('transactions.pickup_date', '=',  $pickupDate)
-            ->groupBy('Product', 'Price')
+            ->groupBy('Product', 'Price', 'Quantity')
             ->orderBy('Product')
             ->get();
 
