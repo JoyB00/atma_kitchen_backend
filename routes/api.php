@@ -175,8 +175,8 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
 
 
     // Ingredient Use History
-    Route::get('/ingredientUseHistory', [IngredientProcurementController::class, 'index']);
-    Route::post('/ingredientUseHistory', [IngredientProcurementController::class, 'store']);
+    Route::get('/ingredientUseHistory', [HistoryUseIngredientController::class, 'index']);
+    Route::post('/ingredientUseHistory', [HistoryUseIngredientController::class, 'store']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () { // logged in and have Customer role
