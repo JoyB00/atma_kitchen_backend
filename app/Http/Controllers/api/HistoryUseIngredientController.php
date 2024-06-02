@@ -24,14 +24,14 @@ class HistoryUseIngredientController extends Controller
     public function store(Request $request)
     {
         $storeData = $request->all();
-        $data = $storeData['recapIngredient'];
+        $recap = $storeData['recapIngredient'];
         $transaction = $storeData['transaction'];
         foreach ($transaction as $data) {
             $updateTrasaction = Transactions::find($data['id']);
             $updateTrasaction->status = 'onProcess';
             $updateTrasaction->save();
         }
-        foreach ($data as $item) {
+        foreach ($recap as $item) {
             $ingredient = Ingredients::where('ingredient_name', $item['ingredient_name'])->first();
             $ingredient->quantity = $ingredient->quantity -  $item['quantity'];
             $ingredient->save();
