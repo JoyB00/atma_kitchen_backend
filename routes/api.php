@@ -177,6 +177,9 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
     // Ingredient Use History
     Route::get('/ingredientUseHistory', [HistoryUseIngredientController::class, 'index']);
     Route::post('/ingredientUseHistory', [HistoryUseIngredientController::class, 'store']);
+
+    // Report
+    Route::get('/productSales', [ReportController::class, 'getProductSalesByMonth']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () { // logged in and have Customer role
