@@ -9,7 +9,7 @@ class HistoryUseIngredients extends Model
 {
     use HasFactory;
 
-    protected $table = 'history_use_ingredient';
+    protected $table = 'history_use_ingredients';
 
     protected $primaryKey = 'id';
     protected $fillable = [

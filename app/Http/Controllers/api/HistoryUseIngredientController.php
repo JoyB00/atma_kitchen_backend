@@ -34,12 +34,12 @@ class HistoryUseIngredientController extends Controller
         foreach ($recap as $item) {
             $ingredient = Ingredients::where('ingredient_name', $item['ingredient_name'])->first();
             $ingredient->quantity = $ingredient->quantity -  $item['quantity'];
-            $ingredient->save();
             $store = HistoryUseIngredients::create([
                 'ingredient_id' => $ingredient->id,
                 'quantity' => $item['quantity'],
                 'date' => Carbon::now()->toDateString()
             ]);
+            $ingredient->save();
         }
         return response([
             'message' => 'Ingredient History Created',
