@@ -95,6 +95,9 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () 
     Route::post('/employeeSalary', [SalariesController::class, 'store']);
     Route::put('/employeeSalary/{id}', [SalariesController::class, 'update']);
     Route::delete('/employeeSalary/{id}', [SalariesController::class, 'destroy']);
+
+    // Report
+    Route::get('/productSales', [ReportController::class, 'getProductSalesByMonth']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () { // logged in and have Admin role
