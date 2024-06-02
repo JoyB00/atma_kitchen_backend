@@ -22,7 +22,6 @@ class ReportController extends Controller
             ->selectRaw('SUM(transaction_details.quantity * transaction_details.price) as total_harga')
             ->whereMonth('transactions.pickup_date', '=', $month)
             ->groupBy('Product', 'Price', 'Quantity')
-            ->orderBy('Product')
             ->get();
 
         return response([
