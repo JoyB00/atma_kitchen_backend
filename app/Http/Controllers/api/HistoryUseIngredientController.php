@@ -33,11 +33,11 @@ class HistoryUseIngredientController extends Controller
         }
         foreach ($data as $item) {
             $ingredient = Ingredients::where('ingredient_name', $item['ingredient_name'])->first();
-            $ingredient->quantity = $ingredient->quantity -  $item->quantity;
+            $ingredient->quantity = $ingredient->quantity -  $item['quantity'];
             $ingredient->save();
             $store = HistoryUseIngredients::create([
                 'ingredient_id' => $ingredient->id,
-                'quantity' => $item->quantity,
+                'quantity' => $item['quantity'],
                 'date' => Carbon::now()->toDateString()
             ]);
         }
