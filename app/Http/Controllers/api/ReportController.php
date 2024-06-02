@@ -26,9 +26,17 @@ class ReportController extends Controller
             ->orderBy('Product')
             ->get();
 
+        $total = 0;
+        foreach ($products as $item) {
+            $total = $total + ($item->Quantity * $item->Price);
+        }
+
         return response([
             'message' => 'All Data Retrieved',
-            'data' => $products
+            'data' => [
+                'product' => $products,
+                'total' => $total
+            ]
         ], 200);
     }
 }
