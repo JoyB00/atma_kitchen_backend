@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\HistoryUseIngredients;
+use App\Models\Ingredients;
+use App\Models\Transactions;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -21,16 +24,23 @@ class HistoryUseIngredientController extends Controller
     public function store(Request $request)
     {
         $storeData = $request->all();
-        $validate = Validator::make($storeData, [
-            'ingredient_id' => 'required',
-            'transaction_id' => 'required',
-            'quantity' => 'required|numeric',
-            'date' => 'required|date'
-        ]);
-        if ($validate->fails()) {
-            return response(['message' => $validate->errors()->first()], 400);
+        $data = $storeData['recapIngredient'];
+        $transaction = $storeData['transaction'];
+        foreach ($transaction as $data) {
+            $updateTrasaction = Transactions::find($data->id);
+            $updateTrasaction->status = 'onProcess';
+            $updateTrasaction->save();
         }
-        $store = HistoryUseIngredients::create($storeData);
+        foreach ($data as $item) {
+            $ingredient = Ingredients::where('ingredient_name', $item->ingredient_name)->first();
+            $ingredient->quantity = $ingredient->quantity -  $item->quantity;
+            $ingredient->save();
+            $store = HistoryUseIngredients::create([
+                'ingredient_id' => $ingredient->id,
+                'quantity' => $item->quantity,
+                'date' => Carbon::now()->toDateString()
+            ]);
+        }
         return response([
             'message' => 'Ingredient History Created',
             'data' => $store

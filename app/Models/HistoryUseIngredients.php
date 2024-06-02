@@ -14,7 +14,6 @@ class HistoryUseIngredients extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'ingredient_id',
-        'transaction_id',
         'quantity',
         'date'
     ];
