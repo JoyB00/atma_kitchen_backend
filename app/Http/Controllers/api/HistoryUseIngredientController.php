@@ -49,7 +49,7 @@ class HistoryUseIngredientController extends Controller
         }
         return response([
             'message' => 'Ingredient History Created',
-            'data' => $store
+            'data' =>  $transaction
         ], 200);
     }
 }
