@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\TransactionDetail;
+use App\Models\Transactions;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ReportController extends Controller
 {
@@ -21,7 +24,7 @@ class ReportController extends Controller
                 'transaction_details.quantity as Quantity',
                 'transaction_details.price as Price'
             )
-            ->whereMonth('transactions.pickup_date', '=',  $month)
+            ->whereMonth('transactions.pickup_date', '=', $month)
             ->where('transactions.status', '=', 'finished')
             ->groupBy('Product', 'Price', 'Quantity')
             ->orderBy('Product')
@@ -40,4 +43,46 @@ class ReportController extends Controller
             ]
         ], 200);
     }
+
+    public function salesReportYearly(Request $request)
+    {
+        $month = array(
+            'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember',
+        );
+
+        $data = Request::all();
+        $validate = Validator::make(
+            $data,
+            [
+                'year' => 'required'
+            ]
+        );
+        if ($validate->fails()) {
+            return response([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        // generate report containing monthly sales count and total sales
+        // get monthly transaction count on this month
+        $monthlySalesCount = Transactions::whereYear('pickup_date', $data['year'])->get()->groupBy(function ($date) {
+            return Carbon::parse($date->pickup_date)->format('m');
+        });
+
+        return response([
+            'data' => $monthlySalesCount,
+        ], 200);
+    }
+
 }

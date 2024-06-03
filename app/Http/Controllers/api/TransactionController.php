@@ -544,40 +544,6 @@ class TransactionController extends Controller
         ], 200);
     }
 
-    public function salesReportMonthly(Request $request)
-    {
-        $month = array(
-            'Januari',
-            'Februari',
-            'Maret',
-            'April',
-            'Mei',
-            'Juni',
-            'Juli',
-            'Agustus',
-            'September',
-            'Oktober',
-            'November',
-            'Desember',
-        );
-
-        $data = Request::all();
-        $validate = Validator::make(
-            $data,
-            [
-                'year' => 'required'
-            ]
-        );
-        if ($validate->fails()) {
-            return response([
-                'message' => $validate->errors()->first(),
-            ], 400);
-        }
-
-        // generate report containing monthly sales count and total sales
-        
-    }
-
     public function deleteTransaction($id)
     {
         $transaction = Transactions::find($id);
