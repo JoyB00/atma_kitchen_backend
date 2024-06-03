@@ -77,8 +77,8 @@ class ReportController extends Controller
         }
 
         return response([
-            'count' => $monthlySalesCount,
-            'total' => $monthlySalesTotal,
+            'count' => [$monthlySalesCount],
+            'total' => [$monthlySalesTotal],
         ], 200);
     }
 
