@@ -45,8 +45,6 @@ class ReportController extends Controller
 
     public function salesReportMonthly(Request $request)
     {
-        $month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-
         $data = $request->all();
         $validate = Validator::make(
             $data,
@@ -65,14 +63,14 @@ class ReportController extends Controller
         $monthlySalesCount = [];
         $monthlySalesTotal = [];
         for ($i = 1; $i <= 12; $i++) {
-            $monthlySalesCount[$month[$i - 1]] = Transactions::whereYear('pickup_date', $data['year'])
+            $monthlySalesCount[$i - 1] = Transactions::whereYear('pickup_date', $data['year'])
                 ->whereMonth('pickup_date', $i)
                 ->where('status', 'finished')
                 ->count();
         }
         //get total transaction on this month
         for ($i = 1; $i <= 12; $i++) {
-            $monthlySalesTotal[$month[$i - 1]] = Transactions::whereYear('pickup_date', $data['year'])
+            $monthlySalesTotal[$i - 1] = Transactions::whereYear('pickup_date', $data['year'])
                 ->whereMonth('pickup_date', $i)
                 ->where('status', 'finished')
                 ->sum('total_price');
