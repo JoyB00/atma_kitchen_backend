@@ -19,11 +19,6 @@ class HistoryUseIngredients extends Model
     ];
 
 
-    public function Transaction()
-    {
-        return $this->belongsTo(Product::class, 'transaction');
-    }
-
     public function Ingredients()
     {
         return $this->belongsTo(Ingredients::class, 'ingredient_id');
