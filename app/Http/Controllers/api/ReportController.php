@@ -45,20 +45,7 @@ class ReportController extends Controller
 
     public function salesReportMonthly(Request $request)
     {
-        $month = array(
-            'Januari',
-            'Februari',
-            'Maret',
-            'April',
-            'Mei',
-            'Juni',
-            'Juli',
-            'Agustus',
-            'September',
-            'Oktober',
-            'November',
-            'Desember',
-        );
+        $month = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 
         $data = $request->all();
         $validate = Validator::make(
