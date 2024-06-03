@@ -14,7 +14,7 @@ class HistoryUseIngredientController extends Controller
 {
     public function index()
     {
-        $history = HistoryUseIngredients::with('Ingredient', 'Transaction')->get();
+        $history = HistoryUseIngredients::with('Ingredient')->get();
         return response([
             'message' => 'All Date Retrivied',
             'data' => $history
