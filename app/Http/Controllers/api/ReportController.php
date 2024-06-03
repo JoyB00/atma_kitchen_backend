@@ -45,21 +45,6 @@ class ReportController extends Controller
 
     public function salesReportMonthly(Request $request)
     {
-        $month = array(
-            'Januari',
-            'Februari',
-            'Maret',
-            'April',
-            'Mei',
-            'Juni',
-            'Juli',
-            'Agustus',
-            'September',
-            'Oktober',
-            'November',
-            'Desember',
-        );
-
         $data = $request->all();
         $validate = Validator::make(
             $data,
@@ -75,15 +60,17 @@ class ReportController extends Controller
 
         // generate report containing monthly sales count and total sales
         // get monthly transaction count on this month
+        $monthlySalesCount = [];
+        $monthlySalesTotal = [];
         for ($i = 1; $i <= 12; $i++) {
-            $monthlySalesCount[$month[$i - 1]] = Transactions::whereYear('pickup_date', $data['year'])
+            $monthlySalesCount[$i - 1] = Transactions::whereYear('pickup_date', $data['year'])
                 ->whereMonth('pickup_date', $i)
                 ->where('status', 'finished')
                 ->count();
         }
         //get total transaction on this month
         for ($i = 1; $i <= 12; $i++) {
-            $monthlySalesTotal[$month[$i - 1]] = Transactions::whereYear('pickup_date', $data['year'])
+            $monthlySalesTotal[$i - 1] = Transactions::whereYear('pickup_date', $data['year'])
                 ->whereMonth('pickup_date', $i)
                 ->where('status', 'finished')
                 ->sum('total_price');
