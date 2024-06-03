@@ -61,7 +61,7 @@ class ReportController extends Controller
             'Desember',
         );
 
-        $data = Request::all();
+        $data = $request->all();
         $validate = Validator::make(
             $data,
             [
