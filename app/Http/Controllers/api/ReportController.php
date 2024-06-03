@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\TransactionDetail;
 use App\Models\Transactions;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -76,9 +75,19 @@ class ReportController extends Controller
 
         // generate report containing monthly sales count and total sales
         // get monthly transaction count on this month
-        $monthlySalesCount = Transactions::whereYear('pickup_date', $data['year'])->get()->groupBy(function ($date) {
-            return Carbon::parse($date->pickup_date)->format('m');
-        });
+        for ($i = 1; $i <= 12; $i++) {
+            $monthlySalesCount[$month[$i - 1]] = Transactions::whereYear('pickup_date', $data['year'])
+                ->whereMonth('pickup_date', $i)
+                ->where('status', 'finished')
+                ->count();
+        }
+        //get total transaction on this month
+        for ($i = 1; $i <= 12; $i++) {
+            $monthlySalesTotal[$month[$i - 1]] = Transactions::whereYear('pickup_date', $data['year'])
+                ->whereMonth('pickup_date', $i)
+                ->where('status', 'finished')
+                ->sum('total_price');
+        }
 
         return response([
             'data' => $monthlySalesCount,
