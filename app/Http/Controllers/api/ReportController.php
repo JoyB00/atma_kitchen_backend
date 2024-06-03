@@ -43,7 +43,7 @@ class ReportController extends Controller
         ], 200);
     }
 
-    public function salesReportYearly(Request $request)
+    public function salesReportMonthly(Request $request)
     {
         $month = array(
             'Januari',
