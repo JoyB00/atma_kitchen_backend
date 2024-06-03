@@ -62,6 +62,8 @@ class ReportController extends Controller
 
         // generate report containing monthly sales count and total sales
         // get monthly transaction count on this month
+        $monthlySalesCount = [];
+        $monthlySalesTotal = [];
         for ($i = 1; $i <= 12; $i++) {
             $monthlySalesCount[$month[$i - 1]] = Transactions::whereYear('pickup_date', $data['year'])
                 ->whereMonth('pickup_date', $i)
