@@ -95,6 +95,9 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () 
     Route::post('/employeeSalary', [SalariesController::class, 'store']);
     Route::put('/employeeSalary/{id}', [SalariesController::class, 'update']);
     Route::delete('/employeeSalary/{id}', [SalariesController::class, 'destroy']);
+
+    // Report
+    Route::get('/productSales/Owner', [ReportController::class, 'getProductSalesByMonth']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () { // logged in and have Admin role
@@ -179,7 +182,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
     Route::post('/ingredientUseHistory', [HistoryUseIngredientController::class, 'store']);
 
     // Report
-    Route::get('/productSales', [ReportController::class, 'getProductSalesByMonth']);
+    Route::get('/productSales/MO', [ReportController::class, 'getProductSalesByMonth']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () { // logged in and have Customer role
