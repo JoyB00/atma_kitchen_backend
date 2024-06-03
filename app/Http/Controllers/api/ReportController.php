@@ -45,7 +45,7 @@ class ReportController extends Controller
 
     public function salesReportMonthly(Request $request)
     {
-        $month = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+        $month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
         $data = $request->all();
         $validate = Validator::make(
@@ -77,8 +77,8 @@ class ReportController extends Controller
         }
 
         return response([
-            'count' => [$monthlySalesCount],
-            'total' => [$monthlySalesTotal],
+            'count' => $monthlySalesCount,
+            'total' => $monthlySalesTotal,
         ], 200);
     }
 
