@@ -26,13 +26,15 @@ class ReportController extends Controller
             ->select(
                 DB::raw('COALESCE(products.product_name, hampers.hampers_name) as Product'),
                 DB::raw('SUM(transaction_details.quantity) as Quantity'),
-                DB::raw('SUM(transaction_details.price * transaction_details.quantity) as Price')
+                DB::raw('SUM(transaction_details.price * transaction_details.quantity) as Price'),
+                DB::raw('IFNULL(products.price, hampers.price) as OriginalPrice')
             )
             ->whereMonth('transactions.pickup_date', '=', $month)
             ->where('transactions.status', '=', 'finished')
-            ->groupBy('Product')
+            ->groupBy('Product', 'OriginalPrice')
             ->orderBy('Product')
             ->get();
+
 
 
 
