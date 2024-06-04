@@ -103,7 +103,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () 
     Route::delete('/employeeSalary/{id}', [SalariesController::class, 'destroy']);
 
     // Report
-    Route::get('/productSales/Owner', [ReportController::class, 'getProductSalesByMonth']);
+    Route::get('/productSales/MO', [ReportController::class, 'getProductSalesByMonth']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () { // logged in and have Admin role
