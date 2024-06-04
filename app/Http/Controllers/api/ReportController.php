@@ -40,7 +40,7 @@ class ReportController extends Controller
 
         $total = 0;
         foreach ($products as $item) {
-            $total = $total + ($item->Quantity * $item->Price);
+            $total = $total + ($item->Quantity * $item->OriginalPrice);
         }
 
         return response([
