@@ -30,9 +30,9 @@ class ReportController extends Controller
             )
             ->whereMonth('transactions.pickup_date', '=', $month)
             ->where('transactions.status', '=', 'finished')
-            ->groupBy('Product')
             ->orderBy('Product')
             ->get();
+
 
         $total = 0;
         foreach ($products as $item) {
