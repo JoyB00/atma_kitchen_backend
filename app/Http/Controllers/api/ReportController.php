@@ -25,8 +25,8 @@ class ReportController extends Controller
             ->leftJoin('hampers', 'transaction_details.hampers_id', '=', 'hampers.id')
             ->select(
                 DB::raw('COALESCE(products.product_name, hampers.hampers_name) as Product'),
-                DB::raw('SUM(transaction_details.quantity) as TotalQuantity'),
-                DB::raw('SUM(transaction_details.price * transaction_details.quantity) as TotalPrice')
+                DB::raw('SUM(transaction_details.quantity) as Quantity'),
+                DB::raw('SUM(transaction_details.price * transaction_details.quantity) as Price')
             )
             ->whereMonth('transactions.pickup_date', '=', $month)
             ->where('transactions.status', '=', 'finished')
