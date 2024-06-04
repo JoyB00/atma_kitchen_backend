@@ -559,47 +559,6 @@ class TransactionController extends Controller
         ], 200);
     }
 
-    public function getConsignorReport()
-    {
-        // Fetch transaction details with necessary joins
-        $transactions = Transactions::with(['TransactionDetails.Product.Consignor'])
-            ->get()
-            ->groupBy('TransactionDetails.Product.consignor_id');
-
-        $report = [];
-
-        foreach ($transactions as $consignorId => $transactionDetails) {
-            $consignorName = $transactionDetails->first()->TransactionDetails->first()->Product->Consignor->consignor_name;
-            $consignorData = [
-                'consignor_id' => $consignorId,
-                'consignor_name' => $consignorName,
-                'products' => []
-            ];
-
-            foreach ($transactionDetails as $transaction) {
-                foreach ($transaction->TransactionDetails as $detail) {
-                    $product = $detail->Product;
-                    $quantity = $detail->quantity;
-                    $price = $detail->price;
-                    $total = $quantity * $price;
-                    $commission = 0.2 * $total;
-                    $received = $total - commission;
-
-                    $consignorData['products'][] = [
-                        'product_name' => $product->product_name,
-                        'quantity_sold' => $quantity,
-                        'sale_price' => $price,
-                        'total' => $total,
-                        'commission' => $commission,
-                        'received' => $received,
-                    ];
-                }
-            }
-
-            $report[] = $consignorData;
-        }
-
-        return response()->json($report);
-    }
+    
     
 }

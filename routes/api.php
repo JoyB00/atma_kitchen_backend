@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Api\BalanceController;
+// use App\Http\Controllers\ConsignorReportController;
 use App\Http\Middleware\UserRoleCheck;
 use Illuminate\Support\Facades\Route;
 
@@ -177,6 +178,11 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
     Route::get('/shortageIngredient/{id}', [TransactionConfirmationController::class, 'showShortageIngredient']);
     Route::get('/transactionConfirmation/proccess', [TransactionConfirmationController::class, 'showTransactionNeedToProccess']);
     Route::post('/transactionConfirmation/proccess/recap', [TransactionConfirmationController::class, 'recapUsedIngredient']);
+
+    //Report
+    Route::post('/consignor-report', [ReportController::class, 'getConsignorReport']);
+
+    Route::post('/absence-report', [ReportController::class, 'getAbsenceReport']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () { // logged in and have Customer role

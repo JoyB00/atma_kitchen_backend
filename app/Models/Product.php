@@ -25,12 +25,12 @@ class Product extends Model
         'description'
     ];
 
-    public function Categories()
+    public function Category()
     {
         return  $this->belongsTo(Categories::class, 'category_id');
     }
 
-    public function Consignors()
+    public function Consignor()
     {
         return $this->belongsTo(Consignors::class, 'consignor_id');
     }

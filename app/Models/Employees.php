@@ -25,4 +25,9 @@ class Employees extends Model
     {
         return $this->hasMany(Absence::class);
     }
+
+    public function Salaries()
+    {
+        return $this->hasMany(Salaries::class, 'employee_id', 'id');
+    }
 }

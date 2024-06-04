@@ -178,35 +178,4 @@ class BalanceController extends Controller
         }
     }
     
-
-    public function clearWithdrawalRequests()
-    {
-        // Check if the authenticated user is an admin
-        if (auth()->user()->role_id != 2) {
-            Log::warning('Unauthorized access attempt by user: '.auth()->user()->id);
-            return response([
-                'message' => 'Unauthorized'
-            ], 403);
-        }
-
-        DB::beginTransaction();
-        try {
-            // Delete all pending withdrawal requests
-            $deleted = BalanceHistories::where('status', 'pending')->delete();
-
-            Log::info('Deleted '.$deleted.' pending withdrawal requests.');
-
-            DB::commit();
-
-            return response([
-                'message' => 'All pending withdrawal requests have been cleared',
-            ], 200);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('An error occurred while clearing the withdrawal requests: '.$e->getMessage());
-            return response([
-                'message' => 'An error occurred while clearing the withdrawal requests'
-            ], 500);
-        }
-    }
 }
