@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\BalanceHistories;
 use App\Models\Customers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class BalanceController extends Controller
 {
@@ -41,9 +43,9 @@ class BalanceController extends Controller
             'amount' => 'required|numeric|min:1',
             'bank_name' => 'required',
             'account_number' => 'required',
-            'date' => 'required|date',
             'detail_information' => 'required'
         ]);
+        $data['date'] = now();
 
         if ($validate->fails()) {
             return response([
@@ -58,27 +60,30 @@ class BalanceController extends Controller
             ], 400);
         }
 
-        $customer->nominal_balance -= $amount;
-        $customer->save();
+        // Log the withdrawal request creation
+        Log::info('Creating withdrawal request', [
+            'customer_id' => $customer->id,
+            'withdraw_amount' => $amount,
+        ]);
 
-        // Mencatat riwayat saldo
+        // Create a withdrawal request with status pending
         BalanceHistories::create([
             'customer_id' => $customer->id,
-            'balance_nominal' => -$amount,
+            'nominal_balance' => -$amount, 
             'bank_name' => $data['bank_name'],
             'account_number' => $data['account_number'],
             'date' => $data['date'],
             'detail_information' => $data['detail_information'],
+            'status' => 'pending' // Add status pending
         ]);
 
         return response([
-            'message' => 'Withdrawal Successful',
-            'data' => ['balance' => $customer->nominal_balance]
+            'message' => 'Withdrawal request submitted successfully, awaiting confirmation',
         ], 200);
     }
 
     // Menampilkan riwayat saldo customer yang diotorisasi berdasarkan ID
-    public function balanceHistory($id)
+    public function withdrawHistory($id)
     {
         $customer = Customers::where('user_id', auth()->user()->id)->first();
         if (!$customer || $customer->id != $id) {
@@ -93,5 +98,115 @@ class BalanceController extends Controller
             'message' => 'Balance histories retrieved successfully',
             'data' => $balanceHistories,
         ], 200);
+    }
+
+    // Menampilkan pengajuan penarikan saldo (Admin)
+    public function showWithdrawalRequests()
+    {
+        // Check if the authenticated user is an admin
+        if (auth()->user()->role_id != 2) {
+            return response([
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        $withdrawalRequests = BalanceHistories::where('status', 'pending')->get();
+
+        return response([
+            'message' => 'Withdrawal requests retrieved successfully',
+            'data' => $withdrawalRequests,
+        ], 200);
+    }
+
+    public function confirmWithdrawal(Request $request, $id)
+    {
+      
+        if (auth()->user()->role_id != 2) {
+          
+            return response([
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+    
+        // Find the withdrawal request by ID and ensure its status is pending
+        $withdrawalRequest = BalanceHistories::where('id', $id)->where('status', 'pending')->first();
+    
+        if (!$withdrawalRequest) {
+          
+            return response([
+                'message' => 'Withdrawal request not found or already processed'
+            ], 404);
+        }
+    
+        Log::info('Found withdrawal request ID: ' . $id . ' with status: ' . $withdrawalRequest->status);
+    
+        // Find the customer associated with the withdrawal request
+        $customer = Customers::find($withdrawalRequest->customer_id);
+        if (!$customer) {
+            Log::warning('Customer not found for customer ID: ' . $withdrawalRequest->customer_id);
+            return response([
+                'message' => 'Customer not found'
+            ], 404);
+        }
+    
+        DB::beginTransaction();
+        try {
+            // Calculate the new balance
+            $newBalance = $customer->nominal_balance + $withdrawalRequest->nominal_balance;
+    
+            // Deduct the balance from the customer's account
+            $customer->nominal_balance = $newBalance;
+            $customer->save();
+    
+            // Update the status of the withdrawal request to confirmed
+            $withdrawalRequest->status = 'confirmed';
+            $withdrawalRequest->save();
+    
+            Log::info('Withdrawal request confirmed for request ID: ' . $id . ', new customer balance: ' . $newBalance);
+    
+            DB::commit();
+    
+            return response([
+                'message' => 'Withdrawal request confirmed successfully',
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('An error occurred while confirming the withdrawal request: ' . $e->getMessage());
+            return response([
+                'message' => 'An error occurred while confirming the withdrawal request'
+            ], 500);
+        }
+    }
+    
+
+    public function clearWithdrawalRequests()
+    {
+        // Check if the authenticated user is an admin
+        if (auth()->user()->role_id != 2) {
+            Log::warning('Unauthorized access attempt by user: '.auth()->user()->id);
+            return response([
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Delete all pending withdrawal requests
+            $deleted = BalanceHistories::where('status', 'pending')->delete();
+
+            Log::info('Deleted '.$deleted.' pending withdrawal requests.');
+
+            DB::commit();
+
+            return response([
+                'message' => 'All pending withdrawal requests have been cleared',
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('An error occurred while clearing the withdrawal requests: '.$e->getMessage());
+            return response([
+                'message' => 'An error occurred while clearing the withdrawal requests'
+            ], 500);
+        }
     }
 }
