@@ -112,7 +112,8 @@ class ReportController extends Controller
         if ($ingredientUse->isEmpty()) {
             return response([
                 'message' => 'No Data Found',
-            ], 404);
+                'data' => []
+            ], 200);
         }
 
         return response([
