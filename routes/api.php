@@ -92,6 +92,7 @@ Route::middleware('auth:api')->group(function () { // all logged in user
 
     // Report
     Route::post('/salesReportMonthly', [ReportController::class, 'salesReportMonthly']);
+    Route::post('/ingredientUsageReport', [ReportController::class, 'ingredientUsageReport']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () { // logged in and have Owner role

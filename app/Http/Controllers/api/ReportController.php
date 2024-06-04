@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\HistoryUseIngredients;
 use App\Models\TransactionDetail;
 use App\Models\Transactions;
 use Illuminate\Http\Request;
@@ -82,4 +83,39 @@ class ReportController extends Controller
         ], 200);
     }
 
+    public function ingredientUsageReport(Request $request)
+    {
+        $data = $request->all();
+
+        //make sure it's a valid date
+        $validate = Validator::make(
+            $data,
+            [
+                'from' => 'required',
+                'to' => 'required'
+            ]
+        );
+
+        if ($validate->fails() || strtotime($data['from']) > strtotime($data['to'])) {
+            return response([
+                'message' => "Invalid date range",
+            ], 400);
+        }
+
+        // get ingredient usage report
+        $ingredientUse = HistoryUseIngredients::with('Ingredients')
+            ->whereBetween('date', [$data['from'], $data['to']])
+            ->get();
+
+        if ($ingredientUse->isEmpty()) {
+            return response([
+                'message' => 'No Data Found',
+            ], 404);
+        }
+
+        return response([
+            'message' => 'All Data Retrieved',
+            'data' => $ingredientUse
+        ], 200);
+    }
 }
