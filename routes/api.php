@@ -95,6 +95,7 @@ Route::middleware('auth:api')->group(function () { // all logged in user
     // Report
     Route::post('/salesReportMonthly', [ReportController::class, 'salesReportMonthly']);
     Route::post('/ingredientUsageReport', [ReportController::class, 'ingredientUsageReport']);
+    Route::get('/productSales', [ReportController::class, 'getProductSalesByMonth']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () { // logged in and have Owner role
@@ -103,7 +104,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () 
     Route::delete('/employeeSalary/{id}', [SalariesController::class, 'destroy']);
 
     // Report
-    Route::get('/productSales/Owner', [ReportController::class, 'getProductSalesByMonth']);
+    // Route::get('/productSales/Owner', [ReportController::class, 'getProductSalesByMonth']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () { // logged in and have Admin role
@@ -192,7 +193,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
     Route::post('/ingredientUseHistory', [HistoryUseIngredientController::class, 'store']);
 
     // Report
-    Route::get('/productSales/MO', [ReportController::class, 'getProductSalesByMonth']);
+
     //Report
     Route::post('/consignor-report', [ReportController::class, 'getConsignorReport']);
 
@@ -239,6 +240,4 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::get('/show-balance/{id}', [BalanceController::class, 'showBalance']);
     Route::post('/withdraw-balance/{id}', [BalanceController::class, 'withdrawBalance']);
     Route::get('/history-withdraw/{id}', [BalanceController::class, 'withdrawHistory']);
-   
 });
-  

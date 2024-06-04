@@ -8,8 +8,10 @@ use App\Models\Consignors;
 use App\Models\Employees;
 use App\Models\HistoryUseIngredients;
 use App\Models\TransactionDetail;
+use App\Models\Transactions;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ReportController extends Controller
