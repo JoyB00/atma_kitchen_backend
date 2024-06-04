@@ -239,6 +239,4 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::get('/show-balance/{id}', [BalanceController::class, 'showBalance']);
     Route::post('/withdraw-balance/{id}', [BalanceController::class, 'withdrawBalance']);
     Route::get('/history-withdraw/{id}', [BalanceController::class, 'withdrawHistory']);
-   
 });
-  

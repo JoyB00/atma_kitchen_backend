@@ -174,7 +174,19 @@ class TransactionConfirmationController extends Controller
                 'TransactionDetails.Product.AllRecipes',
                 'TransactionDetails.Product.AllRecipes.Ingredients'
             )->find($i['id']);
-            $temp = Transactions::with('Customer', 'Customer.Users', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers', 'TransactionDetails.Product.AllRecipes', 'TransactionDetails.Product.AllRecipes.Ingredients')->find($i['id']);
+            $temp = Transactions::with(
+                'Customer',
+                'Customer.Users',
+                'TransactionDetails',
+                'TransactionDetails.Product',
+                'TransactionDetails.Hampers',
+                'TransactionDetails.Hampers.HampersDetail',
+                'TransactionDetails.Hampers.HampersDetail.Product',
+                'TransactionDetails.Hampers.HampersDetail.Product.AllRecipes',
+                'TransactionDetails.Hampers.HampersDetail.Product.AllRecipes.Ingredients',
+                'TransactionDetails.Product.AllRecipes',
+                'TransactionDetails.Product.AllRecipes.Ingredients'
+            )->find($i['id']);
             $transaksiArray[$key] = $temp;
             $transaksiID_array[$key] = $temp->id;
         }
@@ -195,7 +207,7 @@ class TransactionConfirmationController extends Controller
     {
         $transactionId = $id;
         $results = $this->usedIngredient($transactionId);
-    
+
         $shortageIngredient = $results->map(function ($item) {
             $ingredient = Ingredients::where('ingredient_name', $item['ingredient_name'])->first();
             if ($ingredient->quantity < $item['quantity']) {
@@ -205,19 +217,19 @@ class TransactionConfirmationController extends Controller
                 ];
             }
         });
-    
+
         $shortageIngredient = $shortageIngredient->filter(function ($item) {
             return !is_null($item);
         });
-    
+
         $shortageIngredient = $shortageIngredient->values();
-    
+
         return response([
             'message' => 'Show all ingredient used',
             'data' => $shortageIngredient
         ], 200);
     }
-    
+
 
 
 
