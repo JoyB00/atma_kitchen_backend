@@ -107,9 +107,9 @@ class TransactionConfirmationController extends Controller
             ->join('recipes as r', 'r.product_id', '=', 'p.id')
             ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
             ->whereIn('transactions.id', $transactionIds)
-            ->groupBy('i.ingredient_name')
-            ->select('i.ingredient_name')
-            ->selectRaw('CAST(SUM(r.quantity) AS DECIMAL) as quantity')
+            ->groupBy('i.ingredient_name', 'i.unit')
+            ->select('i.ingredient_name', 'i.unit')
+            ->selectRaw('CAST(SUM(r.quantity * dt.quantity) AS DECIMAL) as quantity')
             ->get();
 
         $subquery2 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
@@ -119,9 +119,9 @@ class TransactionConfirmationController extends Controller
             ->join('recipes as r', 'r.product_id', '=', 'p.id')
             ->join('ingredients as i', 'i.id', '=', 'r.ingredient_id')
             ->whereIn('transactions.id', $transactionIds)
-            ->groupBy('i.ingredient_name', 'p.product_name')
-            ->select('i.ingredient_name')
-            ->selectRaw('CAST(SUM(r.quantity) AS DECIMAL) as quantity')
+            ->groupBy('i.ingredient_name', 'i.unit')
+            ->select('i.ingredient_name', 'i.unit')
+            ->selectRaw('CAST(SUM(r.quantity * dt.quantity) AS DECIMAL) as quantity')
             ->get();
 
         $subquery3 = Transactions::join('transaction_details as dt', 'transactions.id', '=', 'dt.transaction_id')
@@ -130,8 +130,8 @@ class TransactionConfirmationController extends Controller
             ->leftJoin('products as p', 'hd.product_id', '=', 'p.id')
             ->join('ingredients as i', 'i.id', '=', 'hd.ingredient_id')
             ->whereIn('transactions.id', $transactionIds)
-            ->groupBy('i.ingredient_name')
-            ->select('i.ingredient_name')
+            ->groupBy('i.ingredient_name', 'i.unit')
+            ->select('i.ingredient_name', 'i.unit')
             ->selectRaw('CAST(COUNT(i.ingredient_name) AS DECIMAL) as quantity')
             ->get();
 
@@ -143,6 +143,7 @@ class TransactionConfirmationController extends Controller
             ->map(function ($group) {
                 return [
                     'ingredient_name' => $group->first()->ingredient_name,
+                    'unit' => $group->first()->unit,
                     'quantity' => $group->sum('quantity')
                 ];
             })
@@ -160,7 +161,19 @@ class TransactionConfirmationController extends Controller
         $transaksiID_array = [];
 
         foreach ($data['item'] as $key => $i) {
-            $temp = Transactions::with('Customer', 'Customer.Users', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers', 'TransactionDetails.Product.AllRecipes', 'TransactionDetails.Product.AllRecipes.Ingredients')->find($i['id']);
+            $temp = Transactions::with(
+                'Customer',
+                'Customer.Users',
+                'TransactionDetails',
+                'TransactionDetails.Product',
+                'TransactionDetails.Hampers',
+                'TransactionDetails.Hampers.HampersDetail',
+                'TransactionDetails.Hampers.HampersDetail.Product',
+                'TransactionDetails.Hampers.HampersDetail.Product.AllRecipes',
+                'TransactionDetails.Hampers.HampersDetail.Product.AllRecipes.Ingredients',
+                'TransactionDetails.Product.AllRecipes',
+                'TransactionDetails.Product.AllRecipes.Ingredients'
+            )->find($i['id']);
             $transaksiArray[$key] = $temp;
             $transaksiID_array[$key] = $temp->id;
         }
