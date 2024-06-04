@@ -8,9 +8,9 @@ use App\Models\Consignors;
 use App\Models\Employees;
 use App\Models\HistoryUseIngredients;
 use App\Models\TransactionDetail;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
 
 class ReportController extends Controller
 {
@@ -120,7 +120,6 @@ class ReportController extends Controller
             'data' => $ingredientUse
         ], 200);
     }
-
 
     public function getConsignorReport(Request $request)
     {
