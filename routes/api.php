@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Api\BalanceController;
+// use App\Http\Controllers\ConsignorReportController;
 use App\Http\Middleware\UserRoleCheck;
 use Illuminate\Support\Facades\Route;
 
@@ -94,6 +95,7 @@ Route::middleware('auth:api')->group(function () { // all logged in user
     // Report
     Route::post('/salesReportMonthly', [ReportController::class, 'salesReportMonthly']);
     Route::post('/ingredientUsageReport', [ReportController::class, 'ingredientUsageReport']);
+    Route::get('/productSales', [ReportController::class, 'getProductSalesByMonth']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () { // logged in and have Owner role
@@ -102,7 +104,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () 
     Route::delete('/employeeSalary/{id}', [SalariesController::class, 'destroy']);
 
     // Report
-    Route::get('/productSales/Owner', [ReportController::class, 'getProductSalesByMonth']);
+    // Route::get('/productSales/Owner', [ReportController::class, 'getProductSalesByMonth']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () { // logged in and have Admin role
@@ -142,6 +144,10 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () 
 
     // Transaction
     Route::post('/transactionWhereStatus', [TransactionController::class, 'getTransactionWhereStatus']);
+    //Balance
+    Route::get('/withdrawal-requests', [BalanceController::class, 'showWithdrawalRequests']);
+    Route::post('/confirm-withdrawal/{id}', [BalanceController::class, 'confirmWithdrawal']);
+    Route::delete('/clear-withdrawal', [BalanceController::class, 'clearWithdrawalRequests']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () { // logged in and have MO role
@@ -191,6 +197,9 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
 
     Route::post('/consignor-report', [ReportController::class, 'getConsignorReport']);
     
+
+    Route::post('/consignor-report', [ReportController::class, 'getConsignorReport']);
+
     Route::post('/absence-report', [ReportController::class, 'getAbsenceReport']);
 });
 
@@ -205,6 +214,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::post('/cartList', [CartsController::class, 'updateListCart']);
     Route::put('/cart/{id}', [CartsController::class, 'update']);
     Route::delete('/cart/{id}', [CartsController::class, 'destroy']);
+
     // Address
     Route::get('/address', [AddressController::class, 'index']);
     Route::get('/address/$id', [AddressController::class, 'show']);
@@ -229,8 +239,8 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::put('/payment/{id}', [TransactionController::class, 'paymentCustomer']);
     Route::post('/payment/evidence/{id}', [TransactionController::class, 'storePaymentEvidence']);
 
-     // Balance
-     Route::get('/show-balance/{id}', [BalanceController::class, 'showBalance']);
-     Route::post('/withdraw-balance/{id}', [BalanceController::class, 'withdrawBalance']);
-     Route::get('/history-withdraw/{id}', [BalanceController::class, 'withdrawHistory']);
+    // Balance
+    Route::get('/show-balance/{id}', [BalanceController::class, 'showBalance']);
+    Route::post('/withdraw-balance/{id}', [BalanceController::class, 'withdrawBalance']);
+    Route::get('/history-withdraw/{id}', [BalanceController::class, 'withdrawHistory']);
 });

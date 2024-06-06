@@ -30,7 +30,7 @@ class Product extends Model
         return  $this->belongsTo(Categories::class, 'category_id');
     }
 
-    public function Consignors()
+    public function Consignor()
     {
         return $this->belongsTo(Consignors::class, 'consignor_id');
     }
@@ -42,6 +42,6 @@ class Product extends Model
 
     public function AllRecipes()
     {
-        return $this->hasMany(Recipes::class, 'product_id','id');
+        return $this->hasMany(Recipes::class, 'product_id', 'id');
     }
 }

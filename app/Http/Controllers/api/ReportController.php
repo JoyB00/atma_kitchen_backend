@@ -25,18 +25,22 @@ class ReportController extends Controller
             ->leftJoin('hampers', 'transaction_details.hampers_id', '=', 'hampers.id')
             ->select(
                 DB::raw('COALESCE(products.product_name, hampers.hampers_name) as Product'),
-                'transaction_details.quantity as Quantity',
-                'transaction_details.price as Price'
+                DB::raw('SUM(transaction_details.quantity) as Quantity'),
+                DB::raw('SUM(transaction_details.price * transaction_details.quantity) as Price'),
+                DB::raw('IFNULL(products.product_price, hampers.hampers_price) as OriginalPrice')
             )
             ->whereMonth('transactions.pickup_date', '=', $month)
             ->where('transactions.status', '=', 'finished')
-            ->groupBy('Product', 'Price', 'Quantity')
+            ->groupBy('Product', 'OriginalPrice')
             ->orderBy('Product')
             ->get();
 
+
+
+
         $total = 0;
         foreach ($products as $item) {
-            $total = $total + ($item->Quantity * $item->Price);
+            $total = $total + ($item->Quantity * $item->OriginalPrice);
         }
 
         return response([
@@ -114,7 +118,8 @@ class ReportController extends Controller
         if ($ingredientUse->isEmpty()) {
             return response([
                 'message' => 'No Data Found',
-            ], 404);
+                'data' => []
+            ], 200);
         }
 
         return response([
@@ -158,7 +163,6 @@ class ReportController extends Controller
                 $soldDetails = TransactionDetail::where('product_id', $product->id)
                     ->whereBetween('created_at', [$startDate, $endDate])
                     ->get();
-              
 
                 $quantitySold = $soldDetails->sum('quantity');
                 $totalPrice = $soldDetails->sum('total_price');
@@ -182,65 +186,64 @@ class ReportController extends Controller
     }
 
     public function getAbsenceReport(Request $request)
-{
-    // Validate the request
-    $validator = Validator::make($request->all(), [
-        'year' => 'required|date_format:Y',
-        'month' => 'required|date_format:n'
-    ]);
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'year' => 'required|date_format:Y',
+            'month' => 'required|date_format:n'
+        ]);
 
-    if ($validator->fails()) {
-        return response()->json(['message' => $validator->errors()], 400);
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()], 400);
+        }
+
+        $year = $request->input('year');
+        $month = $request->input('month');
+
+        // Check if absence data exists for the requested month and year
+        $absenceAvailable = Absence::whereMonth('absence_date', $month)
+            ->whereYear('absence_date', $year)
+            ->exists();
+
+        if (!$absenceAvailable) {
+            return response()->json(['message' => 'Absence data for the requested month and year is not available'], 404);
+        }
+
+        // Fetch employees with their absences and user details for the given month and year
+        $employees = Employees::with(['Absence' => function ($query) use ($month, $year) {
+            $query->whereYear('absence_date', $year)
+                ->whereMonth('absence_date', $month);
+        }, 'Users'])->get();
+
+        $report = [];
+        $totalWages = 0;
+
+        foreach ($employees as $employee) {
+            $absentCount = $employee->Absence->count();
+            $presenceCount = Carbon::create($year, $month, 1)->daysInMonth - $absentCount;
+
+            $dailyWage = $presenceCount * 100000;
+            $bonus = ($absentCount <= 4) ? 500000 : 0;
+            $totalWage = $dailyWage + $bonus;
+
+            $report[] = [
+                'nama' => $employee->Users ? $employee->Users->fullName : 'Unknown',
+                'jumlah_hadir' => $presenceCount,
+                'jumlah_bolos' => $absentCount,
+                'honor_harian' => number_format($dailyWage, 0, ',', '.'),
+                'bonus_rajin' => number_format($bonus, 0, ',', '.'),
+                'total' => number_format($totalWage, 0, ',', '.'),
+            ];
+
+            $totalWages += $totalWage;
+        }
+
+        $totalWagesFormatted = number_format($totalWages, 0, ',', '.');
+
+        return response()->json([
+            'message' => 'Success Absence Report and Wage',
+            'data' => $report,
+            'total_wages' => $totalWagesFormatted
+        ], 200);
     }
-
-    $year = $request->input('year');
-    $month = $request->input('month');
-
-    // Check if absence data exists for the requested month and year
-    $absenceAvailable = Absence::whereMonth('absence_date', $month)
-                                ->whereYear('absence_date', $year)
-                                ->exists();
-
-    if (!$absenceAvailable) {
-        return response()->json(['message' => 'Absence data for the requested month and year is not available'], 404);
-    }
-
-    // Fetch employees with their absences and user details for the given month and year
-    $employees = Employees::with(['Absence' => function ($query) use ($month, $year) {
-        $query->whereYear('absence_date', $year)
-              ->whereMonth('absence_date', $month);
-    }, 'Users'])->get();
-
-    $report = [];
-    $totalWages = 0;
-
-    foreach ($employees as $employee) {
-        $absentCount = $employee->Absence->count();
-        $presenceCount = Carbon::create($year, $month, 1)->daysInMonth - $absentCount;
-
-        $dailyWage = $presenceCount * 100000;
-        $bonus = ($absentCount <= 4) ? 500000 : 0;
-        $totalWage = $dailyWage + $bonus;
-
-        $report[] = [
-            'employee_name' => $employee->Users ? $employee->Users->fullName : 'Unknown',
-            'total_attendance' => $presenceCount,
-            'total_absent' => $absentCount,
-            'daily_wages' => number_format($dailyWage, 0, ',', '.'),
-            'bonus' => number_format($bonus, 0, ',', '.'),
-            'total_wages' => number_format($totalWage, 0, ',', '.'),
-        ];
-
-        $totalWages += $totalWage;
-    }
-
-    $totalWagesFormatted = number_format($totalWages, 0, ',', '.');
-
-    return response()->json([
-        'message' => 'Success Absence Report and Wage',
-        'data' => $report,
-        'total_wages' => $totalWagesFormatted
-    ], 200);
-}
-
 }

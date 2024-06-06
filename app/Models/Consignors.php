@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Consignors extends Model
 {
     use HasFactory;
+
     protected $table = 'consignors';
 
     protected $primaryKey = 'id';
@@ -16,6 +17,11 @@ class Consignors extends Model
         'phone_number',
         'active',
     ];
+
+    public function Product()
+    {
+        return $this->hasMany(Product::class, 'consignor_id');
+    }
 
     public function Product()
     {
