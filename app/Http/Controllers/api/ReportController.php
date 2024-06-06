@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\HistoryUseIngredients;
+use App\Models\Absence;
+use App\Models\Consignors;
+use App\Models\Employees;
 use App\Models\TransactionDetail;
 use App\Models\Transactions;
+use App\Models\HistoryUseIngredients;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
