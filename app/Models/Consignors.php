@@ -16,4 +16,10 @@ class Consignors extends Model
         'phone_number',
         'active',
     ];
+
+    public function Product()
+    {
+        return $this->hasMany(Product::class, 'consignor_id');
+    }
+
 }

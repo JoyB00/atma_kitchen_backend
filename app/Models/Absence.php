@@ -21,4 +21,9 @@ class Absence extends Model
     {
         return $this->belongsTo(Employees::class, 'employees_id');
     }
+
+    public function Users()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
