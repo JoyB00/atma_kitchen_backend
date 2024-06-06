@@ -196,7 +196,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
 
     //Report
     Route::post('/consignor-report', [ReportController::class, 'getConsignorReport']);
-
+    
     Route::post('/absence-report', [ReportController::class, 'getAbsenceReport']);
 });
 

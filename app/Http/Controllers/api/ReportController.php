@@ -122,22 +122,7 @@ class ReportController extends Controller
             'data' => $ingredientUse
         ], 200);
     }
-}
-<?php
 
-namespace App\Http\Controllers\Api;
-
-use App\Http\Controllers\Controller;
-use App\Models\Absence;
-use App\Models\Consignors;
-use App\Models\Employees;
-use App\Models\TransactionDetail;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
-
-class ReportController extends Controller
-{
     public function getConsignorReport(Request $request)
     {
         // Validate the request
@@ -238,12 +223,12 @@ class ReportController extends Controller
         $totalWage = $dailyWage + $bonus;
 
         $report[] = [
-            'nama' => $employee->Users ? $employee->Users->fullName : 'Unknown',
-            'jumlah_hadir' => $presenceCount,
-            'jumlah_bolos' => $absentCount,
-            'honor_harian' => number_format($dailyWage, 0, ',', '.'),
-            'bonus_rajin' => number_format($bonus, 0, ',', '.'),
-            'total' => number_format($totalWage, 0, ',', '.'),
+            'employee_name' => $employee->Users ? $employee->Users->fullName : 'Unknown',
+            'total_attendance' => $presenceCount,
+            'total_absent' => $absentCount,
+            'daily_wages' => number_format($dailyWage, 0, ',', '.'),
+            'bonus' => number_format($bonus, 0, ',', '.'),
+            'total_wages' => number_format($totalWage, 0, ',', '.'),
         ];
 
         $totalWages += $totalWage;
