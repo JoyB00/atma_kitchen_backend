@@ -23,9 +23,4 @@ class Consignors extends Model
         return $this->hasMany(Product::class, 'consignor_id');
     }
 
-    public function Product()
-    {
-        return $this->hasMany(Product::class, 'consignor_id');
-    }
-
 }
