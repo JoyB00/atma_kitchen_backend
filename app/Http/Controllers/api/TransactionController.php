@@ -544,6 +544,17 @@ class TransactionController extends Controller
         ], 200);
     }
 
+    public function getLatePaymentTransaction()
+    {
+        $transactions = Transactions::where('status', 'notPaid')->where('order_date', '>=',
+            Carbon::now()->subDays(2)->toDateString())->get();
+
+        return response([
+            'message' => 'All data Retrieved',
+            'data' => $transactions
+        ], 200);
+    }
+
     public function deleteTransaction($id)
     {
         $transaction = Transactions::find($id);
@@ -559,6 +570,5 @@ class TransactionController extends Controller
         ], 200);
     }
 
-    
-    
+
 }

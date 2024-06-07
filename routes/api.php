@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\api;
+
 use App\Http\Middleware\UserRoleCheck;
 use Illuminate\Support\Facades\Route;
 
@@ -141,6 +142,8 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () 
 
     // Transaction
     Route::post('/transactionWhereStatus', [TransactionController::class, 'getTransactionWhereStatus']);
+    Route::get('/lateTransactions', [TransactionController::class, 'getLatePaymentTransaction']);
+
     //Balance
     Route::get('/withdrawal-requests', [BalanceController::class, 'showWithdrawalRequests']);
     Route::post('/confirm-withdrawal/{id}', [BalanceController::class, 'confirmWithdrawal']);
@@ -193,7 +196,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
     Route::get('/productSales/MO', [ReportController::class, 'getProductSalesByMonth']);
 
     Route::post('/consignor-report', [ReportController::class, 'getConsignorReport']);
-    
+
 
     Route::post('/consignor-report', [ReportController::class, 'getConsignorReport']);
 
