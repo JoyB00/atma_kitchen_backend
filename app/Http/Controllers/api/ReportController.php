@@ -274,6 +274,7 @@ class ReportController extends Controller
             'total_wages' => $totalWagesFormatted
         ], 200);
     }
+}
 
     public function getIncomeAndExpenseReport(Request $request)
 {
@@ -358,8 +359,6 @@ class ReportController extends Controller
         ]
     ], 200);
 }
-
-    
 
 }
 
