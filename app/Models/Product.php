@@ -42,6 +42,6 @@ class Product extends Model
 
     public function AllRecipes()
     {
-        return $this->hasMany(Recipes::class, 'product_id','id');
+        return $this->hasMany(Recipes::class, 'product_id', 'id');
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\HistoryUseIngredients;
 use App\Models\Ingredients;
+use App\Models\TransactionDetail;
 use App\Models\Transactions;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -31,6 +32,8 @@ class HistoryUseIngredientController extends Controller
             $updateTrasaction->status = 'onProcess';
             $updateTrasaction->save();
         }
+
+
         foreach ($recap as $item) {
             $ingredient = Ingredients::where('ingredient_name', $item['ingredient_name'])->first();
             $ingredient->quantity = $ingredient->quantity -  $item['quantity'];

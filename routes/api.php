@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\Api\BalanceController;
-// use App\Http\Controllers\ConsignorReportController;
 use App\Http\Middleware\UserRoleCheck;
 use Illuminate\Support\Facades\Route;
 
@@ -95,6 +93,7 @@ Route::middleware('auth:api')->group(function () { // all logged in user
     // Report
     Route::post('/salesReportMonthly', [ReportController::class, 'salesReportMonthly']);
     Route::post('/ingredientUsageReport', [ReportController::class, 'ingredientUsageReport']);
+    Route::get('/productSales', [ReportController::class, 'getProductSalesByMonth']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () { // logged in and have Owner role
@@ -103,7 +102,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':1'])->group(function () 
     Route::delete('/employeeSalary/{id}', [SalariesController::class, 'destroy']);
 
     // Report
-    Route::get('/productSales/Owner', [ReportController::class, 'getProductSalesByMonth']);
+    // Route::get('/productSales/Owner', [ReportController::class, 'getProductSalesByMonth']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () { // logged in and have Admin role
@@ -143,6 +142,8 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':2'])->group(function () 
 
     // Transaction
     Route::post('/transactionWhereStatus', [TransactionController::class, 'getTransactionWhereStatus']);
+    Route::get('/lateTransactions', [TransactionController::class, 'getLatePaymentTransaction']);
+
     //Balance
     Route::get('/withdrawal-requests', [BalanceController::class, 'showWithdrawalRequests']);
     Route::post('/confirm-withdrawal/{id}', [BalanceController::class, 'confirmWithdrawal']);
@@ -241,6 +242,4 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::get('/show-balance/{id}', [BalanceController::class, 'showBalance']);
     Route::post('/withdraw-balance/{id}', [BalanceController::class, 'withdrawBalance']);
     Route::get('/history-withdraw/{id}', [BalanceController::class, 'withdrawHistory']);
-   
 });
-  
