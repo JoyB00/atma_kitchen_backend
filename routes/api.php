@@ -194,10 +194,11 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':3'])->group(function () 
     // Report
     Route::get('/productSales/MO', [ReportController::class, 'getProductSalesByMonth']);
 
-    //Report
     Route::post('/consignor-report', [ReportController::class, 'getConsignorReport']);
     
     Route::post('/absence-report', [ReportController::class, 'getAbsenceReport']);
+
+    Route::post('/income-expense-report', [ReportController::class, 'getIncomeAndExpenseReport']);
 });
 
 Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () { // logged in and have Customer role
