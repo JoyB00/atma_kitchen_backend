@@ -41,6 +41,7 @@ Route::middleware('auth:api')->group(function () { // all logged in user
 
     // Order
     Route::get('/orderHistory/{id}', [TransactionController::class, 'getOrderHistory']);
+    Route::post('/searchOrderHistory', [TransactionController::class, 'searchOrderHistory']);
     Route::get('/detailOrder/{id}', [TransactionController::class, 'getDetailOrder']);
     Route::get('/searchProductNameInTransactions/{term}', [TransactionController::class, 'searchProductNameInTransactions']);
     Route::get('/order', [TransactionController::class, 'index']);
