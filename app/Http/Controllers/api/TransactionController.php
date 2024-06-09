@@ -52,24 +52,11 @@ class TransactionController extends Controller
     public function searchOrderHistory(Request $request)
     {
         $data = $request->all();
-
-        $validate = Validator::make(
-            $data,
-            [
-                'id' => 'required',
-            ]
-        );
-        if ($validate->fails()) {
-            return response([
-                'message' => $validate->errors()->first(),
-            ], 400);
-        }
-
-        $id = $data['id'];
+        $customer = Customers::where('user_id', auth()->user()->id)->first();
         $searchTerm = $data['query'];
 
         // search by product/hampers name
-        $orders = Transactions::with('Delivery', 'Customer', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('customer_id', $id)->where(
+        $orders = Transactions::with('Delivery', 'Customer', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('customer_id', $customer->id)->where(
             function ($query) use ($searchTerm) {
                 $query->whereHas('TransactionDetails.Product', function ($query) use ($searchTerm) {
                     $query->where('product_name', 'like', '%' . $searchTerm . '%');
