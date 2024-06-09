@@ -546,7 +546,7 @@ class TransactionController extends Controller
 
     public function getLatePaymentTransaction()
     {
-        $transactions = Transactions::with('Customer')->where('status', 'notPaid')->where('order_date', '<=',
+        $transactions = Transactions::with('Customer.Users')->where('status', 'notPaid')->where('order_date', '<=',
             Carbon::now()->addDays(2)->toDateString())->get();
 
         return response([
