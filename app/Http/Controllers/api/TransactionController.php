@@ -57,7 +57,6 @@ class TransactionController extends Controller
             $data,
             [
                 'id' => 'required',
-                'query' => 'required'
             ]
         );
         if ($validate->fails()) {
