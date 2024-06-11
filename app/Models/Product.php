@@ -25,14 +25,9 @@ class Product extends Model
         'description'
     ];
 
-    public function Categories()
+    public function Category()
     {
         return  $this->belongsTo(Categories::class, 'category_id');
-    }
-
-    public function TransactionDetail()
-    {
-        return $this->hasMany(TransactionDetail::class, 'product_id');
     }
 
     public function Consignor()
@@ -47,6 +42,6 @@ class Product extends Model
 
     public function AllRecipes()
     {
-        return $this->hasMany(Recipes::class, 'product_id', 'id');
+        return $this->hasMany(Recipes::class, 'product_id','id');
     }
 }
