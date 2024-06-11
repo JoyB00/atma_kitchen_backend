@@ -30,6 +30,11 @@ class Product extends Model
         return  $this->belongsTo(Categories::class, 'category_id');
     }
 
+    public function TransactionDetail()
+    {
+        return $this->hasMany(TransactionDetail::class, 'product_id');
+    }
+
     public function Consignor()
     {
         return $this->belongsTo(Consignors::class, 'consignor_id');

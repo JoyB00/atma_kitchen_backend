@@ -6,13 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Absence;
 use App\Models\Consignors;
 use App\Models\Employees;
-use App\Models\HistoryUseIngredients;
 use App\Models\TransactionDetail;
 use App\Models\Transactions;
-use Carbon\Carbon;
+use App\Models\OtherProcurements;
+use App\Models\HistoryUseIngredients;
+use App\Models\IngredientProcurements;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ReportController extends Controller
 {
@@ -135,115 +138,240 @@ class ReportController extends Controller
             'year' => 'required|date_format:Y',
             'month' => 'required|date_format:n'
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
-
+    
         $year = $request->input('year');
         $month = $request->input('month');
-
+    
+        // Log validated inputs
+        Log::info('Validated inputs:', ['year' => $year, 'month' => $month]);
+    
         // Get the first and last date of the month
         $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth();
         $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth();
-
+    
+        // Log the date range
+        Log::info('Date Range:', ['startDate' => $startDate, 'endDate' => $endDate]);
+    
         // Fetch the consignors and their sold products in the given month and year
-        $consignors = Consignors::with('Product')->get();
-
+        $consignors = Consignors::with(['Product' => function($query) use ($startDate, $endDate) {
+            $query->whereHas('TransactionDetail', function($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            });
+        }])->get();
+    
+        // Log fetched consignors
+        Log::info('Fetched Consignors:', ['consignors' => $consignors->toArray()]);
+    
         $report = [];
-
+    
         foreach ($consignors as $consignor) {
+            Log::info('Processing Consignor:', ['consignor_name' => $consignor->consignor_name]);
+    
             $consignorReport = [
                 'consignor_name' => $consignor->consignor_name,
                 'products' => [],
             ];
-
+    
             foreach ($consignor->Product as $product) {
+                Log::info('Processing Product:', ['product_name' => $product->product_name]);
+    
                 // Fetch the transaction details for the given product and date range
-                $soldDetails = TransactionDetail::where('product_id', $product->id)
+                $soldDetails = $product->TransactionDetail()
                     ->whereBetween('created_at', [$startDate, $endDate])
                     ->get();
-
+    
                 $quantitySold = $soldDetails->sum('quantity');
                 $totalPrice = $soldDetails->sum('total_price');
                 $commission = $totalPrice * 0.2;
                 $amountReceived = $totalPrice - $commission;
-
-                $consignorReport['products'][] = [
+    
+                // Log each product's sold details
+                Log::info('Product Sold Details:', [
                     'product_name' => $product->product_name,
                     'quantity_sold' => $quantitySold,
-                    'sale_price' => $product->product_price,
-                    'total' => $totalPrice,
+                    'totalPrice' => $totalPrice,
                     'commission' => $commission,
-                    'received' => $amountReceived,
-                ];
+                    'amountReceived' => $amountReceived,
+                ]);
+    
+                // Only include the product if it has been sold in the date range
+                if ($quantitySold > 0) {
+                    $consignorReport['products'][] = [
+                        'product_name' => $product->product_name,
+                        'quantity_sold' => $quantitySold,
+                        'sale_price' => $product->product_price,
+                        'total' => $totalPrice,
+                        'commission' => $commission,
+                        'received' => $amountReceived,
+                    ];
+                }
             }
-
-            $report[] = $consignorReport;
+    
+            // Only include consignors with at least one sold product
+            if (!empty($consignorReport['products'])) {
+                $report[] = $consignorReport;
+            }
         }
-
+    
+        // Log final report
+        Log::info('Final Report:', ['report' => $report]);
+    
         return response()->json($report);
     }
+    
 
     public function getAbsenceReport(Request $request)
-    {
-        // Validate the request
-        $validator = Validator::make($request->all(), [
-            'year' => 'required|date_format:Y',
-            'month' => 'required|date_format:n'
-        ]);
+{
+    // Validasi permintaan
+    $validator = Validator::make($request->all(), [
+        'year' => 'required|date_format:Y',
+        'month' => 'required|date_format:n'
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()], 400);
-        }
-
-        $year = $request->input('year');
-        $month = $request->input('month');
-
-        // Check if absence data exists for the requested month and year
-        $absenceAvailable = Absence::whereMonth('absence_date', $month)
-            ->whereYear('absence_date', $year)
-            ->exists();
-
-        if (!$absenceAvailable) {
-            return response()->json(['message' => 'Absence data for the requested month and year is not available'], 404);
-        }
-
-        // Fetch employees with their absences and user details for the given month and year
-        $employees = Employees::with(['Absence' => function ($query) use ($month, $year) {
-            $query->whereYear('absence_date', $year)
-                ->whereMonth('absence_date', $month);
-        }, 'Users'])->get();
-
-        $report = [];
-        $totalWages = 0;
-
-        foreach ($employees as $employee) {
-            $absentCount = $employee->Absence->count();
-            $presenceCount = Carbon::create($year, $month, 1)->daysInMonth - $absentCount;
-
-            $dailyWage = $presenceCount * 100000;
-            $bonus = ($absentCount <= 4) ? 500000 : 0;
-            $totalWage = $dailyWage + $bonus;
-
-            $report[] = [
-                'nama' => $employee->Users ? $employee->Users->fullName : 'Unknown',
-                'jumlah_hadir' => $presenceCount,
-                'jumlah_bolos' => $absentCount,
-                'honor_harian' => number_format($dailyWage, 0, ',', '.'),
-                'bonus_rajin' => number_format($bonus, 0, ',', '.'),
-                'total' => number_format($totalWage, 0, ',', '.'),
-            ];
-
-            $totalWages += $totalWage;
-        }
-
-        $totalWagesFormatted = number_format($totalWages, 0, ',', '.');
-
-        return response()->json([
-            'message' => 'Success Absence Report and Wage',
-            'data' => $report,
-            'total_wages' => $totalWagesFormatted
-        ], 200);
+    if ($validator->fails()) {
+        return response()->json(['message' => $validator->errors()], 400);
     }
+
+    $year = $request->input('year');
+    $month = $request->input('month');
+
+    // Periksa apakah data ketidakhadiran tersedia untuk bulan dan tahun yang diminta
+    $absenceAvailable = Absence::whereMonth('absence_date', $month)
+                                ->whereYear('absence_date', $year)
+                                ->exists();
+    if (!$absenceAvailable) {
+        return response()->json(['message' => 'Absence data for the requested month and year is not available'], 404);
+    }
+
+    // Ambil data karyawan dengan absensinya dan detail pengguna untuk bulan dan tahun yang diberikan
+    $employees = Employees::with(['Absence' => function ($query) use ($month, $year) {
+        $query->whereYear('absence_date', $year)
+              ->whereMonth('absence_date', $month);
+    }, 'Users'])->get();
+
+    $report = [];
+    $totalWages = 0;
+
+    foreach ($employees as $employee) {
+        $absentCount = $employee->Absence->count();
+        $presenceCount = Carbon::create($year, $month, 1)->daysInMonth - $absentCount;
+
+        $dailyWage = $presenceCount * 100000;
+        $bonus = ($absentCount <= 4) ? 500000 : 0;
+        $totalWage = $dailyWage + $bonus;
+
+        $report[] = [
+            'employee_name' => $employee->Users ? $employee->Users->fullName : 'Unknown',
+            'total_attendance' => $presenceCount,
+            'total_absent' => $absentCount,
+            'daily_wages' => $dailyWage,
+            'bonus' => $bonus,
+            'total_wages' => $totalWage,
+        ];
+
+        $totalWages += $totalWage;
+    }
+
+    Log::info('Absence Report Data:', ['data' => $report, 'total_wages' => $totalWages]);
+
+    return response()->json([
+        'message' => 'Success Absence Report and Wage',
+        'data' => $report,
+        'total_wages' => $totalWages
+    ], 200);
 }
+
+
+
+
+public function getIncomeAndExpenseReport(Request $request)
+{
+    // Validasi input bulan dan tahun
+    $validator = Validator::make($request->all(), [
+        'year' => 'required|date_format:Y',
+        'month' => 'required|date_format:n'
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['message' => $validator->errors()], 400);
+    }
+
+    $year = $request->input('year');
+    $month = $request->input('month');
+
+    // Ambil data pendapatan
+    $totalSales = TransactionDetail::whereHas('transaction', function ($query) use ($year, $month) {
+        $query->whereYear('pickup_date', $year)
+              ->whereMonth('pickup_date', $month);
+    })->sum('total_price');
+
+    $totalTip = floatval(Transactions::whereYear('pickup_date', $year)
+                            ->whereMonth('pickup_date', $month)
+                            ->sum('tip'));
+
+    $totalIncome = $totalSales + $totalTip;
+
+    // Ambil data pengeluaran dari pembelian lain
+    $expenseList = OtherProcurements::whereYear('procurement_date', $year)
+                                    ->whereMonth('procurement_date', $month)
+                                    ->get();
+
+    $ingredientExpenses = IngredientProcurements::whereYear('procurement_date', $year)
+                                                ->whereMonth('procurement_date', $month)
+                                                ->get();
+
+    $expenseSummary = [];
+    $totalExpense = 0;
+
+    foreach ($expenseList as $expense) {
+        $expenseName = $expense->item_name;
+        $totalExpenseItem = $expense->total_price;
+
+        if (!isset($expenseSummary[$expenseName])) {
+            $expenseSummary[$expenseName] = 0;
+        }
+
+        $expenseSummary[$expenseName] += $totalExpenseItem;
+        $totalExpense += $totalExpenseItem;
+    }
+
+    foreach ($ingredientExpenses as $expense) {
+        $expenseName = 'Raw Material'; // Mengasumsikan nama khusus untuk pengeluaran bahan baku
+        $totalExpenseItem = $expense->total_price;
+
+        if (!isset($expenseSummary[$expenseName])) {
+            $expenseSummary[$expenseName] = 0;
+        }
+
+        $expenseSummary[$expenseName] += $totalExpenseItem;
+        $totalExpense += $totalExpenseItem;
+    }
+
+    $incomeData = [
+        'Sales' => $totalSales,
+        'Tip' => $totalTip
+    ];
+
+    $expenseData = [];
+    foreach ($expenseSummary as $name => $total) {
+        $expenseData[$name] = $total;
+    }
+
+    return response()->json([
+        'message' => 'Income and Expense Report',
+        'data' => [
+            'Income' => $incomeData,
+            'Expenses' => $expenseData,
+            'Total Income' => $totalIncome,
+            'Total Expenses' => $totalExpense
+        ]
+    ], 200);
+}
+
+
+}
+
