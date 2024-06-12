@@ -17,6 +17,7 @@ class BalanceHistories extends Model
         'bank_name', 
         'account_number', 
         'date', 
+        'status',
         'detail_information'
     ];
 
