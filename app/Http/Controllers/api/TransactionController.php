@@ -49,6 +49,29 @@ class TransactionController extends Controller
         ], 200);
     }
 
+    public function searchOrderHistory(Request $request)
+    {
+        $data = $request->all();
+        $customer = Customers::where('user_id', auth()->user()->id)->first();
+        $searchTerm = $data['query'];
+
+        // search by product/hampers name
+        $orders = Transactions::with('Delivery', 'Customer', 'TransactionDetails', 'TransactionDetails.Product', 'TransactionDetails.Hampers')->where('customer_id', $customer->id)->where(
+            function ($query) use ($searchTerm) {
+                $query->whereHas('TransactionDetails.Product', function ($query) use ($searchTerm) {
+                    $query->where('product_name', 'like', '%' . $searchTerm . '%');
+                })->orWhereHas('TransactionDetails.Hampers', function ($query) use ($searchTerm) {
+                    $query->where('hampers_name', 'like', '%' . $searchTerm . '%');
+                });
+            }
+        )->orderBy('id', 'desc')->get();
+
+        return response([
+            'message' => 'All data Retrieved',
+            'data' => $orders,
+        ], 200);
+    }
+
     public function getDetailOrder($id)
     {
         $transaction = Transactions::find($id);
@@ -546,8 +569,8 @@ class TransactionController extends Controller
 
     public function getLatePaymentTransaction()
     {
-        $transactions = Transactions::with('Customer')->where('status', 'notPaid')->where('order_date', '<=',
-            Carbon::now()->subDays(2)->toDateString())->get();
+        $transactions = Transactions::with('Customer.Users')->where('status', 'notPaid')->where('order_date', '<=',
+            Carbon::now()->addDays(2)->toDateString())->get();
 
         return response([
             'message' => 'All data Retrieved',

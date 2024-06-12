@@ -228,6 +228,7 @@ Route::middleware(['auth:api', UserRoleCheck::class . ':4'])->group(function () 
     Route::post('/orderBuyNow', [TransactionController::class, 'storeBuyNow']);
     Route::get('/orderDetail/{id}', [TransactionController::class, 'getDetailOrderAuth']);
     Route::post('/transactionWhereStatusCustomer', [TransactionController::class, 'getTransactionWhereStatusWithAuth']);
+    Route::post('/searchOrderHistory', [TransactionController::class, 'searchOrderHistory']);
 
     // Delivery
     Route::post('/delivery', [DeliveryController::class, 'store']);
