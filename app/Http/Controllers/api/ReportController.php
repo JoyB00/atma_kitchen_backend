@@ -223,6 +223,7 @@ class ReportController extends Controller
         return response()->json($report);
     }
     
+    
 
     public function getAbsenceReport(Request $request)
 {
@@ -285,9 +286,6 @@ class ReportController extends Controller
     ], 200);
 }
 
-
-
-
 public function getIncomeAndExpenseReport(Request $request)
 {
     // Validasi input bulan dan tahun
@@ -340,7 +338,7 @@ public function getIncomeAndExpenseReport(Request $request)
     }
 
     foreach ($ingredientExpenses as $expense) {
-        $expenseName = 'Raw Material'; // Mengasumsikan nama khusus untuk pengeluaran bahan baku
+        $expenseName = 'Raw Material';
         $totalExpenseItem = $expense->total_price;
 
         if (!isset($expenseSummary[$expenseName])) {
@@ -371,6 +369,7 @@ public function getIncomeAndExpenseReport(Request $request)
         ]
     ], 200);
 }
+
 
 
 }
