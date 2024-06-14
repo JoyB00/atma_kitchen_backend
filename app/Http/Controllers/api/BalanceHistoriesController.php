@@ -44,7 +44,7 @@ class BalanceHistoriesController extends Controller
             'date' => $data['date'],
             'detail_information' => $data['detail_information'],
             'customer_id' => Customers::where('user_id', auth()->user()->id)->first()->id,
-            'status' => 'Transaction Rejected'
+            'status' => 'Confirmed'
         ]);
         return response([
             'message' => 'Balance History Created Successfully',

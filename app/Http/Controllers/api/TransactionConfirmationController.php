@@ -14,7 +14,6 @@ use App\Models\TransactionDetail;
 use App\Models\Transactions;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 
 class TransactionConfirmationController extends Controller
 {
@@ -26,7 +25,7 @@ class TransactionConfirmationController extends Controller
         $customer = Customers::find($transaction->customer_id);
         if ($data['status'] == 'accepted') {
             $transaction->status = 'accepted';
-            $customer->point = $customer->point -  $transaction->used_point + $transaction->earned_point;
+            $customer->point = $customer->point - $transaction->used_point + $transaction->earned_point;
             $transaction->save();
             $customer->save();
         } else {
@@ -78,9 +77,9 @@ class TransactionConfirmationController extends Controller
             }
             $delivery = Deliveries::find($transaction->delivery_id);
             if (!is_null($delivery->shipping_cost)) {
-                $customer->nominal_balance =  $customer->nominal_balance + $subtotal + $delivery->shipping_cost;
+                $customer->nominal_balance = $customer->nominal_balance + $subtotal + $delivery->shipping_cost;
             } else {
-                $customer->nominal_balance =  $customer->nominal_balance + $subtotal;
+                $customer->nominal_balance = $customer->nominal_balance + $subtotal;
             }
             $transaction->save();
             $customer->save();
@@ -90,7 +89,8 @@ class TransactionConfirmationController extends Controller
                 'bank_name' => 'BRI',
                 'account_number' => '8769123441231',
                 'date' => Carbon::now()->toDateString(),
-                'detail_information' => 'Refund from online purchase'
+                'detail_information' => 'Refund from online purchase',
+                'status' => 'Transaction Rejected'
             ]);
         }
 
@@ -229,8 +229,6 @@ class TransactionConfirmationController extends Controller
             'data' => $shortageIngredient
         ], 200);
     }
-
-
 
 
     public function showTransactionNeedToProccess()
