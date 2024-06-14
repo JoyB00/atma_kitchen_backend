@@ -37,7 +37,15 @@ class BalanceHistoriesController extends Controller
                 'message' => $validate->errors()->first(),
             ], 400);
         }
-        $balanceHistory = BalanceHistories::create($data);
+        $balanceHistory = BalanceHistories::create([
+            'nominal_balance' => $data['balance_nominal'],
+            'bank_name' => $data['bank_name'],
+            'account_number' => $data['account_number'],
+            'date' => $data['date'],
+            'detail_information' => $data['detail_information'],
+            'customer_id' => Customers::where('user_id', auth()->user()->id)->first()->id,
+            'status' => 'Transaction Rejected'
+        ]);
         return response([
             'message' => 'Balance History Created Successfully',
             'data' => $balanceHistory
@@ -90,7 +98,7 @@ class BalanceHistoriesController extends Controller
                 'data' => $balance_history
             ], 200);
         }
-        return  response([
+        return response([
             'message' => 'Delete Balance History Failed',
             'data' => null,
         ], 400);
