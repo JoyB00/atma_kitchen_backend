@@ -180,7 +180,7 @@ class BalanceController extends Controller
         DB::beginTransaction();
         try {
             // Deduct the balance from the customer's account
-            $customer->nominal_balance -= $withdrawalRequest->nominal_balance;
+            $customer->nominal_balance += $withdrawalRequest->nominal_balance;
             $customer->save();
 
             // Update the status of the withdrawal request to confirmed
